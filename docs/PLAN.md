@@ -50,6 +50,7 @@ A user can belong to multiple orgs with a different role in each (`memberships` 
 | `requests` | id, org_id, requester_id, title, amount_minor, currency, category, justification, status[pending\|approved\|rejected\|withdrawn], decided_by, decided_at, created_at, updated_at |
 | `request_events` | id, org_id, request_id, actor_id, type, from_status, to_status, note, created_at |
 | `invitations` | id, org_id, email, role, token, expires_at, accepted_at |
+| `notifications` | id, user_id, org_id, request_id, type, body, read_at, created_at |
 
 RLS helper: `has_role(org_id, role)` reading `memberships`. All policies scope by
 `org_id in (select org_id from memberships where user_id = auth.uid())`.
@@ -67,9 +68,15 @@ RLS helper: `has_role(org_id, role)` reading `memberships`. All policies scope b
 
 **Included extras**
 - In-app Activity feed (reads `request_events`) — doubles as observability UI
-- Email on decision (Resend)
+- **In-app notification on decision** (`notifications` table; bell/feed) — replaces email
 - Sentry error tracking + structured server logs (request_id) + `/api/health`
 - Vercel Web Analytics
+
+**Identity & tenancy decisions**
+- **Supabase Auth** for identity (no Clerk/third-party) — so RLS uses native `auth.uid()`.
+- **Our own `organizations`/`memberships` tables** for orgs + roles — tenant isolation is
+  enforced by *our* RLS, which is the whole point. Not outsourced.
+- Email confirmation **disabled** in Supabase for the demo so test accounts log in instantly.
 
 ---
 
@@ -104,6 +111,8 @@ RLS helper: `has_role(org_id, role)` reading `memberships`. All policies scope b
 
 ## Deferred (documented, not built — honest scoping)
 
+- **Transactional email** (Resend/Postmark) on decision — needs a verified sending domain
+  (can't verify `*.vercel.app`); replaced with in-app notifications. ~30-min add with a domain.
 - Multi-level / dual approval over a higher tier
 - SSO / SAML, billing, org switching UI polish
 - Receipt file uploads (Supabase Storage)
