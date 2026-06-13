@@ -54,6 +54,36 @@ enforced by *my* RLS, not outsourced.
 
 ---
 
+## 3b · Data model
+
+Seven tables. `auth.users` is Supabase's; everything else is mine. The `memberships`
+table is the hinge — it's what makes the app multi-tenant *and* role-aware, and almost
+every RLS policy keys off it.
+
+```
+auth.users ─1:1─ profiles                         (name/email mirror, via trigger)
+    │
+    │ 1:N
+    ▼
+memberships ──N:1──► organizations                (role: admin | approver | requester)
+                          │  1:N
+                          ▼
+                       requests ──1:N──► request_events   (append-only audit log)
+                          ▲                   ▲
+                          │ requester_id      │ actor_id
+                       auth.users ────────────┘
+organizations ─1:N─ invitations                   (email + role + single-use token)
+auth.users    ─1:N─ notifications                  (in-app, replaces email)
+```
+
+Key column choices that carry weight:
+- `requests.amount_minor BIGINT` — integer cents, never a float. `currency` is copied
+  from the org by a trigger so it can't be spoofed.
+- `requests.status` enum drives the lifecycle; it is only ever written by the RPC.
+- `memberships UNIQUE(org_id, user_id)` — you can't be in one org twice.
+- `request_events` has **no** UPDATE/DELETE policy — the audit trail is immutable.
+- `organizations.approval_threshold_minor` — the single knob behind threshold routing.
+
 ## 4 · The security model in one screen
 
 | Rule | Where it's enforced |
@@ -157,6 +187,30 @@ Everything else (email, dual approval, uploads) is a layer on top of these three
   requests" story airtight; would add a narrow, status-guarded UPDATE policy.
 
 ---
+
+## 9b · What I'd add with more time
+
+In rough priority order — each is a contained change, not a rewrite:
+
+1. **Multi-level / dual approval.** A second threshold tier where big-ticket requests need
+   *two* distinct approvers. The `decide_request` RPC is the single place this lives:
+   record approvals in a join table and only flip `status` when the quorum is met.
+2. **Transactional email (Resend) + digests.** Verify a domain, then have the RPC enqueue
+   a decision email and a daily "pending approvals" digest for approvers. The in-app
+   notifications already model the events; email is just another channel.
+3. **Audit export.** CSV/JSON export of `request_events` for a date range — finance teams
+   live on this for reconciliation. Append-only data makes it trivial and trustworthy.
+4. **Spend analytics for admins.** Approved spend by category/month, approver throughput,
+   time-to-decision. A read-only reporting view; no change to the write path.
+5. **Receipts.** Supabase Storage uploads on a request, with RLS mirroring the request's
+   visibility.
+6. **Request editing + comments.** A narrow, status-guarded UPDATE policy so a requester
+   can amend a *pending* request, plus a comment thread on the detail page.
+7. **Role hardening niceties.** Org ownership transfer, and SSO for larger customers.
+
+What I deliberately would **not** add: a separate heavyweight "admin dashboard." The
+existing dashboard + members + settings + activity already cover the admin surface for
+one approval flow; more would be over-engineering for this scope.
 
 ## 10 · Adding a required field to a live table (the migration question)
 
