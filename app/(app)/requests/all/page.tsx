@@ -47,7 +47,11 @@ export default async function AllRequestsPage({
         description="Every expense request in this organization, across all statuses."
       />
 
-      <div className="flex flex-wrap gap-2">
+      {/* On phones the five pills don't fit on one line; rather than wrap to a
+          ragged second row, they scroll horizontally edge-to-edge (the -mx-5
+          bleed cancels the page padding). At sm+ there's room, so they wrap
+          normally. */}
+      <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 sm:pb-0 [&::-webkit-scrollbar]:hidden">
         {FILTERS.map((f) => {
           const isActive = f.value === active;
           const href = f.value === "all" ? "/requests/all" : `/requests/all?status=${f.value}`;
@@ -56,7 +60,7 @@ export default async function AllRequestsPage({
               key={f.value}
               href={href}
               className={clsx(
-                "rounded-full border px-4 py-2 text-sm font-medium transition-colors",
+                "shrink-0 whitespace-nowrap rounded-full border px-4 py-2 text-sm font-medium transition-colors",
                 isActive
                   ? "border-ink bg-ink text-cream"
                   : "border-mist bg-cream text-storm/80 hover:border-storm/30 hover:text-ink",

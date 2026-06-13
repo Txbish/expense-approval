@@ -16,14 +16,6 @@ interface RequestListProps {
   actionLabel?: string;
 }
 
-function AdminTag() {
-  return (
-    <span className="inline-flex shrink-0 rounded border border-orange/55 px-1.5 py-0.5 text-3xs font-semibold uppercase tracking-wide text-ink">
-      admin
-    </span>
-  );
-}
-
 export function RequestList({
   requests,
   profiles,
@@ -70,13 +62,10 @@ export function RequestList({
                       {showRequester && <> · {nameOf(profiles, r.requester_id)}</>}
                     </p>
                   </div>
-                  <StatusBadge status={r.status} />
+                  <StatusBadge status={r.status} locked={overLimit} />
                 </div>
                 <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    <Money minor={r.amount_minor} currency={r.currency} className="font-medium text-ink" />
-                    {overLimit && r.status === "pending" && <AdminTag />}
-                  </div>
+                  <Money minor={r.amount_minor} currency={r.currency} className="font-medium text-ink" />
                   <span className="flex items-center gap-1.5 text-xs tabular text-storm/55">
                     {timeAgo(r.updated_at)}
                     {reviewable && (
@@ -99,7 +88,7 @@ export function RequestList({
               <th>Request</th>
               {showRequester && <th>Requester</th>}
               <th className="text-right">Amount</th>
-              <th>Status</th>
+              <th className="text-center">Status</th>
               <th className="text-right">Updated</th>
               {reviewable && <th className="text-right sr-only">Action</th>}
             </tr>
@@ -126,13 +115,10 @@ export function RequestList({
                     <td className="px-4 py-3.5 text-storm/80">{nameOf(profiles, r.requester_id)}</td>
                   )}
                   <td className="px-4 py-3.5 text-right">
-                    <span className="inline-flex items-center justify-end gap-2">
-                      <Money minor={r.amount_minor} currency={r.currency} className="font-medium text-ink" />
-                      {overLimit && r.status === "pending" && <AdminTag />}
-                    </span>
+                    <Money minor={r.amount_minor} currency={r.currency} className="font-medium text-ink" />
                   </td>
-                  <td className="px-4 py-3.5">
-                    <StatusBadge status={r.status} />
+                  <td className="px-4 py-3.5 text-center">
+                    <StatusBadge status={r.status} locked={overLimit} />
                   </td>
                   <td className="px-4 py-3.5 text-right text-xs tabular text-storm/60">{timeAgo(r.updated_at)}</td>
                   {reviewable && (

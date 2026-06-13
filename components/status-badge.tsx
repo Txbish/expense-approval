@@ -35,6 +35,17 @@ function GlyphWithdrawn({ className }: { className?: string }) {
     </svg>
   );
 }
+/* Admin-locked pending: the padlock replaces the clock so the over-threshold
+   "an admin must decide" state rides inside the single Pending pill — no extra
+   row, no second column element. */
+function GlyphLock({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 20 20" className={className} fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <rect x="4.75" y="9" width="10.5" height="7.25" rx="1.75" />
+      <path d="M7.25 9V6.6a2.75 2.75 0 0 1 5.5 0V9" />
+    </svg>
+  );
+}
 
 const STATUS: Record<RequestStatus, { pill: string; glyph: (p: { className?: string }) => ReactNode }> = {
   pending: { pill: "bg-cream/80 border-orange/60 text-ink", glyph: GlyphPending },
@@ -43,11 +54,14 @@ const STATUS: Record<RequestStatus, { pill: string; glyph: (p: { className?: str
   withdrawn: { pill: "bg-parchment border-mist/60 text-storm", glyph: GlyphWithdrawn },
 };
 
-export function StatusBadge({ status }: { status: RequestStatus }) {
+export function StatusBadge({ status, locked = false }: { status: RequestStatus; locked?: boolean }) {
   const cfg = STATUS[status];
-  const Glyph = cfg.glyph;
+  // Admin-lock only qualifies a pending request; ignore the flag otherwise.
+  const adminLocked = locked && status === "pending";
+  const Glyph = adminLocked ? GlyphLock : cfg.glyph;
   return (
     <span
+      title={adminLocked ? "Above threshold — an admin must decide" : undefined}
       className={clsx(
         "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium capitalize",
         cfg.pill,
@@ -55,6 +69,7 @@ export function StatusBadge({ status }: { status: RequestStatus }) {
     >
       <Glyph className="h-3.5 w-3.5 shrink-0" />
       {status}
+      {adminLocked && <span className="sr-only"> — admin required</span>}
     </span>
   );
 }
