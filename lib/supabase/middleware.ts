@@ -43,6 +43,7 @@ export async function updateSession(request: NextRequest) {
     path.startsWith("/signup") ||
     path.startsWith("/auth") ||
     path.startsWith("/invite") ||
+    path.startsWith("/api/health") ||
     path === "/";
 
   if (!user && !isPublic) {
