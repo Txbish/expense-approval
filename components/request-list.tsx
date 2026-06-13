@@ -11,6 +11,9 @@ interface RequestListProps {
   showRequester?: boolean;
   threshold?: number;
   emptyLabel?: string;
+  /** Adds a per-row action button (e.g. on the approval queue). */
+  reviewable?: boolean;
+  actionLabel?: string;
 }
 
 export function RequestList({
@@ -19,6 +22,8 @@ export function RequestList({
   showRequester = false,
   threshold,
   emptyLabel = "No requests yet.",
+  reviewable = false,
+  actionLabel = "Review",
 }: RequestListProps) {
   if (requests.length === 0) {
     return (
@@ -36,51 +41,62 @@ export function RequestList({
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-line bg-surface shadow-sm">
+    <div className="overflow-hidden rounded-2xl border border-mist bg-cream">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[40rem] text-sm">
-          <thead className="border-b border-line bg-surface-2 text-left text-xs uppercase tracking-wide text-muted">
-            <tr>
-              <th className="px-4 py-2.5 font-medium">Request</th>
-              {showRequester && <th className="px-4 py-2.5 font-medium">Requester</th>}
-              <th className="px-4 py-2.5 text-right font-medium">Amount</th>
-              <th className="px-4 py-2.5 font-medium">Status</th>
-              <th className="px-4 py-2.5 text-right font-medium">Updated</th>
+          <thead className="border-b border-mist text-left">
+            <tr className="[&>th]:px-4 [&>th]:py-3 [&>th]:text-2xs [&>th]:font-medium [&>th]:uppercase [&>th]:tracking-[0.08em] [&>th]:text-storm/60">
+              <th>Request</th>
+              {showRequester && <th>Requester</th>}
+              <th className="text-right">Amount</th>
+              <th>Status</th>
+              <th className="text-right">Updated</th>
+              {reviewable && <th className="text-right sr-only">Action</th>}
             </tr>
           </thead>
-          <tbody className="stagger-rise divide-y divide-line">
+          <tbody className="stagger-rise divide-y divide-mist/70">
             {requests.map((r, i) => {
               const overLimit = threshold !== undefined && r.amount_minor > threshold;
               return (
                 <tr
                   key={r.id}
                   style={{ "--i": i } as React.CSSProperties}
-                  className="group transition-colors duration-150 hover:bg-surface-2"
+                  className="group transition-colors duration-150 hover:bg-ink/3"
                 >
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3.5">
                     <Link
                       href={`/requests/${r.id}`}
-                      className="font-medium text-ink transition-colors group-hover:text-accent-ink"
+                      className="font-medium text-ink transition-colors group-hover:text-blue"
                     >
                       {r.title}
                     </Link>
-                    <div className="text-xs text-muted">{r.category}</div>
+                    <div className="text-xs text-storm/60">{r.category}</div>
                   </td>
                   {showRequester && (
-                    <td className="px-4 py-3 text-muted">{nameOf(profiles, r.requester_id)}</td>
+                    <td className="px-4 py-3.5 text-storm/80">{nameOf(profiles, r.requester_id)}</td>
                   )}
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-4 py-3.5 text-right">
                     <Money minor={r.amount_minor} currency={r.currency} className="font-medium text-ink" />
                     {overLimit && r.status === "pending" && (
-                      <span className="ml-2 inline-flex rounded bg-accent-wash px-1.5 py-0.5 text-3xs font-semibold uppercase tracking-wide text-accent-ink ring-1 ring-inset ring-accent-line">
+                      <span className="ml-2 inline-flex rounded border border-orange/55 px-1.5 py-0.5 text-3xs font-semibold uppercase tracking-wide text-ink">
                         admin
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3.5">
                     <StatusBadge status={r.status} />
                   </td>
-                  <td className="px-4 py-3 text-right text-xs tabular text-muted">{timeAgo(r.updated_at)}</td>
+                  <td className="px-4 py-3.5 text-right text-xs tabular text-storm/60">{timeAgo(r.updated_at)}</td>
+                  {reviewable && (
+                    <td className="px-4 py-3.5 text-right">
+                      <Link
+                        href={`/requests/${r.id}`}
+                        className="inline-flex h-8 items-center gap-1 rounded-full bg-ink px-3.5 text-xs font-medium text-cream transition-colors hover:bg-storm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/40"
+                      >
+                        {actionLabel} →
+                      </Link>
+                    </td>
+                  )}
                 </tr>
               );
             })}

@@ -6,12 +6,13 @@ import { signUp } from "./actions";
 export default function SignupPage() {
   return (
     <AuthShell
-      title="Create your account"
+      eyebrow="Get started"
+      title="create your account."
       subtitle="Then create or join an organization."
       footer={
         <>
           Already have an account?{" "}
-          <Link href="/login" className="font-medium text-accent-ink hover:underline">
+          <Link href="/login" className="font-medium text-blue hover:underline">
             Sign in
           </Link>
         </>

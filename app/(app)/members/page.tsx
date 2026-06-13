@@ -44,6 +44,7 @@ export default async function MembersPage() {
   return (
     <div className="space-y-6">
       <PageHeader
+        eyebrow="Administration"
         title="Members & roles"
         description={`Manage who can request, approve, and administer ${ctx.org.name}.`}
       />

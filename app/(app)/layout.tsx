@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getAppContext, isApprover } from "@/lib/context";
 import { createClient } from "@/lib/supabase/server";
 import { AppNav } from "@/components/app-nav";
+import { AppTopBar } from "@/components/app-topbar";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const ctx = await getAppContext();
@@ -20,12 +21,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       .from("requests")
       .select("id", { count: "exact", head: true })
       .eq("org_id", ctx.org.id)
-      .eq("status", "pending");
+      .eq("status", "pending")
+      .neq("requester_id", ctx.userId); // count only what this user can actually review
     pending = count ?? 0;
   }
 
   return (
-    <div className="min-h-screen bg-bg md:pl-60">
+    <div className="min-h-screen bg-cream md:pl-64">
       <AppNav
         org={ctx.org}
         role={ctx.role}
@@ -34,7 +36,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         unreadCount={unread ?? 0}
         pendingCount={pending}
       />
-      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 md:px-8 lg:py-10">{children}</main>
+      <AppTopBar fullName={ctx.fullName} role={ctx.role} unreadCount={unread ?? 0} />
+      <main className="mx-auto max-w-5xl px-5 py-10 sm:px-8 lg:py-12">{children}</main>
     </div>
   );
 }

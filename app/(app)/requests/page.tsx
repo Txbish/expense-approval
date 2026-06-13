@@ -21,9 +21,10 @@ export default async function MyRequestsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
+        eyebrow="Workspace"
         title="My requests"
         description="Everything you've submitted, newest first."
-        actions={<LinkButton href="/requests/new">New request</LinkButton>}
+        actions={<LinkButton href="/requests/new">+ New request</LinkButton>}
       />
       <RequestList
         requests={requests}

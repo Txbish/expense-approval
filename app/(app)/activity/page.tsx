@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getAppContext } from "@/lib/context";
 import { createClient } from "@/lib/supabase/server";
 import { profilesByIds, nameOf } from "@/lib/queries";
-import { Card, EmptyState, PageHeader } from "@/components/ui";
+import { EmptyState, PageHeader } from "@/components/ui";
 import { timeAgo } from "@/lib/format";
 import type { ExpenseRequest, RequestEvent } from "@/lib/types";
 
@@ -14,10 +14,10 @@ const VERB: Record<string, string> = {
 };
 
 const DOT: Record<string, string> = {
-  created: "bg-withdrawn-solid",
-  approved: "bg-approved-solid",
-  rejected: "bg-rejected-solid",
-  withdrawn: "bg-withdrawn-solid",
+  created: "bg-storm/50",
+  approved: "bg-success",
+  rejected: "bg-destructive",
+  withdrawn: "bg-storm/50",
 };
 
 export default async function ActivityPage() {
@@ -42,6 +42,7 @@ export default async function ActivityPage() {
   return (
     <div className="space-y-6">
       <PageHeader
+        eyebrow="Audit"
         title="Activity"
         description="A complete, append-only audit trail of every decision."
       />
@@ -56,27 +57,27 @@ export default async function ActivityPage() {
           description="Once requests are submitted and decided, every action will be logged here."
         />
       ) : (
-        <Card className="divide-y divide-line">
+        <div className="divide-y divide-mist/70 overflow-hidden rounded-2xl border border-mist bg-cream">
           {events.map((e) => (
-            <div key={e.id} className="flex items-center justify-between gap-4 px-5 py-3 text-sm">
+            <div key={e.id} className="flex items-center justify-between gap-4 px-5 py-3.5 text-sm">
               <div className="flex min-w-0 items-start gap-3">
-                <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${DOT[e.type] ?? "bg-withdrawn-solid"}`} />
+                <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${DOT[e.type] ?? "bg-storm/50"}`} />
                 <div className="min-w-0">
                   <span className="font-medium text-ink">{nameOf(profiles, e.actor_id)}</span>{" "}
-                  <span className="text-muted">{VERB[e.type] ?? e.type}</span>{" "}
+                  <span className="text-storm/70">{VERB[e.type] ?? e.type}</span>{" "}
                   <Link
                     href={`/requests/${e.request_id}`}
-                    className="font-medium text-accent-ink transition-colors hover:underline"
+                    className="font-medium text-blue transition-colors hover:underline"
                   >
                     {titles.get(e.request_id) ?? "a request"}
                   </Link>
-                  {e.note && <span className="text-muted"> — “{e.note}”</span>}
+                  {e.note && <span className="text-storm/70"> — “{e.note}”</span>}
                 </div>
               </div>
-              <span className="shrink-0 text-xs tabular text-faint">{timeAgo(e.created_at)}</span>
+              <span className="shrink-0 text-xs tabular text-storm/55">{timeAgo(e.created_at)}</span>
             </div>
           ))}
-        </Card>
+        </div>
       )}
     </div>
   );

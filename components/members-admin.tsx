@@ -40,30 +40,30 @@ export function MembersAdmin({ members, invites }: { members: MemberRow[]; invit
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       <div className="space-y-6 lg:col-span-2">
-        <Card className="overflow-hidden">
+        <div className="overflow-hidden rounded-2xl border border-mist bg-cream">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[34rem] text-sm">
-              <thead className="border-b border-line bg-surface-2 text-left text-xs uppercase tracking-wide text-muted">
-                <tr>
-                  <th className="px-4 py-2.5 font-medium">Member</th>
-                  <th className="px-4 py-2.5 font-medium">Role</th>
-                  <th className="px-4 py-2.5" />
+              <thead className="border-b border-mist text-left">
+                <tr className="[&>th]:px-4 [&>th]:py-3 [&>th]:text-2xs [&>th]:font-medium [&>th]:uppercase [&>th]:tracking-[0.08em] [&>th]:text-storm/60">
+                  <th>Member</th>
+                  <th>Role</th>
+                  <th />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-line">
+              <tbody className="divide-y divide-mist/70">
                 {members.map((m) => (
-                  <tr key={m.membershipId} className="transition-colors hover:bg-surface-2">
+                  <tr key={m.membershipId} className="transition-colors hover:bg-ink/3">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2.5">
-                        <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-accent-wash text-xs font-semibold text-accent-ink">
+                        <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-ink text-2xs font-semibold uppercase text-cream">
                           {initials(m.name)}
                         </div>
                         <div className="min-w-0">
                           <div className="font-medium text-ink">
                             {m.name}{" "}
-                            {m.isSelf && <span className="text-xs font-normal text-faint">(you)</span>}
+                            {m.isSelf && <span className="text-xs font-normal text-storm/50">(you)</span>}
                           </div>
-                          <div className="truncate text-xs text-muted">{m.email}</div>
+                          <div className="truncate text-xs text-storm/65">{m.email}</div>
                         </div>
                       </div>
                     </td>
@@ -77,7 +77,7 @@ export function MembersAdmin({ members, invites }: { members: MemberRow[]; invit
                             name="role"
                             defaultValue={m.role}
                             onChange={(e) => e.currentTarget.form?.requestSubmit()}
-                            className="w-36"
+                            className="w-40"
                           >
                             <option value="requester">Requester</option>
                             <option value="approver">Approver</option>
@@ -91,7 +91,7 @@ export function MembersAdmin({ members, invites }: { members: MemberRow[]; invit
                         <form action={removeMember}>
                           <input type="hidden" name="membershipId" value={m.membershipId} />
                           <input type="hidden" name="userId" value={m.userId} />
-                          <button className="rounded px-1 text-xs font-medium text-rejected-fg transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                          <button className="rounded px-1 text-xs font-medium text-destructive transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/40">
                             Remove
                           </button>
                         </form>
@@ -102,28 +102,28 @@ export function MembersAdmin({ members, invites }: { members: MemberRow[]; invit
               </tbody>
             </table>
           </div>
-        </Card>
+        </div>
 
         {invites.length > 0 && (
-          <Card className="p-5">
-            <h2 className="mb-3 text-sm font-semibold text-ink">Pending invitations</h2>
-            <ul className="divide-y divide-line">
+          <Card className="p-6">
+            <h2 className="mb-3 text-subheading text-ink">Pending invitations</h2>
+            <ul className="divide-y divide-mist/70">
               {invites.map((i) => (
-                <li key={i.id} className="flex items-center justify-between gap-2 py-2.5 text-sm first:pt-0 last:pb-0">
+                <li key={i.id} className="flex items-center justify-between gap-2 py-3 text-sm first:pt-0 last:pb-0">
                   <div className="flex min-w-0 items-center gap-2">
-                    <span className="truncate text-ink-soft">{i.email}</span>
+                    <span className="truncate text-storm">{i.email}</span>
                     <RoleBadge role={i.role} />
                   </div>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => copy(i.token)}
-                      className="rounded-md bg-surface-2 px-2 py-1 font-mono text-xs text-muted transition-colors hover:bg-surface-sunken hover:text-ink"
+                      className="rounded-md bg-cream px-2.5 py-1 font-mono text-xs text-storm/70 ring-1 ring-inset ring-mist transition-colors hover:bg-mist/40 hover:text-ink"
                     >
                       {copied === i.token ? "copied!" : "copy code"}
                     </button>
                     <form action={revokeInvite}>
                       <input type="hidden" name="inviteId" value={i.id} />
-                      <button className="rounded px-1 text-xs font-medium text-rejected-fg transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                      <button className="rounded px-1 text-xs font-medium text-destructive transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/40">
                         Revoke
                       </button>
                     </form>
@@ -135,12 +135,12 @@ export function MembersAdmin({ members, invites }: { members: MemberRow[]; invit
         )}
       </div>
 
-      <Card className="h-fit p-5">
-        <h2 className="text-sm font-semibold text-ink">Invite a member</h2>
-        <p className="mt-1 text-xs leading-relaxed text-muted">
+      <Card className="h-fit p-6">
+        <h2 className="text-subheading text-ink">Invite a member</h2>
+        <p className="mt-1 text-caption text-storm/70">
           Generates an invite code. Share it with the person — they redeem it after signing up.
         </p>
-        <form action={action} className="mt-4 space-y-3">
+        <form action={action} className="mt-5 space-y-4">
           <Field label="Email">
             <Input name="email" type="email" required placeholder="teammate@company.com" />
           </Field>
@@ -158,11 +158,11 @@ export function MembersAdmin({ members, invites }: { members: MemberRow[]; invit
           </Button>
         </form>
         {state?.token && (
-          <div className="mt-4 rounded-lg border border-approved-line bg-approved-bg p-3 text-sm">
-            <p className="font-medium text-approved-fg">Invite for {state.email}:</p>
+          <div className="mt-4 rounded-xl border border-success/35 bg-success/8 p-3 text-sm">
+            <p className="font-medium text-success">Invite for {state.email}:</p>
             <button
               onClick={() => copy(state.token!)}
-              className="mt-2 block w-full break-all rounded-md bg-surface px-2 py-1.5 text-left font-mono text-xs text-ink-soft ring-1 ring-inset ring-approved-line transition-colors hover:bg-surface-2"
+              className="mt-2 block w-full break-all rounded-md bg-cream px-2.5 py-1.5 text-left font-mono text-xs text-ink ring-1 ring-inset ring-success/30 transition-colors hover:bg-mist/30"
             >
               {copied === state.token ? "copied to clipboard!" : state.token}
             </button>

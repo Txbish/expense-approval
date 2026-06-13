@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getAppContext } from "@/lib/context";
 import { newRequestSchema } from "@/lib/validation";
@@ -53,5 +54,6 @@ export async function createRequest(
   }
 
   log("info", "request.created", { rid, org: ctx.org.id, request: data.id });
+  revalidatePath("/", "layout"); // refresh the persisted nav badge (pending count)
   redirect(`/requests/${data.id}`);
 }

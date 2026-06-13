@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getAppContext } from "@/lib/context";
 import { createClient } from "@/lib/supabase/server";
-import { Card, Button, EmptyState, PageHeader } from "@/components/ui";
+import { Button, EmptyState, PageHeader } from "@/components/ui";
 import { timeAgo } from "@/lib/format";
 import { markAllRead } from "@/app/(app)/actions";
 import type { AppNotification } from "@/lib/types";
@@ -20,6 +20,7 @@ export default async function NotificationsPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <PageHeader
+        eyebrow="Inbox"
         title="Notifications"
         actions={
           hasUnread && (
@@ -43,18 +44,18 @@ export default async function NotificationsPage() {
           description="Updates on your requests and decisions to review will show up here."
         />
       ) : (
-        <Card className="divide-y divide-line">
+        <div className="divide-y divide-mist/70 overflow-hidden rounded-2xl border border-mist bg-cream">
           {notifications.map((n) => {
             const body = (
-              <div className="flex items-start gap-3 px-5 py-3.5">
+              <div className="flex items-start gap-3 px-5 py-4">
                 {!n.read_at ? (
-                  <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-accent" aria-label="Unread" />
+                  <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-blue" aria-label="Unread" />
                 ) : (
                   <span className="mt-1.5 h-2 w-2 shrink-0" />
                 )}
                 <div>
-                  <p className={n.read_at ? "text-sm text-muted" : "text-sm font-medium text-ink"}>{n.body}</p>
-                  <p className="mt-0.5 text-xs tabular text-faint">{timeAgo(n.created_at)}</p>
+                  <p className={n.read_at ? "text-field text-storm/70" : "text-field font-medium text-ink"}>{n.body}</p>
+                  <p className="mt-0.5 text-xs tabular text-storm/55">{timeAgo(n.created_at)}</p>
                 </div>
               </div>
             );
@@ -62,7 +63,7 @@ export default async function NotificationsPage() {
               <Link
                 key={n.id}
                 href={`/requests/${n.request_id}`}
-                className="block transition-colors hover:bg-surface-2"
+                className="block transition-colors hover:bg-ink/3"
               >
                 {body}
               </Link>
@@ -70,7 +71,7 @@ export default async function NotificationsPage() {
               <div key={n.id}>{body}</div>
             );
           })}
-        </Card>
+        </div>
       )}
     </div>
   );

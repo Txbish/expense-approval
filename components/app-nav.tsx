@@ -4,9 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { clsx } from "clsx";
-import { RoleBadge } from "@/components/status-badge";
 import { OrgSwitcher } from "@/components/org-switcher";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { BrandMark } from "@/components/brand-mark";
 import type { MembershipWithOrg } from "@/lib/context";
 import type { Organization, Role } from "@/lib/types";
@@ -20,8 +18,8 @@ interface AppNavProps {
   pendingCount: number;
 }
 
-type NavLink = { href: string; label: string; icon: keyof typeof ICONS; badge?: number; badgeTone?: "accent" };
-type NavGroup = { heading?: string; links: NavLink[] };
+type NavLink = { href: string; label: string; icon: keyof typeof ICONS; badge?: number };
+type NavGroup = { heading: string; links: NavLink[] };
 
 export function AppNav({ org, role, memberships, fullName, unreadCount, pendingCount }: AppNavProps) {
   const pathname = usePathname();
@@ -32,6 +30,7 @@ export function AppNav({ org, role, memberships, fullName, unreadCount, pendingC
 
   const groups: NavGroup[] = [
     {
+      heading: "Workspace",
       links: [
         { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
         { href: "/requests", label: "My requests", icon: "requests" },
@@ -43,13 +42,8 @@ export function AppNav({ org, role, memberships, fullName, unreadCount, pendingC
           {
             heading: "Review",
             links: [
-              {
-                href: "/queue",
-                label: "Approval queue",
-                icon: "queue" as const,
-                badge: pendingCount,
-                badgeTone: "accent" as const,
-              },
+              { href: "/queue", label: "Approval queue", icon: "queue" as const, badge: pendingCount },
+              { href: "/requests/all", label: "All requests", icon: "requests" as const },
             ],
           },
         ]
@@ -68,18 +62,23 @@ export function AppNav({ org, role, memberships, fullName, unreadCount, pendingC
     { heading: "Audit", links: [{ href: "/activity", label: "Activity", icon: "activity" }] },
   ];
 
-  const isActive = (href: string) =>
-    pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
+  // Active = the single longest nav href that prefixes the current path, so
+  // "/requests/new" lights only New request, not My requests too.
+  const allHrefs = groups.flatMap((g) => g.links.map((l) => l.href));
+  const activeHref = allHrefs.reduce<string | null>((best, href) => {
+    const matches = pathname === href || pathname.startsWith(`${href}/`);
+    if (!matches) return best;
+    return !best || href.length > best.length ? href : best;
+  }, null);
+  const isActive = (href: string) => href === activeHref;
 
   const nav = (
-    <nav onClick={close} className="flex flex-1 flex-col gap-6 overflow-y-auto px-3 py-4">
-      {groups.map((group, gi) => (
-        <div key={group.heading ?? gi} className="space-y-1">
-          {group.heading && (
-            <p className="px-3 pb-1 text-2xs font-semibold uppercase tracking-wider text-sidebar-muted/80">
-              {group.heading}
-            </p>
-          )}
+    <nav onClick={close} className="flex flex-1 flex-col gap-6 overflow-y-auto px-4 py-5">
+      {groups.map((group) => (
+        <div key={group.heading} className="space-y-1">
+          <p className="mb-1.5 px-3 text-3xs font-medium uppercase tracking-[0.16em] text-storm/55">
+            {group.heading}
+          </p>
           {group.links.map((link) => {
             const active = isActive(link.href);
             const Icon = ICONS[link.icon];
@@ -89,21 +88,19 @@ export function AppNav({ org, role, memberships, fullName, unreadCount, pendingC
                 href={link.href}
                 aria-current={active ? "page" : undefined}
                 className={clsx(
-                  "group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors duration-150",
-                  active
-                    ? "bg-sidebar-active text-sidebar-ink"
-                    : "text-sidebar-muted hover:bg-sidebar-2 hover:text-sidebar-ink",
+                  "group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors duration-200",
+                  active ? "bg-ink text-cream" : "text-storm/85 hover:bg-ink/6 hover:text-ink",
                 )}
               >
                 <Icon
                   className={clsx(
-                    "h-[1.05rem] w-[1.05rem] shrink-0 transition-colors",
-                    active ? "text-accent-bright" : "text-sidebar-muted group-hover:text-sidebar-ink",
+                    "h-4 w-4 shrink-0",
+                    active ? "text-cream" : "text-storm/60 group-hover:text-ink",
                   )}
                 />
                 <span className="flex-1 truncate">{link.label}</span>
                 {typeof link.badge === "number" && link.badge > 0 && (
-                  <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1.5 text-2xs font-semibold tabular text-accent-contrast">
+                  <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-orange px-1.5 text-2xs font-semibold tabular text-ink">
                     {link.badge}
                   </span>
                 )}
@@ -115,82 +112,32 @@ export function AppNav({ org, role, memberships, fullName, unreadCount, pendingC
     </nav>
   );
 
-  const header = (
-    <div className="flex flex-col gap-3 border-b border-sidebar-line px-4 py-4">
-      <Link href="/dashboard" className="inline-flex items-center gap-2.5 text-sidebar-ink">
-        <BrandMark className="h-8 w-8" />
-        <span className="text-base font-semibold tracking-tight">Approvals</span>
-      </Link>
-      <div className="flex items-center justify-between gap-2">
-        <OrgSwitcher current={org} memberships={memberships} />
-        <RoleBadge role={role} />
-      </div>
-    </div>
-  );
-
-  const footer = (
-    <div className="mt-auto border-t border-sidebar-line px-3 py-3">
-      <Link
-        href="/notifications"
-        onClick={close}
-        aria-current={isActive("/notifications") ? "page" : undefined}
-        className={clsx(
-          "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors duration-150",
-          isActive("/notifications")
-            ? "bg-sidebar-active text-sidebar-ink"
-            : "text-sidebar-muted hover:bg-sidebar-2 hover:text-sidebar-ink",
-        )}
-      >
-        <span className="relative">
-          <ICONS.bell className="h-[1.05rem] w-[1.05rem]" />
-          {unreadCount > 0 && (
-            <span className="absolute -right-1.5 -top-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-3xs font-semibold tabular text-accent-contrast">
-              {unreadCount}
-            </span>
-          )}
-        </span>
-        <span className="flex-1">Notifications</span>
-      </Link>
-
-      <div className="mt-2 flex items-center gap-2 rounded-md px-3 py-2">
-        <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-sidebar-2 text-xs font-semibold text-sidebar-ink">
-          {initials(fullName)}
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium text-sidebar-ink">{fullName ?? "You"}</p>
-        </div>
-        <ThemeToggle />
-        <form action="/auth/signout" method="post">
-          <button
-            type="submit"
-            aria-label="Sign out"
-            title="Sign out"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-sidebar-muted transition-colors duration-150 hover:bg-sidebar-2 hover:text-sidebar-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <ICONS.signout className="h-[1.05rem] w-[1.05rem]" />
-          </button>
-        </form>
-      </div>
+  const orgFooter = (
+    <div className="mt-auto border-t border-mist px-4 py-4">
+      <p className="mb-2 px-1 text-3xs font-medium uppercase tracking-[0.16em] text-storm/55">
+        Organization
+      </p>
+      <OrgSwitcher current={org} memberships={memberships} />
     </div>
   );
 
   return (
     <>
       {/* Mobile top bar */}
-      <div className="sticky top-0 z-[40] flex h-14 items-center justify-between border-b border-line bg-surface/90 px-4 backdrop-blur md:hidden">
+      <div className="sticky top-0 z-[40] flex h-14 items-center justify-between border-b border-mist bg-cream/90 px-4 backdrop-blur md:hidden">
         <Link href="/dashboard" className="inline-flex items-center gap-2 text-ink">
-          <BrandMark className="h-7 w-7" />
-          <span className="text-base font-semibold tracking-tight">Approvals</span>
+          <BrandMark className="h-6 w-6" />
+          <span className="text-lg font-medium lowercase tracking-tight">approvals.</span>
         </Link>
         <div className="flex items-center gap-1">
           <Link
             href="/notifications"
             aria-label="Notifications"
-            className="relative inline-flex h-9 w-9 items-center justify-center rounded-md text-muted hover:bg-surface-2 hover:text-ink"
+            className="relative inline-flex h-9 w-9 items-center justify-center rounded-md text-storm/70 hover:bg-ink/6 hover:text-ink"
           >
             <ICONS.bell className="h-5 w-5" />
             {unreadCount > 0 && (
-              <span className="absolute right-1 top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-3xs font-semibold tabular text-accent-contrast">
+              <span className="absolute right-1 top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-orange px-1 text-3xs font-semibold tabular text-ink">
                 {unreadCount}
               </span>
             )}
@@ -200,7 +147,7 @@ export function AppNav({ org, role, memberships, fullName, unreadCount, pendingC
             onClick={() => setOpen(true)}
             aria-label="Open menu"
             aria-expanded={open}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-ink hover:bg-surface-2"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-ink hover:bg-ink/6"
           >
             <ICONS.menu className="h-5 w-5" />
           </button>
@@ -209,70 +156,73 @@ export function AppNav({ org, role, memberships, fullName, unreadCount, pendingC
 
       {/* Mobile drawer */}
       <div
-        className={clsx(
-          "fixed inset-0 z-[60] md:hidden",
-          open ? "pointer-events-auto" : "pointer-events-none",
-        )}
+        className={clsx("fixed inset-0 z-[60] md:hidden", open ? "pointer-events-auto" : "pointer-events-none")}
         aria-hidden={!open}
       >
         <div
           onClick={() => setOpen(false)}
           className={clsx(
-            "absolute inset-0 bg-black/50 transition-opacity duration-300",
+            "absolute inset-0 bg-ink/60 transition-opacity duration-300",
             open ? "opacity-100" : "opacity-0",
           )}
         />
         <aside
           className={clsx(
-            "absolute inset-y-0 left-0 flex w-[17rem] max-w-[85%] flex-col bg-sidebar text-sidebar-ink shadow-lg transition-transform duration-300 ease-out",
+            "absolute inset-y-0 left-0 flex w-[17rem] max-w-[85%] flex-col bg-cream transition-transform duration-300 ease-out",
             open ? "translate-x-0" : "-translate-x-full",
           )}
         >
-          <div className="flex items-center justify-between border-b border-sidebar-line px-4 py-3">
-            <span className="inline-flex items-center gap-2 text-sidebar-ink">
-              <BrandMark className="h-7 w-7" />
-              <span className="text-base font-semibold tracking-tight">Approvals</span>
+          <div className="flex h-16 items-center justify-between border-b border-mist px-4">
+            <span className="inline-flex items-center gap-2 text-ink">
+              <BrandMark className="h-6 w-6" />
+              <span className="text-lg font-medium lowercase tracking-tight">approvals.</span>
             </span>
             <button
               type="button"
               onClick={() => setOpen(false)}
               aria-label="Close menu"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-sidebar-muted hover:bg-sidebar-2 hover:text-sidebar-ink"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-storm/70 hover:bg-ink/6 hover:text-ink"
             >
               <ICONS.close className="h-5 w-5" />
             </button>
           </div>
-          <div className="flex items-center justify-between gap-2 border-b border-sidebar-line px-4 py-3">
-            <OrgSwitcher current={org} memberships={memberships} />
-            <RoleBadge role={role} />
-          </div>
           {nav}
-          {footer}
+          <div className="border-t border-mist px-4 py-3">
+            <form action="/auth/signout" method="post">
+              <button
+                type="submit"
+                className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-storm/85 transition-colors hover:bg-ink/6 hover:text-ink"
+              >
+                <ICONS.signout className="h-4 w-4" />
+                Sign out
+              </button>
+            </form>
+          </div>
+          {orgFooter}
         </aside>
       </div>
 
       {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-[40] hidden w-60 flex-col bg-sidebar text-sidebar-ink md:flex">
-        {header}
+      <aside className="fixed inset-y-0 left-0 z-[40] hidden w-64 flex-col border-r border-mist bg-cream md:flex">
+        <div className="flex h-16 items-center border-b border-mist px-5">
+          <Link href="/dashboard" className="inline-flex items-center gap-2 text-ink">
+            <BrandMark className="h-6 w-6" />
+            <span className="text-xl font-medium lowercase tracking-tight">approvals.</span>
+          </Link>
+        </div>
         {nav}
-        {footer}
+        {orgFooter}
       </aside>
     </>
   );
 }
 
-function initials(name: string | null): string {
-  if (!name) return "·";
-  const parts = name.trim().split(/\s+/);
-  return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase() || "·";
-}
-
-/* ── Icons — one consistent 20px stroke set ──────────────────────────────── */
+/* ── Icons — one consistent 1.75px stroke set ────────────────────────────── */
 type IconProps = { className?: string };
 const s = (children: React.ReactNode) =>
   function Icon({ className }: IconProps) {
     return (
-      <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
         {children}
       </svg>
     );

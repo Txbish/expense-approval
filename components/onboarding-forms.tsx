@@ -11,8 +11,8 @@ export function OnboardingForms() {
   return (
     <div className="grid gap-5 md:grid-cols-2">
       <Card className="p-6">
-        <h2 className="text-base font-semibold text-ink">Create an organization</h2>
-        <p className="mt-1 text-sm text-muted">You&apos;ll be its admin and first approver.</p>
+        <h2 className="text-subheading text-ink">Create an organization</h2>
+        <p className="mt-1 text-caption text-storm/75">You&apos;ll be its admin and first approver.</p>
         <form action={createAction} className="mt-5 space-y-4">
           <Field label="Organization name">
             <Input name="name" required placeholder="Acme Inc" />
@@ -34,8 +34,8 @@ export function OnboardingForms() {
       </Card>
 
       <Card className="p-6">
-        <h2 className="text-base font-semibold text-ink">Join with an invite</h2>
-        <p className="mt-1 text-sm text-muted">Paste the invite code an admin shared with you.</p>
+        <h2 className="text-subheading text-ink">Join with an invite</h2>
+        <p className="mt-1 text-caption text-storm/75">Paste the invite code an admin shared with you.</p>
         <form action={joinAction} className="mt-5 space-y-4">
           <Field label="Invite code">
             <Input name="token" required placeholder="e.g. 3f9a1c…" className="font-mono" />

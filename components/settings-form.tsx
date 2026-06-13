@@ -35,7 +35,7 @@ export function SettingsForm({
           {pending ? "Saving…" : "Save changes"}
         </Button>
         {state?.ok && (
-          <span className="inline-flex items-center gap-1 text-sm font-medium text-approved-fg">
+          <span className="inline-flex items-center gap-1 text-sm font-medium text-success">
             <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               <path d="M4.5 10.5 8.2 14.2 15.5 5.8" />
             </svg>
