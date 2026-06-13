@@ -8,6 +8,7 @@ import { StatusBadge, Seal } from "@/components/status-badge";
 import { EventTimeline } from "@/components/event-timeline";
 import { DecisionPanel } from "@/components/decision-panel";
 import { WithdrawButton } from "@/components/withdraw-button";
+import { SwitchOrgButton } from "@/components/switch-org-button";
 import { formatMoney, timeAgo } from "@/lib/format";
 import type { ExpenseRequest, RequestEvent } from "@/lib/types";
 
@@ -40,11 +41,21 @@ export default async function RequestDetailPage({
     ...events.map((e) => e.actor_id),
   ]);
 
+  // A request always belongs to one org. RLS may let a multi-org user open a
+  // request from a NON-active org (e.g. via a cross-org notification). Resolve
+  // everything from the request's OWN org + this user's role THERE — never the
+  // active org — so threshold, currency, and permissions are always correct.
+  // ctx.memberships already carries the org + role for every org we belong to.
+  const reqMembership = ctx.memberships.find((m) => m.org_id === request.org_id);
+  const reqOrg = reqMembership?.organizations ?? ctx.org;
+  const reqRole = reqMembership?.role ?? ctx.role;
+  const crossOrg = request.org_id !== ctx.org.id;
+
   const isOwn = request.requester_id === ctx.userId;
-  const isAdmin = ctx.role === "admin";
+  const isAdmin = reqRole === "admin";
   const isPending = request.status === "pending";
-  const overLimit = request.amount_minor > ctx.org.approval_threshold_minor;
-  const canDecide = isApprover(ctx.role) && !isOwn && isPending;
+  const overLimit = request.amount_minor > reqOrg.approval_threshold_minor;
+  const canDecide = isApprover(reqRole) && !isOwn && isPending;
 
   // Above-threshold requests need an admin for ANY decision (matches the
   // decide_request RPC) — UNLESS no eligible (non-requester) admin exists, in
@@ -92,6 +103,23 @@ export default async function RequestDetailPage({
         </svg>
         Back to requests
       </Link>
+
+      {crossOrg && (
+        <div className="flex flex-col gap-3 rounded-2xl border border-blue/35 bg-blue/8 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-2xs font-medium uppercase tracking-[0.14em] text-blue">
+              Different workspace
+            </p>
+            <p className="mt-1 text-field text-ink">
+              This request is in <strong>{reqOrg.name}</strong>, not your active workspace
+              ({ctx.org.name}). Switch to act in it.
+            </p>
+          </div>
+          <SwitchOrgButton orgId={request.org_id} redirectTo={`/requests/${id}`} className="shrink-0">
+            Switch to {reqOrg.name}
+          </SwitchOrgButton>
+        </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
@@ -166,8 +194,8 @@ export default async function RequestDetailPage({
                   At {formatMoney(request.amount_minor, request.currency)}, this
                   is above the{" "}
                   {formatMoney(
-                    ctx.org.approval_threshold_minor,
-                    ctx.org.default_currency,
+                    reqOrg.approval_threshold_minor,
+                    reqOrg.default_currency,
                   )}{" "}
                   threshold. Only an admin can approve or reject it — not just
                   approve.
@@ -187,8 +215,8 @@ export default async function RequestDetailPage({
                     At {formatMoney(request.amount_minor, request.currency)},
                     this is above the{" "}
                     {formatMoney(
-                      ctx.org.approval_threshold_minor,
-                      ctx.org.default_currency,
+                      reqOrg.approval_threshold_minor,
+                      reqOrg.default_currency,
                     )}{" "}
                     threshold.
                   </p>

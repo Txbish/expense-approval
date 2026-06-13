@@ -13,6 +13,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const { count: unread } = await supabase
     .from("notifications")
     .select("id", { count: "exact", head: true })
+    .eq("org_id", ctx.org.id)
     .is("read_at", null);
 
   let pending = 0;
@@ -36,7 +37,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         unreadCount={unread ?? 0}
         pendingCount={pending}
       />
-      <AppTopBar fullName={ctx.fullName} role={ctx.role} unreadCount={unread ?? 0} />
+      <AppTopBar orgName={ctx.org.name} fullName={ctx.fullName} role={ctx.role} unreadCount={unread ?? 0} />
       <main className="mx-auto max-w-5xl px-5 py-10 sm:px-8 lg:py-12">{children}</main>
     </div>
   );

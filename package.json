@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "db:reset": "supabase db reset",
     "seed": "node --env-file=.env.local scripts/seed.mjs",
+    "db:seed": "supabase db reset && node --env-file=.env.local scripts/seed.mjs",
     "redteam": "node --env-file=.env.local scripts/redteam.mjs",
     "test:e2e": "playwright test"
   },

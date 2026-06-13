@@ -16,6 +16,7 @@ const LABELS: { test: (p: string) => boolean; label: string }[] = [
   { test: (p) => p === "/settings", label: "Settings" },
   { test: (p) => p === "/activity", label: "Activity" },
   { test: (p) => p === "/notifications", label: "Notifications" },
+  { test: (p) => p === "/orgs/new", label: "Add organization" },
 ];
 
 function pageLabel(pathname: string): string {
@@ -29,10 +30,12 @@ function initials(name: string | null): string {
 }
 
 export function AppTopBar({
+  orgName,
   fullName,
   role,
   unreadCount,
 }: {
+  orgName: string;
   fullName: string | null;
   role: Role;
   unreadCount: number;
@@ -41,10 +44,12 @@ export function AppTopBar({
 
   return (
     <header className="sticky top-0 z-[40] hidden h-16 items-center justify-between border-b border-mist bg-cream/85 px-8 backdrop-blur md:flex">
-      <div className="flex items-center gap-2.5">
-        <span className="text-3xs font-medium uppercase tracking-[0.16em] text-storm/55">Page</span>
-        <span className="text-mist">|</span>
-        <span className="text-sm font-medium text-ink">{pageLabel(pathname)}</span>
+      <div className="flex min-w-0 items-center gap-2.5">
+        <span className="max-w-[16rem] truncate text-sm font-medium text-ink" title={orgName}>
+          {orgName}
+        </span>
+        <span className="text-mist">/</span>
+        <span className="text-sm text-storm/70">{pageLabel(pathname)}</span>
       </div>
 
       <div className="flex items-center gap-3">
