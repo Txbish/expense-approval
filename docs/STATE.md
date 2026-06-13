@@ -7,8 +7,10 @@ _Last updated: initial setup._
 
 ## Current phase
 
-**Phase 3 — Deploy + presentation.** DB layer, full UI, and tests are done and green
-locally. Next: hosted Supabase + Vercel, optional Sentry, README + presentation.
+**SHIPPED.** Live at https://expense-approval-teal.vercel.app (Supabase project
+`vwexnfnymyaeieyvbbfd`, Vercel project `expense-approval`). Red-team 9/9 on the hosted
+DB; role nav + queue verified live. Remaining: final PR review/merge at your discretion;
+revoke the Supabase PAT.
 
 ## Done
 

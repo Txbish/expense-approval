@@ -4,7 +4,7 @@ A small, deployed web app for one **request → review → decision** flow: comp
 expense/budget approvals, with two roles — the person making requests and the
 person approving them.
 
-**Live URL:** _<add after deploy>_ · **Test accounts:** see [below](#test-accounts)
+**Live URL:** https://expense-approval-teal.vercel.app · **Test accounts:** see [below](#test-accounts)
 
 Stack: **Next.js 16 (App Router) · Supabase (Postgres + Auth + RLS) · Vercel · Playwright**
 

@@ -4,7 +4,7 @@ A multi-tenant expense-approval app. One **request → review → decision** flo
 to production-discipline in 72 hours with Next.js · Supabase · Vercel · Claude Code.
 
 > Use this as speaker notes for a 5–8 minute walkthrough, or read it straight through.
-> Live URL + test accounts are in the README.
+> **Live:** https://expense-approval-teal.vercel.app — test accounts in the README.
 
 ---
 
@@ -103,6 +103,20 @@ matter. (I fixed the UI too: `getAppContext` now scopes the membership lookup to
 current user.)
 
 ---
+
+## 6b · Rigor: I verified the boundary on the *hosted* DB, not just locally
+
+After deploying, I re-ran the red-team against the **production** database — and caught
+something. Supabase's hosted platform applies `ALTER DEFAULT PRIVILEGES GRANT ALL TO
+anon, authenticated`, which had silently overridden my selective table grants. The app
+was still safe (RLS blocked everything), but my "the role isn't even *granted* UPDATE"
+claim was only true locally. So I added a migration that explicitly **revokes** the
+defaults and re-grants the least-privilege set. Now, on production: `authenticated` has
+only `SELECT, INSERT` on `requests`, and `anon` has **zero** table privileges — a direct
+`UPDATE` returns Postgres `42501` (permission denied), not just an empty result.
+
+The lesson I'd want a reviewer to take: I don't trust that a control works because the
+migration says so — I test it where it actually runs.
 
 ## 7 · Observability — how I'd debug this at 2am
 
