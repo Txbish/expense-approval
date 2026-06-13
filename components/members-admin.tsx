@@ -67,7 +67,8 @@ export function MembersAdmin({ members, invites }: { members: MemberRow[]; invit
                       <Select
                         name="role"
                         defaultValue={m.role}
-                        onChange={(e) => e.currentTarget.form?.requestSubmit()}
+                        submitOnChange
+                        aria-label={`Role for ${m.name}`}
                         className="w-full max-w-[12rem]"
                       >
                         <option value="requester">Requester</option>
@@ -126,7 +127,8 @@ export function MembersAdmin({ members, invites }: { members: MemberRow[]; invit
                           <Select
                             name="role"
                             defaultValue={m.role}
-                            onChange={(e) => e.currentTarget.form?.requestSubmit()}
+                            submitOnChange
+                            aria-label={`Role for ${m.name}`}
                             className="w-40"
                           >
                             <option value="requester">Requester</option>

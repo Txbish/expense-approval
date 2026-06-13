@@ -133,25 +133,10 @@ export function Textarea({ className, ...props }: ComponentProps<"textarea">) {
   );
 }
 
-export function Select({ className, children, ...props }: ComponentProps<"select">) {
-  return (
-    <div className={clsx("relative", className)}>
-      <select className={clsx(controlBase, "h-11 appearance-none px-4 pr-9")} {...props}>
-        {children}
-      </select>
-      <svg
-        viewBox="0 0 20 20"
-        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-storm/60"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.75"
-        aria-hidden
-      >
-        <path d="M6 8l4 4 4-4" />
-      </svg>
-    </div>
-  );
-}
+// The select is a custom, cross-platform listbox (native selects render the
+// unstyleable OS picker). Re-exported here so existing `@/components/ui` imports
+// keep working.
+export { Select } from "@/components/select";
 
 export function FormError({ message }: { message?: string | null }) {
   if (!message) return null;
