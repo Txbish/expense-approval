@@ -7,10 +7,16 @@ _Last updated: initial setup._
 
 ## Current phase
 
-**SHIPPED.** Live at https://expense-approval-teal.vercel.app (Supabase project
-`vwexnfnymyaeieyvbbfd`, Vercel project `expense-approval`). Red-team 9/9 on the hosted
-DB; role nav + queue verified live. Remaining: final PR review/merge at your discretion;
-revoke the Supabase PAT.
+**SHIPPED + checklist-hardened.** Live at https://expense-approval-teal.vercel.app
+(Supabase `vwexnfnymyaeieyvbbfd`, Vercel `expense-approval`).
+
+Verified live: red-team 9/9 on hosted DB · full create→approve lifecycle · role nav ·
+last-admin lockout guard · Vercel Analytics · universal request_id logging · **Sentry
+capturing prod exceptions (confirmed in dashboard)** · /api/health ok.
+
+Only intentional gap: transactional email (Resend) — cut by design, replaced with in-app
+notifications (documented). Remaining housekeeping: merge PR #1 at your discretion;
+**revoke the Supabase PAT**; rotate DB password if concerned (it's in local shell history).
 
 ## Done
 
