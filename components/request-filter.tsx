@@ -85,9 +85,14 @@ export function RequestFilter({ filters, active }: { filters: FilterOption[]; ac
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-[60] sm:hidden" role="dialog" aria-modal="true" aria-label="Filter by status">
+        <div
+          className="fixed inset-x-0 top-0 z-[60] flex h-[100dvh] flex-col justify-end sm:hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Filter by status"
+        >
           <div onClick={() => setOpen(false)} className="absolute inset-0 animate-fade-in bg-ink/60" aria-hidden />
-          <div className="animate-slide-up absolute inset-x-0 bottom-0 rounded-t-2xl border-t border-mist bg-cream p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <div className="animate-slide-up relative rounded-t-2xl border-t border-mist bg-cream px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
             <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-mist" aria-hidden />
             <p className="mb-2 px-1 text-2xs font-medium uppercase tracking-[0.16em] text-storm/55">Filter by status</p>
             <div role="radiogroup" aria-label="Filter by status" className="flex flex-col">
