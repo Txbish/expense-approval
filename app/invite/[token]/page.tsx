@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { Card } from "@/components/ui";
+import { AuthShell } from "@/components/auth-shell";
 import { AcceptInvite } from "@/components/accept-invite";
 
 export default async function InvitePage({ params }: { params: Promise<{ token: string }> }) {
@@ -11,37 +11,34 @@ export default async function InvitePage({ params }: { params: Promise<{ token: 
   } = await supabase.auth.getUser();
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-4">
-      <div className="w-full max-w-sm space-y-6">
-        <div className="text-center">
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">You&apos;re invited</h1>
-          <p className="mt-1 text-sm text-slate-500">Join an organization on Approvals.</p>
+    <AuthShell
+      title="You're invited"
+      subtitle="Join an organization on Approvals."
+    >
+      {user ? (
+        <AcceptInvite token={token} />
+      ) : (
+        <div className="space-y-4">
+          <p className="text-sm text-muted">
+            Sign in or create an account to accept this invitation.
+          </p>
+          <div className="flex gap-3">
+            <Link
+              href="/login"
+              className="inline-flex h-9 flex-1 items-center justify-center rounded-md border border-line bg-surface px-4 text-sm font-medium text-ink-soft shadow-sm transition-colors hover:bg-surface-2 hover:text-ink"
+            >
+              Sign in
+            </Link>
+            <Link
+              href="/signup"
+              className="inline-flex h-9 flex-1 items-center justify-center rounded-md bg-accent px-4 text-sm font-medium text-accent-contrast shadow-sm transition-colors hover:bg-accent-hover"
+            >
+              Sign up
+            </Link>
+          </div>
+          <p className="text-xs text-faint">Then return to this link to join.</p>
         </div>
-        <Card className="p-6">
-          {user ? (
-            <AcceptInvite token={token} />
-          ) : (
-            <div className="space-y-3 text-center text-sm text-slate-600">
-              <p>Sign in or create an account to accept this invitation.</p>
-              <div className="flex gap-3">
-                <Link
-                  href="/login"
-                  className="flex-1 rounded-lg border border-slate-300 px-4 py-2 font-medium text-slate-700 hover:bg-slate-50"
-                >
-                  Sign in
-                </Link>
-                <Link
-                  href="/signup"
-                  className="flex-1 rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-500"
-                >
-                  Sign up
-                </Link>
-              </div>
-              <p className="text-xs text-slate-400">Then return to this link to join.</p>
-            </div>
-          )}
-        </Card>
-      </div>
-    </main>
+      )}
+    </AuthShell>
   );
 }

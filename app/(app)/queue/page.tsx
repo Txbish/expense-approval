@@ -3,6 +3,7 @@ import { getAppContext, isApprover } from "@/lib/context";
 import { createClient } from "@/lib/supabase/server";
 import { profilesByIds } from "@/lib/queries";
 import { RequestList } from "@/components/request-list";
+import { PageHeader } from "@/components/ui";
 import type { ExpenseRequest } from "@/lib/types";
 
 export default async function QueuePage() {
@@ -21,19 +22,21 @@ export default async function QueuePage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold text-slate-900">Approval queue</h1>
-        <p className="text-sm text-slate-500">
-          {requests.length} request{requests.length === 1 ? "" : "s"} awaiting review.
-          {ctx.role === "approver" && " Items marked “admin” are above your limit."}
-        </p>
-      </div>
+      <PageHeader
+        title="Approval queue"
+        description={
+          <>
+            {requests.length} request{requests.length === 1 ? "" : "s"} awaiting review, oldest first.
+            {ctx.role === "approver" && " Items marked “admin” are above your limit."}
+          </>
+        }
+      />
       <RequestList
         requests={requests}
         profiles={profiles}
         showRequester
         threshold={ctx.org.approval_threshold_minor}
-        emptyLabel="Nothing to review — you're all caught up. 🎉"
+        emptyLabel="You're all caught up — nothing to review."
       />
     </div>
   );

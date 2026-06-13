@@ -2,16 +2,24 @@ import { getAppContext, isApprover } from "@/lib/context";
 import { createClient } from "@/lib/supabase/server";
 import { profilesByIds } from "@/lib/queries";
 import { RequestList } from "@/components/request-list";
-import { Card, LinkButton } from "@/components/ui";
+import { Card, LinkButton, Money, PageHeader } from "@/components/ui";
 import { formatMoney } from "@/lib/format";
 import type { ExpenseRequest, RequestStatus } from "@/lib/types";
 
-function Stat({ label, value, accent }: { label: string; value: string | number; accent?: string }) {
+type Tone = "pending" | "approved" | "rejected" | "neutral";
+const TONE: Record<Tone, string> = {
+  pending: "text-pending-fg",
+  approved: "text-approved-fg",
+  rejected: "text-rejected-fg",
+  neutral: "text-ink",
+};
+
+function Stat({ label, value, tone = "neutral" }: { label: string; value: React.ReactNode; tone?: Tone }) {
   return (
-    <Card className="p-4">
-      <div className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</div>
-      <div className={`mt-1 text-2xl font-semibold ${accent ?? "text-slate-900"}`}>{value}</div>
-    </Card>
+    <div className="px-5 py-4">
+      <div className="text-xs font-medium uppercase tracking-wide text-muted">{label}</div>
+      <div className={`mt-1.5 text-2xl font-semibold tabular tracking-tight ${TONE[tone]}`}>{value}</div>
+    </div>
   );
 }
 
@@ -39,29 +47,34 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-slate-900">{ctx.org.name}</h1>
-          <p className="text-sm text-slate-500">
-            Approvals above {formatMoney(ctx.org.approval_threshold_minor, ctx.org.default_currency)} require an admin.
-          </p>
-        </div>
-        <LinkButton href="/requests/new">New request</LinkButton>
-      </div>
+      <PageHeader
+        title={ctx.org.name}
+        description={`Requests above ${formatMoney(
+          ctx.org.approval_threshold_minor,
+          ctx.org.default_currency,
+        )} require an admin to approve.`}
+        actions={<LinkButton href="/requests/new">New request</LinkButton>}
+      />
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <Stat label="Pending" value={byStatus("pending")} accent="text-amber-600" />
-        <Stat label="Approved" value={byStatus("approved")} accent="text-emerald-600" />
-        <Stat label="Rejected" value={byStatus("rejected")} accent="text-rose-600" />
+      <Card className="grid grid-cols-2 divide-x divide-y divide-line sm:grid-cols-4 sm:divide-y-0">
+        <Stat label="Pending" value={byStatus("pending")} tone="pending" />
+        <Stat label="Approved" value={byStatus("approved")} tone="approved" />
+        <Stat label="Rejected" value={byStatus("rejected")} tone="rejected" />
         <Stat
           label={approver ? "Pending value" : "My requests"}
-          value={approver ? formatMoney(pendingValue, ctx.org.default_currency) : mine.length}
+          value={
+            approver ? (
+              <Money minor={pendingValue} currency={ctx.org.default_currency} />
+            ) : (
+              mine.length
+            )
+          }
         />
-      </div>
+      </Card>
 
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+      <section className="space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-sm font-semibold text-ink">
             {approver ? "Recent activity" : "My recent requests"}
           </h2>
           {approver && byStatus("pending") > 0 && (
@@ -75,9 +88,11 @@ export default async function DashboardPage() {
           profiles={profiles}
           showRequester={approver}
           threshold={ctx.org.approval_threshold_minor}
-          emptyLabel={approver ? "No requests in this organization yet." : "You haven't made any requests yet."}
+          emptyLabel={
+            approver ? "No requests in this organization yet." : "You haven't made any requests yet."
+          }
         />
-      </div>
+      </section>
     </div>
   );
 }

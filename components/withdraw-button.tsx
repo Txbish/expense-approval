@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { Button, FormError } from "@/components/ui";
+import { Button, FormError, Spinner } from "@/components/ui";
 import { withdrawRequest, type DecisionState } from "@/app/(app)/requests/[id]/actions";
 
 export function WithdrawButton({ requestId }: { requestId: string }) {
@@ -10,6 +10,7 @@ export function WithdrawButton({ requestId }: { requestId: string }) {
     <form action={action} className="space-y-2">
       <input type="hidden" name="requestId" value={requestId} />
       <Button type="submit" variant="secondary" disabled={pending} className="w-full">
+        {pending && <Spinner />}
         {pending ? "Withdrawing…" : "Withdraw request"}
       </Button>
       <FormError message={state?.error} />

@@ -15,7 +15,11 @@ export function OrgSwitcher({
   const [pending, start] = useTransition();
 
   if (memberships.length <= 1) {
-    return <span className="text-sm text-slate-400">·&nbsp; {current.name}</span>;
+    return (
+      <span className="truncate text-sm font-medium text-sidebar-ink" title={current.name}>
+        {current.name}
+      </span>
+    );
   }
 
   return (
@@ -23,11 +27,11 @@ export function OrgSwitcher({
       disabled={pending}
       value={current.id}
       onChange={(e) => start(() => switchOrg(e.target.value))}
-      className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-sm text-slate-700 outline-none hover:bg-slate-100"
+      className="min-w-0 max-w-full truncate rounded-md border border-sidebar-line bg-sidebar-2 px-2 py-1 text-sm font-medium text-sidebar-ink outline-none transition-colors hover:border-sidebar-muted focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
       aria-label="Switch organization"
     >
       {memberships.map((m) => (
-        <option key={m.org_id} value={m.org_id}>
+        <option key={m.org_id} value={m.org_id} className="bg-surface text-ink">
           {m.organizations.name}
         </option>
       ))}

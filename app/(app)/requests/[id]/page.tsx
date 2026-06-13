@@ -3,12 +3,12 @@ import { notFound } from "next/navigation";
 import { getAppContext, isApprover } from "@/lib/context";
 import { createClient } from "@/lib/supabase/server";
 import { profilesByIds, nameOf } from "@/lib/queries";
-import { Card } from "@/components/ui";
-import { StatusBadge } from "@/components/status-badge";
+import { Card, Money } from "@/components/ui";
+import { StatusBadge, Seal } from "@/components/status-badge";
 import { EventTimeline } from "@/components/event-timeline";
 import { DecisionPanel } from "@/components/decision-panel";
 import { WithdrawButton } from "@/components/withdraw-button";
-import { formatMoney, timeAgo } from "@/lib/format";
+import { timeAgo } from "@/lib/format";
 import type { ExpenseRequest, RequestEvent } from "@/lib/types";
 
 export default async function RequestDetailPage({
@@ -47,44 +47,52 @@ export default async function RequestDetailPage({
 
   return (
     <div className="space-y-6">
-      <Link href="/requests" className="text-sm text-slate-500 hover:text-slate-700">
-        ← Back
+      <Link
+        href="/requests"
+        className="inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-ink"
+      >
+        <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M12 5 7 10l5 5" />
+        </svg>
+        Back to requests
       </Link>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <Card className="p-6">
             <div className="flex items-start justify-between gap-4">
-              <div>
-                <h1 className="text-xl font-semibold text-slate-900">{request.title}</h1>
-                <p className="mt-1 text-sm text-slate-500">
+              <div className="min-w-0">
+                <h1 className="text-xl font-semibold tracking-tight text-ink">{request.title}</h1>
+                <p className="mt-1 text-sm text-muted">
                   {request.category} · requested by {nameOf(profiles, request.requester_id)} ·{" "}
                   {timeAgo(request.created_at)}
                 </p>
               </div>
               <StatusBadge status={request.status} />
             </div>
-            <div className="mt-5 flex items-baseline gap-2">
-              <span className="text-3xl font-semibold text-slate-900">
-                {formatMoney(request.amount_minor, request.currency)}
-              </span>
+
+            <div className="mt-6 flex flex-wrap items-baseline gap-3">
+              <Money
+                minor={request.amount_minor}
+                currency={request.currency}
+                className="text-3xl font-semibold text-ink"
+              />
               {overLimit && (
-                <span className="rounded bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-700">
-                  above threshold · admin required
+                <span className="rounded-md bg-accent-wash px-2 py-1 text-xs font-semibold text-accent-ink ring-1 ring-inset ring-accent-line">
+                  Above threshold · admin required
                 </span>
               )}
             </div>
+
             {request.description && (
-              <p className="mt-5 whitespace-pre-wrap rounded-lg bg-slate-50 p-4 text-sm text-slate-700">
+              <p className="mt-6 whitespace-pre-wrap rounded-lg border border-line bg-surface-sunken p-4 text-sm leading-relaxed text-ink-soft">
                 {request.description}
               </p>
             )}
           </Card>
 
           <Card className="p-6">
-            <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">
-              History
-            </h2>
+            <h2 className="mb-5 text-sm font-semibold text-ink">History</h2>
             <EventTimeline events={events} profiles={profiles} />
           </Card>
         </div>
@@ -92,7 +100,7 @@ export default async function RequestDetailPage({
         <div className="space-y-6">
           {canDecide && (
             <Card className="p-5">
-              <h2 className="mb-3 text-sm font-semibold text-slate-900">Review</h2>
+              <h2 className="mb-3 text-sm font-semibold text-ink">Review</h2>
               <DecisionPanel
                 requestId={request.id}
                 overLimit={overLimit}
@@ -103,22 +111,24 @@ export default async function RequestDetailPage({
 
           {isOwn && isPending && (
             <Card className="p-5">
-              <h2 className="mb-3 text-sm font-semibold text-slate-900">Your request</h2>
-              <p className="mb-3 text-sm text-slate-500">It&apos;s awaiting review. You can withdraw it.</p>
+              <h2 className="text-sm font-semibold text-ink">Your request</h2>
+              <p className="mb-4 mt-1 text-sm text-muted">
+                It&apos;s awaiting review. You can withdraw it any time before a decision.
+              </p>
               <WithdrawButton requestId={request.id} />
             </Card>
           )}
 
           {!isPending && (
-            <Card className="p-5">
-              <h2 className="mb-2 text-sm font-semibold text-slate-900">Decision</h2>
-              <p className="text-sm text-slate-600">
-                <StatusBadge status={request.status} />{" "}
+            <Card className="flex flex-col items-center p-6 text-center">
+              <Seal status={request.status} />
+              <p className="mt-4 text-sm font-semibold capitalize text-ink">{request.status}</p>
+              <p className="mt-0.5 text-sm text-muted">
                 {request.decided_by && <>by {nameOf(profiles, request.decided_by)}</>}
                 {request.decided_at && <> · {timeAgo(request.decided_at)}</>}
               </p>
               {request.decision_note && (
-                <p className="mt-2 rounded-lg bg-slate-50 p-3 text-sm text-slate-600">
+                <p className="mt-4 w-full rounded-lg border border-line bg-surface-sunken p-3 text-left text-sm italic text-ink-soft">
                   “{request.decision_note}”
                 </p>
               )}

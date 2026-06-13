@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { OnboardingForms } from "@/components/onboarding-forms";
+import { Wordmark } from "@/components/brand-mark";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default async function OnboardingPage() {
   const supabase = await createClient();
@@ -14,17 +16,27 @@ export default async function OnboardingPage() {
   if (memberships && memberships.length > 0) redirect("/dashboard");
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-16">
-      <div className="mb-8 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Welcome 👋</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Create a new organization, or join one you&apos;ve been invited to.
-        </p>
+    <main className="min-h-screen bg-bg">
+      <header className="flex items-center justify-between px-5 py-4 sm:px-8">
+        <Wordmark className="text-ink" />
+        <ThemeToggle className="text-muted hover:bg-surface-2 hover:text-ink" />
+      </header>
+
+      <div className="mx-auto max-w-3xl px-4 py-10 sm:py-16">
+        <div className="mb-10 max-w-xl">
+          <h1 className="text-3xl font-semibold tracking-tight text-ink">Set up your workspace</h1>
+          <p className="mt-2 text-sm leading-relaxed text-muted">
+            Create a new organization to start collecting expense requests, or join one
+            you&apos;ve been invited to with a code.
+          </p>
+        </div>
+        <OnboardingForms />
+        <form action="/auth/signout" method="post" className="mt-10">
+          <button className="text-sm text-muted transition-colors hover:text-ink">
+            ← Sign out
+          </button>
+        </form>
       </div>
-      <OnboardingForms />
-      <form action="/auth/signout" method="post" className="mt-8 text-center">
-        <button className="text-sm text-slate-400 hover:text-slate-600">Sign out</button>
-      </form>
     </main>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { Button, FormError } from "@/components/ui";
+import { Button, FormError, Spinner } from "@/components/ui";
 import { acceptInvite, type AcceptState } from "@/app/invite/[token]/actions";
 
 export function AcceptInvite({ token }: { token: string }) {
@@ -11,6 +11,7 @@ export function AcceptInvite({ token }: { token: string }) {
       <input type="hidden" name="token" value={token} />
       <FormError message={state?.error} />
       <Button type="submit" disabled={pending} className="w-full">
+        {pending && <Spinner />}
         {pending ? "Joining…" : "Accept invitation"}
       </Button>
     </form>

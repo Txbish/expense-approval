@@ -1,26 +1,23 @@
 import Link from "next/link";
 import { AuthForm } from "@/components/auth-form";
-import { Card } from "@/components/ui";
+import { AuthShell } from "@/components/auth-shell";
 import { signIn } from "./actions";
 
 export default function LoginPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center px-4">
-      <div className="w-full max-w-sm space-y-6">
-        <div className="text-center">
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Approvals</h1>
-          <p className="mt-1 text-sm text-slate-500">Sign in to your workspace</p>
-        </div>
-        <Card className="p-6">
-          <AuthForm action={signIn} mode="login" />
-        </Card>
-        <p className="text-center text-sm text-slate-500">
+    <AuthShell
+      title="Sign in"
+      subtitle="Welcome back to your workspace."
+      footer={
+        <>
           New here?{" "}
-          <Link href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
+          <Link href="/signup" className="font-medium text-accent-ink hover:underline">
             Create an account
           </Link>
-        </p>
-      </div>
-    </main>
+        </>
+      }
+    >
+      <AuthForm action={signIn} mode="login" />
+    </AuthShell>
   );
 }

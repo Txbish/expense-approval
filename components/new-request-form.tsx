@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { Button, Field, FormError, Input, Select, Textarea } from "@/components/ui";
+import { Button, Field, FormError, Input, Select, Spinner, Textarea } from "@/components/ui";
 import { CATEGORIES } from "@/lib/validation";
 import { createRequest, type NewRequestState } from "@/app/(app)/requests/new/actions";
 
@@ -33,6 +33,7 @@ export function NewRequestForm({ currency, threshold }: { currency: string; thre
       <FormError message={state?.error} />
       <div className="flex justify-end">
         <Button type="submit" disabled={pending}>
+          {pending && <Spinner />}
           {pending ? "Submitting…" : "Submit request"}
         </Button>
       </div>

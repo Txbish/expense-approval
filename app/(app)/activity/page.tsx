@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getAppContext } from "@/lib/context";
 import { createClient } from "@/lib/supabase/server";
 import { profilesByIds, nameOf } from "@/lib/queries";
-import { Card } from "@/components/ui";
+import { Card, EmptyState, PageHeader } from "@/components/ui";
 import { timeAgo } from "@/lib/format";
 import type { ExpenseRequest, RequestEvent } from "@/lib/types";
 
@@ -11,6 +11,13 @@ const VERB: Record<string, string> = {
   approved: "approved",
   rejected: "rejected",
   withdrawn: "withdrew",
+};
+
+const DOT: Record<string, string> = {
+  created: "bg-withdrawn-solid",
+  approved: "bg-approved-solid",
+  rejected: "bg-rejected-solid",
+  withdrawn: "bg-withdrawn-solid",
 };
 
 export default async function ActivityPage() {
@@ -34,26 +41,43 @@ export default async function ActivityPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold text-slate-900">Activity</h1>
-        <p className="text-sm text-slate-500">A complete, append-only audit trail of every decision.</p>
-      </div>
-      <Card className="divide-y divide-slate-100">
-        {events.length === 0 && <p className="p-6 text-sm text-slate-500">No activity yet.</p>}
-        {events.map((e) => (
-          <div key={e.id} className="flex items-center justify-between gap-4 px-5 py-3 text-sm">
-            <div>
-              <span className="font-medium text-slate-900">{nameOf(profiles, e.actor_id)}</span>{" "}
-              <span className="text-slate-600">{VERB[e.type] ?? e.type}</span>{" "}
-              <Link href={`/requests/${e.request_id}`} className="font-medium text-indigo-600 hover:text-indigo-500">
-                {titles.get(e.request_id) ?? "a request"}
-              </Link>
-              {e.note && <span className="text-slate-500"> — “{e.note}”</span>}
+      <PageHeader
+        title="Activity"
+        description="A complete, append-only audit trail of every decision."
+      />
+      {events.length === 0 ? (
+        <EmptyState
+          icon={
+            <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M3 12h4l2.5 7 5-15L17 12h4" />
+            </svg>
+          }
+          title="No activity yet"
+          description="Once requests are submitted and decided, every action will be logged here."
+        />
+      ) : (
+        <Card className="divide-y divide-line">
+          {events.map((e) => (
+            <div key={e.id} className="flex items-center justify-between gap-4 px-5 py-3 text-sm">
+              <div className="flex min-w-0 items-start gap-3">
+                <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${DOT[e.type] ?? "bg-withdrawn-solid"}`} />
+                <div className="min-w-0">
+                  <span className="font-medium text-ink">{nameOf(profiles, e.actor_id)}</span>{" "}
+                  <span className="text-muted">{VERB[e.type] ?? e.type}</span>{" "}
+                  <Link
+                    href={`/requests/${e.request_id}`}
+                    className="font-medium text-accent-ink transition-colors hover:underline"
+                  >
+                    {titles.get(e.request_id) ?? "a request"}
+                  </Link>
+                  {e.note && <span className="text-muted"> — “{e.note}”</span>}
+                </div>
+              </div>
+              <span className="shrink-0 text-xs tabular text-faint">{timeAgo(e.created_at)}</span>
             </div>
-            <span className="shrink-0 text-xs text-slate-400">{timeAgo(e.created_at)}</span>
-          </div>
-        ))}
-      </Card>
+          ))}
+        </Card>
+      )}
     </div>
   );
 }

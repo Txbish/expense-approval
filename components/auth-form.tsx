@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { Button, Field, FormError, Input } from "@/components/ui";
+import { Button, Field, FormError, Input, Spinner } from "@/components/ui";
 import type { AuthState } from "@/app/login/actions";
 
 interface AuthFormProps {
@@ -33,6 +33,7 @@ export function AuthForm({ action, mode }: AuthFormProps) {
       </Field>
       <FormError message={state?.error} />
       <Button type="submit" disabled={pending} className="w-full">
+        {pending && <Spinner />}
         {pending ? "Please wait…" : mode === "login" ? "Sign in" : "Create account"}
       </Button>
     </form>

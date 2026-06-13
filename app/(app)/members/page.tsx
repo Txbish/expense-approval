@@ -3,6 +3,7 @@ import { getAppContext } from "@/lib/context";
 import { createClient } from "@/lib/supabase/server";
 import { profilesByIds, nameOf } from "@/lib/queries";
 import { MembersAdmin, type MemberRow, type InviteRow } from "@/components/members-admin";
+import { PageHeader } from "@/components/ui";
 import type { Invitation, Membership } from "@/lib/types";
 
 export default async function MembersPage() {
@@ -42,10 +43,10 @@ export default async function MembersPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold text-slate-900">Members &amp; roles</h1>
-        <p className="text-sm text-slate-500">Manage who can request, approve, and administer {ctx.org.name}.</p>
-      </div>
+      <PageHeader
+        title="Members & roles"
+        description={`Manage who can request, approve, and administer ${ctx.org.name}.`}
+      />
       <MembersAdmin members={members} invites={invites} />
     </div>
   );

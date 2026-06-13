@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { Button, Field, FormError, Input } from "@/components/ui";
+import { Button, Field, FormError, Input, Spinner } from "@/components/ui";
 import { updateSettings, type SettingsState } from "@/app/(app)/settings/actions";
 
 export function SettingsForm({
@@ -31,9 +31,17 @@ export function SettingsForm({
       <FormError message={state?.error} />
       <div className="flex items-center gap-3">
         <Button type="submit" disabled={pending}>
+          {pending && <Spinner />}
           {pending ? "Saving…" : "Save changes"}
         </Button>
-        {state?.ok && <span className="text-sm text-emerald-600">Saved ✓</span>}
+        {state?.ok && (
+          <span className="inline-flex items-center gap-1 text-sm font-medium text-approved-fg">
+            <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M4.5 10.5 8.2 14.2 15.5 5.8" />
+            </svg>
+            Saved
+          </span>
+        )}
       </div>
     </form>
   );

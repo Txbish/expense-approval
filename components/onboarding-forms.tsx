@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { Button, Card, Field, FormError, Input } from "@/components/ui";
+import { Button, Card, Field, FormError, Input, Spinner } from "@/components/ui";
 import { createOrg, joinByToken, type OnboardState } from "@/app/onboarding/actions";
 
 export function OnboardingForms() {
@@ -9,11 +9,11 @@ export function OnboardingForms() {
   const [joinState, joinAction, joining] = useActionState<OnboardState, FormData>(joinByToken, {});
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
+    <div className="grid gap-5 md:grid-cols-2">
       <Card className="p-6">
-        <h2 className="text-lg font-semibold text-slate-900">Create an organization</h2>
-        <p className="mt-1 text-sm text-slate-500">You&apos;ll be its admin and first approver.</p>
-        <form action={createAction} className="mt-4 space-y-4">
+        <h2 className="text-base font-semibold text-ink">Create an organization</h2>
+        <p className="mt-1 text-sm text-muted">You&apos;ll be its admin and first approver.</p>
+        <form action={createAction} className="mt-5 space-y-4">
           <Field label="Organization name">
             <Input name="name" required placeholder="Acme Inc" />
           </Field>
@@ -27,20 +27,22 @@ export function OnboardingForms() {
           </div>
           <FormError message={createState?.error} />
           <Button type="submit" disabled={creating} className="w-full">
+            {creating && <Spinner />}
             {creating ? "Creating…" : "Create organization"}
           </Button>
         </form>
       </Card>
 
       <Card className="p-6">
-        <h2 className="text-lg font-semibold text-slate-900">Join with an invite</h2>
-        <p className="mt-1 text-sm text-slate-500">Paste the invite code an admin shared with you.</p>
-        <form action={joinAction} className="mt-4 space-y-4">
+        <h2 className="text-base font-semibold text-ink">Join with an invite</h2>
+        <p className="mt-1 text-sm text-muted">Paste the invite code an admin shared with you.</p>
+        <form action={joinAction} className="mt-5 space-y-4">
           <Field label="Invite code">
             <Input name="token" required placeholder="e.g. 3f9a1c…" className="font-mono" />
           </Field>
           <FormError message={joinState?.error} />
           <Button type="submit" variant="secondary" disabled={joining} className="w-full">
+            {joining && <Spinner />}
             {joining ? "Joining…" : "Join organization"}
           </Button>
         </form>

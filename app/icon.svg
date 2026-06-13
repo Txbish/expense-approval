@@ -1,0 +1,14 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Approvals seal">
+  <defs>
+    <linearGradient id="seal" x1="7" y1="4" x2="25" y2="28" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#E86A2E"/>
+      <stop offset="1" stop-color="#C13C18"/>
+    </linearGradient>
+  </defs>
+  <!-- the seal disc -->
+  <circle cx="16" cy="16" r="14" fill="url(#seal)"/>
+  <!-- inner ring: the impression of a stamp -->
+  <circle cx="16" cy="16" r="10.5" fill="none" stroke="#FFFFFF" stroke-opacity="0.5" stroke-width="1.25"/>
+  <!-- the mark of approval -->
+  <path d="M10.5 16.4 L14.3 20 L21.7 11.6" fill="none" stroke="#FFFFFF" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
