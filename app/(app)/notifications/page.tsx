@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { getAppContext } from "@/lib/context";
 import { createClient } from "@/lib/supabase/server";
 import { Button, EmptyState, PageHeader } from "@/components/ui";
+import { NotificationLink } from "@/components/notification-link";
 import { timeAgo } from "@/lib/format";
 import { markAllRead } from "@/app/(app)/actions";
 import type { AppNotification } from "@/lib/types";
@@ -61,13 +61,15 @@ export default async function NotificationsPage() {
               </div>
             );
             return n.request_id ? (
-              <Link
+              <NotificationLink
                 key={n.id}
+                id={n.id}
                 href={`/requests/${n.request_id}`}
+                unread={!n.read_at}
                 className="block transition-colors hover:bg-ink/3"
               >
                 {body}
-              </Link>
+              </NotificationLink>
             ) : (
               <div key={n.id}>{body}</div>
             );

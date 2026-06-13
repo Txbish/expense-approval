@@ -6,8 +6,9 @@ import { useState } from "react";
 import { clsx } from "clsx";
 import { OrgSwitcher } from "@/components/org-switcher";
 import { BrandMark } from "@/components/brand-mark";
+import { NotificationsMenu } from "@/components/notifications-menu";
 import type { MembershipWithOrg } from "@/lib/context";
-import type { Organization, Role } from "@/lib/types";
+import type { AppNotification, Organization, Role } from "@/lib/types";
 
 interface AppNavProps {
   org: Organization;
@@ -16,12 +17,13 @@ interface AppNavProps {
   fullName: string | null;
   unreadCount: number;
   pendingCount: number;
+  notifications: AppNotification[];
 }
 
 type NavLink = { href: string; label: string; icon: keyof typeof ICONS; badge?: number };
 type NavGroup = { heading: string; links: NavLink[] };
 
-export function AppNav({ org, role, memberships, fullName, unreadCount, pendingCount }: AppNavProps) {
+export function AppNav({ org, role, memberships, fullName, unreadCount, pendingCount, notifications }: AppNavProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const isApprover = role === "approver" || role === "admin";
@@ -143,18 +145,7 @@ export function AppNav({ org, role, memberships, fullName, unreadCount, pendingC
           <span className="text-lg font-medium lowercase tracking-tight">approvals.</span>
         </Link>
         <div className="flex items-center gap-1">
-          <Link
-            href="/notifications"
-            aria-label="Notifications"
-            className="relative inline-flex h-10 w-10 items-center justify-center rounded-md text-storm/70 hover:bg-ink/6 hover:text-ink"
-          >
-            <ICONS.bell className="h-5 w-5" />
-            {unreadCount > 0 && (
-              <span className="absolute right-1 top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-orange px-1 text-3xs font-semibold tabular text-ink">
-                {unreadCount}
-              </span>
-            )}
-          </Link>
+          <NotificationsMenu notifications={notifications} unreadCount={unreadCount} className="h-10 w-10" />
           <button
             type="button"
             onClick={() => setOpen(true)}
@@ -283,12 +274,6 @@ const ICONS = {
     </>,
   ),
   activity: s(<path d="M3 12h4l2.5 7 5-15L17 12h4" />),
-  bell: s(
-    <>
-      <path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6" />
-      <path d="M10.5 20a1.8 1.8 0 0 0 3 0" />
-    </>,
-  ),
   signout: s(
     <>
       <path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3" />

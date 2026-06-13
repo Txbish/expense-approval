@@ -44,6 +44,22 @@ export async function switchOrg(orgId: string, redirectTo?: string): Promise<voi
   redirect(dest);
 }
 
+/** Mark a single notification read — fired when its entry is opened. */
+export async function markRead(notificationId: string): Promise<void> {
+  startAction("notifications.mark_read");
+  const ctx = await getAppContext();
+  if (!ctx) return;
+  const supabase = await createClient();
+  await supabase
+    .from("notifications")
+    .update({ read_at: new Date().toISOString() })
+    .eq("id", notificationId)
+    .eq("org_id", ctx.org.id)
+    .is("read_at", null);
+  revalidatePath("/notifications");
+  revalidatePath("/", "layout");
+}
+
 /** Mark the active org's notifications as read (notifications are org-scoped). */
 export async function markAllRead(): Promise<void> {
   startAction("notifications.mark_all_read");

@@ -3,6 +3,7 @@ import { getAppContext, isApprover } from "@/lib/context";
 import { createClient } from "@/lib/supabase/server";
 import { AppNav } from "@/components/app-nav";
 import { AppTopBar } from "@/components/app-topbar";
+import type { AppNotification } from "@/lib/types";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const ctx = await getAppContext();
@@ -15,6 +16,15 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     .select("id", { count: "exact", head: true })
     .eq("org_id", ctx.org.id)
     .is("read_at", null);
+
+  // Recent inbox for the bell popover; the full history lives at /notifications.
+  const { data: notifData } = await supabase
+    .from("notifications")
+    .select("*")
+    .eq("org_id", ctx.org.id)
+    .order("created_at", { ascending: false })
+    .limit(10);
+  const notifications = (notifData ?? []) as AppNotification[];
 
   let pending = 0;
   if (isApprover(ctx.role)) {
@@ -36,8 +46,15 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         fullName={ctx.fullName}
         unreadCount={unread ?? 0}
         pendingCount={pending}
+        notifications={notifications}
       />
-      <AppTopBar orgName={ctx.org.name} fullName={ctx.fullName} role={ctx.role} unreadCount={unread ?? 0} />
+      <AppTopBar
+        orgName={ctx.org.name}
+        fullName={ctx.fullName}
+        role={ctx.role}
+        unreadCount={unread ?? 0}
+        notifications={notifications}
+      />
       <main className="mx-auto max-w-5xl px-5 py-10 pb-[max(2.5rem,env(safe-area-inset-bottom))] sm:px-8 lg:py-12">{children}</main>
     </div>
   );

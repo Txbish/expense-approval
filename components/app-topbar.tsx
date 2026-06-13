@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { RoleBadge } from "@/components/status-badge";
-import type { Role } from "@/lib/types";
+import { NotificationsMenu } from "@/components/notifications-menu";
+import type { AppNotification, Role } from "@/lib/types";
 
 const LABELS: { test: (p: string) => boolean; label: string }[] = [
   { test: (p) => p === "/dashboard", label: "Dashboard" },
@@ -34,11 +34,13 @@ export function AppTopBar({
   fullName,
   role,
   unreadCount,
+  notifications,
 }: {
   orgName: string;
   fullName: string | null;
   role: Role;
   unreadCount: number;
+  notifications: AppNotification[];
 }) {
   const pathname = usePathname();
 
@@ -54,21 +56,7 @@ export function AppTopBar({
 
       <div className="flex items-center gap-3">
         <RoleBadge role={role} />
-        <Link
-          href="/notifications"
-          aria-label="Notifications"
-          className="relative inline-flex h-9 w-9 items-center justify-center rounded-md text-storm/70 transition-colors hover:bg-ink/6 hover:text-ink"
-        >
-          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6" />
-            <path d="M10.5 20a1.8 1.8 0 0 0 3 0" />
-          </svg>
-          {unreadCount > 0 && (
-            <span className="absolute right-1 top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-orange px-1 text-3xs font-semibold tabular text-ink">
-              {unreadCount}
-            </span>
-          )}
-        </Link>
+        <NotificationsMenu notifications={notifications} unreadCount={unreadCount} className="h-9 w-9" />
         <div className="flex items-center gap-2 border-l border-mist pl-3">
           <span
             className="grid h-8 w-8 place-items-center rounded-full bg-ink text-2xs font-semibold uppercase text-cream"
