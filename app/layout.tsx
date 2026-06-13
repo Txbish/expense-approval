@@ -25,7 +25,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <head>
-        <link rel="preconnect" href="https://db.onlinewebfonts.com" crossOrigin="anonymous" />
+        <link
+          rel="preconnect"
+          href="https://db.onlinewebfonts.com"
+          crossOrigin="anonymous"
+        />
       </head>
       <body className="min-h-full bg-cream text-ink antialiased">
         {process.env.NODE_ENV === "development" ? (
