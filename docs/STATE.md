@@ -38,9 +38,12 @@ schema/RLS/RPC before any UI.
 
 - **Multi-tenant** (org_id isolation in RLS) — stronger "real SaaS" + RLS signal.
 - **Threshold-routed single approval** — under threshold any approver; over ⇒ admin. One tier.
-- **Extras in scope:** Resend email on decision, Sentry, in-app activity feed.
+- **Extras in scope:** Sentry, in-app activity feed, **in-app notifications** on decision.
 - **Money:** integer minor units; currency per org.
-- **Auth:** `@supabase/ssr` cookies (no localStorage JWT).
+- **Auth:** Supabase Auth via `@supabase/ssr` cookies (no localStorage JWT). **No Clerk** —
+  RLS must use native `auth.uid()`; orgs/roles are our own tables (the differentiator).
+- **Email cut:** Resend/transactional email dropped — needs a verified domain, can't verify
+  `*.vercel.app`. Replaced with in-app notifications. Documented as a deliberate cut.
 
 ## Grading rubric — self-check before submission
 
@@ -69,9 +72,10 @@ schema/RLS/RPC before any UI.
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase project | ⬜ pending |
 | `SUPABASE_SERVICE_ROLE_KEY` (server only) | Supabase project | ⬜ pending |
-| `RESEND_API_KEY` | resend.com | ⬜ pending |
 | `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN` | sentry.io | ⬜ pending |
 | Vercel project link | vercel.com | ⬜ pending |
+
+_Resend removed — email cut in favor of in-app notifications (no domain to verify)._
 
 ## Open questions for the user
 
