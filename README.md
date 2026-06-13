@@ -36,7 +36,7 @@ This app puts *all* authorization in the database, and proves it holds:
 | Tenant isolation | RLS scopes every row by `org_id` via the `memberships` table |
 | Role permissions | `requester` / `approver` / `admin`, enforced in RLS + the decision RPC |
 | Segregation of duties | You **cannot approve your own request** (`actor ≠ requester`) |
-| Approval limits | Amount over the org threshold requires an **admin** (senior approver) |
+| Approval limits | Over-threshold requests need an **admin** — *unless no eligible (non-requester) admin exists* (e.g. a sole admin filed it), where any approver may decide so a request never deadlocks |
 | Concurrency | Decision RPC locks the row + guards `status='pending'` — one winner |
 | Audit trail | Append-only `request_events` (no UPDATE/DELETE policy for anyone) |
 | Money correctness | Stored as integer **minor units** (cents); never floats |
@@ -68,7 +68,19 @@ what a browser/attacker has) and tries to break the model. Run `npm run redteam`
 - **Admin** — approver + invite members, set roles, set currency & approval threshold.
 
 Lifecycle: `pending → approved | rejected` (or `withdrawn` by the requester). Status
-is visible and live to both sides; every change is notified in-app and audited.
+is visible and live to both sides; every change is notified in-app and audited. A
+rejected/withdrawn request can be **resubmitted as a new one** (pre-filled), keeping
+the original on the record.
+
+**Multi-org.** A person can belong to several orgs (different roles in each). The
+org **switcher** is the single source of truth — switching re-renders the *entire*
+app in that tenant: requests, queue, **All requests**, members, settings, and
+notifications are all scoped to the active org. Follow a deep link into another org
+and you get a clear *"this is in Org X — switch"* banner rather than a silent
+context blend. Create or join more orgs any time from the switcher (`/orgs/new`).
+
+The UI is a deliberate design system (the **aop.** language — Aeonik Pro, an
+ink/cream palette, a single blue accent), not default component styling.
 
 ## Local development
 
@@ -79,7 +91,7 @@ npm install
 npx supabase start                 # boots local Postgres/Auth/etc.
 cp .env.example .env.local         # then paste keys from `npx supabase status`
 npm run db:reset                   # applies all migrations
-npm run seed                       # creates test accounts + demo data
+npm run db:seed                    # reset + reseed in one step (recommended)
 npm run dev                        # http://localhost:3000
 
 npm run redteam                    # prove RLS holds (9/9)
@@ -88,18 +100,30 @@ npm run test:e2e                   # Playwright: full lifecycle + role nav
 
 ## Test accounts
 
-All passwords: `Password123!`
+All passwords: `Password123!`. The seed builds three orgs that together exercise
+every flow:
 
-| Org | Email | Role |
-|---|---|---|
-| Acme Inc (USD) | `admin@acme.test` | Admin (senior approver) |
-| Acme Inc (USD) | `approver@acme.test` | Approver |
-| Acme Inc (USD) | `requester@acme.test` | Requester |
-| Globex (EUR) | `admin@globex.test` | Admin |
+| Org | Email | Role | Notes |
+|---|---|---|---|
+| Acme Inc (USD, $1k) | `admin@acme.test` | Admin | also an **approver in Globex** → multi-org |
+| Acme Inc | `approver@acme.test` | Approver | files own request; can use the fallback on Alice's offsite |
+| Acme Inc | `requester@acme.test` | Requester | pending / over-limit / withdrawn |
+| Acme Inc | `requester2@acme.test` | Requester | approved + rejected + over-limit |
+| Globex (EUR, €500) | `admin@globex.test` | Admin | |
+| Globex | `requester@globex.test` | Requester | under + over-limit (EUR) |
+| Initech (USD, $1k) | `admin@initech.test` | Admin | **sole admin**; over-limit deadlock |
+| Initech | `approver@initech.test` | Approver | can decide Gary's request via the fallback |
 
-Acme's threshold is **$1,000** — the seeded "New developer laptop" ($1,200) can only
-be approved by the admin, not the approver. Globex exists to demonstrate that Acme
-users can't see or touch another tenant's data.
+Flows to try (the seed prints these on completion):
+
+- **Strict over-limit** — as `approver@acme.test`, "New developer laptop" ($1,200) can
+  only be decided by an admin.
+- **Approver fallback** — as `approver@acme.test`, Alice's own "Annual offsite" ($5,000)
+  *can* be decided by you, because Acme has no other admin.
+- **No self-approval** — your "Mechanical keyboard" never appears in your own queue.
+- **Multi-org / cross-org** — as `admin@acme.test`, switch between Acme and Globex; open
+  a Globex request while in Acme to see the cross-org banner.
+- **Tenant isolation** — Globex/Initech prove Acme users can't see another tenant's data.
 
 ## Project layout
 
