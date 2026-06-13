@@ -7,32 +7,40 @@ _Last updated: initial setup._
 
 ## Current phase
 
-**Phase 1 — DB foundation + scaffold.** Setting up the Next.js project and the Supabase
-schema/RLS/RPC before any UI.
+**Phase 3 — Deploy + presentation.** DB layer, full UI, and tests are done and green
+locally. Next: hosted Supabase + Vercel, optional Sentry, README + presentation.
 
 ## Done
 
 - [x] Architecture + scope locked (`docs/PLAN.md`)
-- [x] Project `CLAUDE.md` (non-negotiables) + `docs/CONVENTIONS.md` (git/coding rules)
-- [x] Git initialized: `main` (deployable) + `develop` (integration); first commit = governance docs
-- [x] GitHub auth confirmed (account `Txbish`, ssh) — remote/PRs available
-- [x] Working on branch `feat/scaffold-nextjs`
+- [x] Project `CLAUDE.md` + `docs/CONVENTIONS.md`
+- [x] Git: `main` + `develop`; working on `feat/scaffold-nextjs`; focused commit history
+- [x] GitHub auth confirmed (account `Txbish`, ssh)
+- [x] Next.js 16 scaffold (App Router, TS, Tailwind)
+- [x] Supabase local stack running (Docker); `@supabase/ssr` clients + middleware
+- [x] **DB foundation: 5 migrations** — schema, triggers, RLS helpers, per-op RLS policies, RPCs
+- [x] Seed script (2 orgs for cross-tenant tests, 6 users, mixed-state requests)
+- [x] **Red-team script: 9/9 PASS** — tenant isolation, ownership, no client writes,
+      self-approval blocked, approval limits, single-winner concurrency, anon lockout
+- [x] Shared libs: Zod validation, money helpers, JSON logger
 
-## In progress
+## Done (Phase 2)
 
-- [ ] Scaffold Next.js (App Router, TS, Tailwind)
+- [x] Full UI: auth, onboarding, invite, dashboard, requester/approver/admin flows
+- [x] Role-aware nav + multi-org switcher; in-app notifications + activity feed
+- [x] `/api/health` probe (privilege-free `health()` fn) — returns ok
+- [x] **Playwright E2E green (2/2):** full lifecycle across two roles + role-based nav
+- [x] Build + typecheck clean; **caught & fixed a role mis-resolution bug** via E2E
+      (getAppContext was reading co-members; RLS still would have blocked real actions —
+      defense-in-depth held — but UI showed wrong buttons. Now scoped to auth.uid().)
 
 ## Next (ordered)
 
-1. Next.js scaffold + `lib/supabase/{server,client}.ts` (`@supabase/ssr`, httpOnly cookies)
-2. Supabase migrations: schema → RLS (per-operation policies) → `decide_request` RPC → seed
-3. Auth (sign up / log in) + middleware session refresh
-4. Org onboarding (create org / join via invite)
-5. Requester flow (new request, my requests, detail, withdraw)
-6. Approver flow (queue, decide) + threshold routing
-7. Admin (members/roles, settings) + activity feed
-8. Observability (Sentry, structured logs, /api/health) + Resend email on decision
-9. Red-team verification (capture output) → deploy to Vercel → presentation
+1. Sentry wiring (optional — needs user's DSN; gated so blank = disabled)
+2. Create hosted Supabase project; push migrations; disable email confirmation; seed
+3. Deploy to Vercel; set env vars; smoke-test live test accounts
+4. README + PRESENTATION (incl. red-team output, cuts, deeper-fix notes)
+5. Open PR feat/scaffold-nextjs → develop → main
 
 ## Decisions log
 
