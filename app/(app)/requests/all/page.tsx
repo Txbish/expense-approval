@@ -1,10 +1,9 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { clsx } from "clsx";
 import { getAppContext, isApprover } from "@/lib/context";
 import { createClient } from "@/lib/supabase/server";
 import { profilesByIds } from "@/lib/queries";
 import { RequestList } from "@/components/request-list";
+import { RequestFilter } from "@/components/request-filter";
 import { PageHeader } from "@/components/ui";
 import type { ExpenseRequest, RequestStatus } from "@/lib/types";
 
@@ -47,30 +46,7 @@ export default async function AllRequestsPage({
         description="Every expense request in this organization, across all statuses."
       />
 
-      {/* On phones the five pills don't fit on one line; rather than wrap to a
-          ragged second row, they scroll horizontally edge-to-edge (the -mx-5
-          bleed cancels the page padding). At sm+ there's room, so they wrap
-          normally. */}
-      <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 sm:pb-0 [&::-webkit-scrollbar]:hidden">
-        {FILTERS.map((f) => {
-          const isActive = f.value === active;
-          const href = f.value === "all" ? "/requests/all" : `/requests/all?status=${f.value}`;
-          return (
-            <Link
-              key={f.value}
-              href={href}
-              className={clsx(
-                "shrink-0 whitespace-nowrap rounded-full border px-4 py-2 text-sm font-medium transition-colors",
-                isActive
-                  ? "border-ink bg-ink text-cream"
-                  : "border-mist bg-cream text-storm/80 hover:border-storm/30 hover:text-ink",
-              )}
-            >
-              {f.label}
-            </Link>
-          );
-        })}
-      </div>
+      <RequestFilter filters={FILTERS} active={active} />
 
       <RequestList
         requests={requests}

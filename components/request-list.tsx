@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { clsx } from "clsx";
 import { StatusBadge } from "@/components/status-badge";
 import { EmptyState, Money } from "@/components/ui";
 import { timeAgo } from "@/lib/format";
@@ -47,12 +48,15 @@ export function RequestList({
           room for the five-column table without clipping. */}
       <ul className="stagger-rise divide-y divide-mist/70 lg:hidden">
         {requests.map((r, i) => {
-          const overLimit = threshold !== undefined && r.amount_minor > threshold;
+          const adminReq = threshold !== undefined && r.amount_minor > threshold && r.status === "pending";
           return (
             <li key={r.id} style={{ "--i": i } as React.CSSProperties}>
               <Link
                 href={`/requests/${r.id}`}
-                className="flex min-h-[3.75rem] flex-col gap-2 px-4 py-3.5 transition-colors active:bg-ink/5 focus-visible:outline-none focus-visible:bg-ink/5"
+                className={clsx(
+                  "flex min-h-[3.75rem] flex-col gap-2 px-4 py-3.5 transition-colors active:bg-ink/5 focus-visible:outline-none focus-visible:bg-ink/5",
+                  adminReq && "bg-parchment/60",
+                )}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -62,7 +66,7 @@ export function RequestList({
                       {showRequester && <> · {nameOf(profiles, r.requester_id)}</>}
                     </p>
                   </div>
-                  <StatusBadge status={r.status} locked={overLimit} />
+                  <StatusBadge status={r.status} admin={adminReq} />
                 </div>
                 <div className="flex items-center justify-between gap-3">
                   <Money minor={r.amount_minor} currency={r.currency} className="font-medium text-ink" />
@@ -95,12 +99,15 @@ export function RequestList({
           </thead>
           <tbody className="stagger-rise divide-y divide-mist/70">
             {requests.map((r, i) => {
-              const overLimit = threshold !== undefined && r.amount_minor > threshold;
+              const adminReq = threshold !== undefined && r.amount_minor > threshold && r.status === "pending";
               return (
                 <tr
                   key={r.id}
                   style={{ "--i": i } as React.CSSProperties}
-                  className="group transition-colors duration-150 hover:bg-ink/3"
+                  className={clsx(
+                    "group transition-colors duration-150 hover:bg-ink/3",
+                    adminReq && "bg-parchment/60",
+                  )}
                 >
                   <td className="px-4 py-3.5">
                     <Link
@@ -118,7 +125,7 @@ export function RequestList({
                     <Money minor={r.amount_minor} currency={r.currency} className="font-medium text-ink" />
                   </td>
                   <td className="px-4 py-3.5 text-center">
-                    <StatusBadge status={r.status} locked={overLimit} />
+                    <StatusBadge status={r.status} admin={adminReq} />
                   </td>
                   <td className="px-4 py-3.5 text-right text-xs tabular text-storm/60">{timeAgo(r.updated_at)}</td>
                   {reviewable && (

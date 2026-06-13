@@ -35,18 +35,16 @@ function GlyphWithdrawn({ className }: { className?: string }) {
     </svg>
   );
 }
-/* Admin-locked pending: the padlock replaces the clock so the over-threshold
-   "an admin must decide" state rides inside the single Pending pill — no extra
-   row, no second column element. */
-function GlyphLock({ className }: { className?: string }) {
+/* Shield-check — an over-threshold pending request that only an admin can decide.
+   It folds into the single pill ("Admin pending") rather than a second tag. */
+function GlyphShield({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 20 20" className={className} fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-      <rect x="4.75" y="9" width="10.5" height="7.25" rx="1.75" />
-      <path d="M7.25 9V6.6a2.75 2.75 0 0 1 5.5 0V9" />
+    <svg viewBox="0 0 20 20" className={className} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M10 17.5s5.5-2.75 5.5-7V4.2L10 2.3 4.5 4.2v6.3c0 4.25 5.5 7 5.5 7Z" />
+      <path d="m7.5 9.7 1.7 1.7 3.3-3.4" />
     </svg>
   );
 }
-
 const STATUS: Record<RequestStatus, { pill: string; glyph: (p: { className?: string }) => ReactNode }> = {
   pending: { pill: "bg-cream/80 border-orange/60 text-ink", glyph: GlyphPending },
   approved: { pill: "bg-cream/80 border-success/35 text-success", glyph: GlyphApproved },
@@ -54,22 +52,21 @@ const STATUS: Record<RequestStatus, { pill: string; glyph: (p: { className?: str
   withdrawn: { pill: "bg-parchment border-mist/60 text-storm", glyph: GlyphWithdrawn },
 };
 
-export function StatusBadge({ status, locked = false }: { status: RequestStatus; locked?: boolean }) {
+export function StatusBadge({ status, admin = false }: { status: RequestStatus; admin?: boolean }) {
   const cfg = STATUS[status];
-  // Admin-lock only qualifies a pending request; ignore the flag otherwise.
-  const adminLocked = locked && status === "pending";
-  const Glyph = adminLocked ? GlyphLock : cfg.glyph;
+  // Admin approval only qualifies a pending request; ignore the flag otherwise.
+  const adminPending = admin && status === "pending";
+  const Glyph = adminPending ? GlyphShield : cfg.glyph;
   return (
     <span
-      title={adminLocked ? "Above threshold — an admin must decide" : undefined}
+      title={adminPending ? "Above threshold — an admin must decide" : undefined}
       className={clsx(
-        "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium capitalize",
+        "inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border px-2.5 py-1 text-xs font-medium capitalize",
         cfg.pill,
       )}
     >
       <Glyph className="h-3.5 w-3.5 shrink-0" />
-      {status}
-      {adminLocked && <span className="sr-only"> — admin required</span>}
+      {adminPending ? "Admin pending" : status}
     </span>
   );
 }
