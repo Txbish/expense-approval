@@ -40,6 +40,8 @@ export async function decideRequest(
   revalidatePath(`/requests/${parsed.data.requestId}`);
   revalidatePath("/queue");
   revalidatePath("/dashboard");
+  revalidatePath("/requests/all");
+  revalidatePath("/", "layout"); // refresh the persisted nav badge (pending count)
   return { ok: true };
 }
 
@@ -57,5 +59,8 @@ export async function withdrawRequest(
   }
   revalidatePath(`/requests/${requestId}`);
   revalidatePath("/requests");
+  revalidatePath("/queue");
+  revalidatePath("/requests/all");
+  revalidatePath("/", "layout"); // refresh the persisted nav badge (pending count)
   return { ok: true };
 }

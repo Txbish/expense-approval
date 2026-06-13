@@ -12,10 +12,11 @@ export default async function SettingsPage() {
   return (
     <div className="mx-auto max-w-xl space-y-6">
       <PageHeader
+        eyebrow="Administration"
         title="Organization settings"
         description={`Currency and approval policy for ${ctx.org.name}.`}
       />
-      <Card className="p-6">
+      <Card className="p-6 sm:p-8">
         <SettingsForm
           name={ctx.org.name}
           currency={ctx.org.default_currency}

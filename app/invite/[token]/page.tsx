@@ -12,31 +12,34 @@ export default async function InvitePage({ params }: { params: Promise<{ token: 
 
   return (
     <AuthShell
-      title="You're invited"
-      subtitle="Join an organization on Approvals."
+      eyebrow="Invitation"
+      title="you're invited."
+      subtitle="Join an organization on approvals."
     >
       {user ? (
         <AcceptInvite token={token} />
       ) : (
         <div className="space-y-4">
-          <p className="text-sm text-muted">
+          <p className="text-caption text-storm/75">
             Sign in or create an account to accept this invitation.
           </p>
           <div className="flex gap-3">
             <Link
               href="/login"
-              className="inline-flex h-9 flex-1 items-center justify-center rounded-md border border-line bg-surface px-4 text-sm font-medium text-ink-soft shadow-sm transition-colors hover:bg-surface-2 hover:text-ink"
+              className="inline-flex h-11 flex-1 items-center justify-center rounded-full border border-mist/60 bg-parchment px-5 text-field font-medium text-ink transition-colors hover:bg-mist/40"
             >
               Sign in
             </Link>
             <Link
               href="/signup"
-              className="inline-flex h-9 flex-1 items-center justify-center rounded-md bg-accent px-4 text-sm font-medium text-accent-contrast shadow-sm transition-colors hover:bg-accent-hover"
+              className="inline-flex h-11 flex-1 items-center justify-center rounded-full bg-ink px-5 text-field font-medium text-cream transition-colors hover:bg-storm"
             >
               Sign up
             </Link>
           </div>
-          <p className="text-xs text-faint">Then return to this link to join.</p>
+          <p className="text-2xs uppercase tracking-[0.12em] text-storm/55">
+            Then return to this link to join.
+          </p>
         </div>
       )}
     </AuthShell>

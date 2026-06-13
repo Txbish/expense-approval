@@ -16,6 +16,7 @@ export default async function QueuePage() {
     .select("*")
     .eq("org_id", ctx.org.id)
     .eq("status", "pending")
+    .neq("requester_id", ctx.userId) // you can't review your own request — keep the queue actionable
     .order("created_at", { ascending: true });
   const requests = (data ?? []) as ExpenseRequest[];
   const profiles = await profilesByIds(supabase, requests.map((r) => r.requester_id));
@@ -23,6 +24,7 @@ export default async function QueuePage() {
   return (
     <div className="space-y-6">
       <PageHeader
+        eyebrow="Review"
         title="Approval queue"
         description={
           <>
@@ -35,6 +37,7 @@ export default async function QueuePage() {
         requests={requests}
         profiles={profiles}
         showRequester
+        reviewable
         threshold={ctx.org.approval_threshold_minor}
         emptyLabel="You're all caught up — nothing to review."
       />

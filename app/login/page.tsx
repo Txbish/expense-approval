@@ -6,12 +6,13 @@ import { signIn } from "./actions";
 export default function LoginPage() {
   return (
     <AuthShell
-      title="Sign in"
-      subtitle="Welcome back to your workspace."
+      eyebrow="Sign in"
+      title="welcome back."
+      subtitle="Enter your credentials to access the dashboard."
       footer={
         <>
-          New here?{" "}
-          <Link href="/signup" className="font-medium text-accent-ink hover:underline">
+          Need access?{" "}
+          <Link href="/signup" className="font-medium text-blue hover:underline">
             Create an account
           </Link>
         </>

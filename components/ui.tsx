@@ -3,20 +3,30 @@ import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import { formatMoney } from "@/lib/format";
 
-/* ── Buttons ───────────────────────────────────────────────────────────── */
+/* ── Buttons (aop pill system) ───────────────────────────────────────────── */
 
-type ButtonVariant = "primary" | "secondary" | "danger" | "ghost" | "approve";
+type ButtonVariant =
+  | "primary"
+  | "secondary"
+  | "outline"
+  | "ghost"
+  | "danger"
+  | "approve"
+  | "wash"
+  | "link";
 
 const buttonBase =
-  "inline-flex items-center justify-center gap-2 rounded-md px-4 h-9 text-sm font-medium whitespace-nowrap select-none transition-[background-color,border-color,color,box-shadow,transform] duration-150 ease-out active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:pointer-events-none disabled:opacity-50";
+  "inline-flex items-center justify-center gap-2 rounded-full h-11 px-6 text-field font-medium whitespace-nowrap select-none transition-colors duration-200 ease-out-quart focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/40 disabled:pointer-events-none disabled:opacity-45";
 
 const buttonVariants: Record<ButtonVariant, string> = {
-  primary: "bg-accent text-accent-contrast shadow-sm hover:bg-accent-hover",
-  secondary:
-    "border border-line bg-surface text-ink-soft shadow-sm hover:bg-surface-2 hover:text-ink hover:border-line-strong",
-  danger: "bg-reject-btn text-white shadow-sm hover:bg-reject-btn-hover",
-  approve: "bg-approve-btn text-white shadow-sm hover:bg-approve-btn-hover",
-  ghost: "text-muted hover:bg-surface-2 hover:text-ink",
+  primary: "bg-ink text-cream hover:bg-storm",
+  secondary: "bg-parchment text-ink border border-mist/60 hover:bg-mist/40",
+  outline: "border border-blue text-blue hover:bg-blue/8",
+  ghost: "text-ink hover:bg-ink/6",
+  danger: "bg-destructive text-cream hover:bg-destructive/90",
+  approve: "bg-success text-cream hover:bg-success/90",
+  wash: "bg-orange text-ink hover:bg-orange/90",
+  link: "h-auto px-0 text-blue hover:underline underline-offset-4",
 };
 
 export function Button({
@@ -50,31 +60,40 @@ export function LinkButton({
 /* ── Surfaces ──────────────────────────────────────────────────────────── */
 
 export function Card({ className, children }: { className?: string; children: ReactNode }) {
+  return <div className={clsx("rounded-2xl bg-card", className)}>{children}</div>;
+}
+
+/* ── Eyebrow — the uppercase tracked kicker used across the app ──────────── */
+
+export function Eyebrow({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div className={clsx("rounded-xl border border-line bg-surface shadow-sm", className)}>
+    <p className={clsx("text-2xs font-medium uppercase tracking-[0.16em] text-storm/60", className)}>
       {children}
-    </div>
+    </p>
   );
 }
 
-/* ── Page header — the consistent title · description · action band ──────── */
+/* ── Page header — eyebrow · heading · description · action ──────────────── */
 
 export function PageHeader({
+  eyebrow,
   title,
   description,
   actions,
 }: {
+  eyebrow?: ReactNode;
   title: ReactNode;
   description?: ReactNode;
   actions?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-      <div className="min-w-0 space-y-1">
-        <h1 className="text-xl font-semibold tracking-tight text-ink">{title}</h1>
-        {description && <p className="max-w-2xl text-sm text-muted">{description}</p>}
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="min-w-0 space-y-2">
+        {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+        <h1 className="text-heading-sm text-ink">{title}</h1>
+        {description && <p className="max-w-2xl text-body-sm text-storm/80">{description}</p>}
       </div>
-      {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
+      {actions && <div className="flex shrink-0 flex-wrap items-center gap-3">{actions}</div>}
     </div>
   );
 }
@@ -82,7 +101,7 @@ export function PageHeader({
 /* ── Form controls ─────────────────────────────────────────────────────── */
 
 const controlBase =
-  "w-full rounded-md border border-line bg-surface text-sm text-ink transition-colors duration-150 placeholder:text-faint hover:border-line-strong focus:border-accent focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-60";
+  "w-full rounded-lg border border-mist bg-cream text-field text-ink transition-colors duration-200 hover:border-storm/30 focus:border-blue focus:outline-none focus:ring-2 focus:ring-blue/30 disabled:cursor-not-allowed disabled:opacity-60";
 
 export function Field({
   label,
@@ -94,27 +113,43 @@ export function Field({
   children: ReactNode;
 }) {
   return (
-    <label className="block space-y-1.5">
-      <span className="text-sm font-medium text-ink-soft">{label}</span>
+    <label className="block space-y-2">
+      <span className="block text-2xs font-medium uppercase tracking-[0.12em] text-storm/80">
+        {label}
+      </span>
       {children}
-      {hint && <span className="block text-xs text-muted">{hint}</span>}
+      {hint && <span className="block text-caption text-storm/70">{hint}</span>}
     </label>
   );
 }
 
 export function Input({ className, ...props }: ComponentProps<"input">) {
-  return <input className={clsx(controlBase, "h-9 px-3", className)} {...props} />;
+  return <input className={clsx(controlBase, "h-11 px-4", className)} {...props} />;
 }
 
 export function Textarea({ className, ...props }: ComponentProps<"textarea">) {
-  return <textarea className={clsx(controlBase, "px-3 py-2 leading-relaxed", className)} {...props} />;
+  return (
+    <textarea className={clsx(controlBase, "min-h-24 resize-y px-4 py-3 leading-relaxed", className)} {...props} />
+  );
 }
 
 export function Select({ className, children, ...props }: ComponentProps<"select">) {
   return (
-    <select className={clsx(controlBase, "h-9 px-3 pr-8", className)} {...props}>
-      {children}
-    </select>
+    <div className={clsx("relative", className)}>
+      <select className={clsx(controlBase, "h-11 appearance-none px-4 pr-9")} {...props}>
+        {children}
+      </select>
+      <svg
+        viewBox="0 0 20 20"
+        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-storm/60"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        aria-hidden
+      >
+        <path d="M6 8l4 4 4-4" />
+      </svg>
+    </div>
   );
 }
 
@@ -123,7 +158,7 @@ export function FormError({ message }: { message?: string | null }) {
   return (
     <p
       role="alert"
-      className="flex items-start gap-2 rounded-md border border-rejected-line bg-rejected-bg px-3 py-2 text-sm text-rejected-fg"
+      className="flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/8 px-3 py-2.5 text-field text-destructive"
     >
       <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0" fill="currentColor" aria-hidden>
         <path
@@ -137,7 +172,7 @@ export function FormError({ message }: { message?: string | null }) {
   );
 }
 
-/* ── Money — the ledger figure: tabular mono, aligned, currency-aware ────── */
+/* ── Money — Aeonik tabular figures, aligned and currency-aware ──────────── */
 
 export function Money({
   minor,
@@ -149,13 +184,11 @@ export function Money({
   className?: string;
 }) {
   return (
-    <span className={clsx("font-mono tabular tracking-tight", className)}>
-      {formatMoney(minor, currency)}
-    </span>
+    <span className={clsx("tabular tracking-tight", className)}>{formatMoney(minor, currency)}</span>
   );
 }
 
-/* ── Empty state — teaches the interface, never just "nothing here" ──────── */
+/* ── Empty state — teaches the interface ─────────────────────────────────── */
 
 export function EmptyState({
   icon,
@@ -169,15 +202,15 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-line bg-surface px-6 py-14 text-center">
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-mist bg-cream px-6 py-16 text-center">
       {icon && (
-        <div className="mb-4 grid h-12 w-12 place-items-center rounded-full bg-accent-wash text-accent-ink">
+        <div className="mb-4 grid h-12 w-12 place-items-center rounded-full bg-parchment text-ink">
           {icon}
         </div>
       )}
-      <p className="text-sm font-semibold text-ink">{title}</p>
-      {description && <p className="mt-1 max-w-sm text-sm text-muted">{description}</p>}
-      {action && <div className="mt-5">{action}</div>}
+      <p className="text-subheading text-ink">{title}</p>
+      {description && <p className="mt-2 max-w-sm text-caption text-storm/70">{description}</p>}
+      {action && <div className="mt-6">{action}</div>}
     </div>
   );
 }

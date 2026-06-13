@@ -1,237 +1,144 @@
 @import "tailwindcss";
 
-/* Manual dark mode: toggled by `.dark` on <html>, defaults to system pref
-   via the no-flash script in app/layout.tsx. */
-@custom-variant dark (&:where(.dark, .dark *));
+/* ───────────────────────────────────────────────────────────────────────────
+   Aeonik Pro — loaded from the same CDN the aop. app uses (db.onlinewebfonts.com).
+   One family, three weights, with the OpenType stylistic sets aop enables.
+─────────────────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: "Aeonik Pro";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("https://db.onlinewebfonts.com/t/12ff62164c9778917bddb93c6379cf47.woff2") format("woff2"),
+    url("https://db.onlinewebfonts.com/t/12ff62164c9778917bddb93c6379cf47.woff") format("woff");
+}
+@font-face {
+  font-family: "Aeonik Pro";
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url("https://db.onlinewebfonts.com/t/81c9cfcec66a1bb46e90e184f4d04641.woff2") format("woff2"),
+    url("https://db.onlinewebfonts.com/t/81c9cfcec66a1bb46e90e184f4d04641.woff") format("woff");
+}
+@font-face {
+  font-family: "Aeonik Pro";
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("https://db.onlinewebfonts.com/t/362636484f8ad521fec5a297fdc0ab12.woff2") format("woff2"),
+    url("https://db.onlinewebfonts.com/t/362636484f8ad521fec5a297fdc0ab12.woff") format("woff");
+}
 
 /* ───────────────────────────────────────────────────────────────────────────
-   THE LEDGER — design tokens
-   Ink on paper, tabular figures, a single stroke of vermilion: the seal of a
-   decision. Every color is defined once here and exposed to Tailwind via the
-   @theme block below. No hardcoded colors or font sizes live in components.
-   All pairings verified for WCAG AA (body ≥4.5:1, large/graphic ≥3:1).
+   THE AOP SYSTEM — high-contrast digital-blueprint aesthetic.
+   Cream canvas · parchment cards · ink text · blue interactive · orange
+   decorative-only. No shadows; hierarchy is surface color, not elevation.
+   Light theme only. Tokens defined once, exposed to Tailwind via @theme.
 ─────────────────────────────────────────────────────────────────────────── */
 
 :root {
-  /* Surfaces — pure paper, no warm tint (warmth lives in the accent, not bg) */
-  --bg: oklch(0.985 0 0);
-  --surface: oklch(1 0 0);
-  --surface-2: oklch(0.972 0.002 265);
-  --surface-sunken: oklch(0.967 0.003 265);
+  /* Brand palette */
+  --ink: hsl(187 100% 3%); /* #001011 */
+  --storm: hsl(184 35% 9%); /* #0f1e1f */
+  --blue: hsl(211 100% 50%); /* #007aff */
+  --orange: hsl(13 98% 56%); /* #fd5321 */
+  --cream: hsl(47 33% 98%); /* #fcfbf8 */
+  --parchment: hsl(60 9% 92%); /* #ededea */
+  --mist: hsl(150 3% 76%); /* #c1c4c2 */
 
-  /* Ink ramp — cool near-neutral */
-  --ink: oklch(0.23 0.006 265);
-  --ink-soft: oklch(0.36 0.008 265);
-  --muted: oklch(0.47 0.01 265);
-  --faint: oklch(0.6 0.01 265);
+  /* Operational semantics */
+  --success: hsl(158 67% 22%);
+  --destructive: hsl(6 73% 38%);
+  --muted-foreground: hsl(184 14% 30%);
 
-  /* Hairlines */
-  --line: oklch(0.918 0.004 265);
-  --line-strong: oklch(0.86 0.005 265);
+  --radius: 0.75rem;
+}
 
-  /* The seal — vermilion. accent = fills (white text passes AA),
-     accent-ink = text/links on paper, accent-bright = the seal graphic. */
-  --accent: oklch(0.545 0.205 33);
-  --accent-hover: oklch(0.495 0.2 32);
-  --accent-ink: oklch(0.47 0.17 33);
-  --accent-bright: oklch(0.63 0.21 35);
-  --accent-wash: oklch(0.965 0.022 40);
-  --accent-line: oklch(0.88 0.06 36);
-  --accent-contrast: oklch(0.995 0 0);
+@theme inline {
+  /* Brand colors */
+  --color-ink: var(--ink);
+  --color-storm: var(--storm);
+  --color-blue: var(--blue);
+  --color-orange: var(--orange);
+  --color-cream: var(--cream);
+  --color-parchment: var(--parchment);
+  --color-mist: var(--mist);
+  --color-success: var(--success);
+  --color-destructive: var(--destructive);
 
-  /* Navigation rail — the dark second-neutral layer (light mode) */
-  --sidebar: oklch(0.205 0.012 265);
-  --sidebar-2: oklch(0.26 0.012 265);
-  --sidebar-ink: oklch(0.93 0.005 265);
-  --sidebar-muted: oklch(0.67 0.01 265);
-  --sidebar-line: oklch(0.31 0.01 265);
-  --sidebar-active: oklch(0.28 0.03 33);
+  /* Semantic aliases (shadcn-compatible) */
+  --color-background: var(--cream);
+  --color-foreground: var(--ink);
+  --color-card: var(--parchment);
+  --color-card-foreground: var(--ink);
+  --color-popover: var(--cream);
+  --color-primary: var(--ink);
+  --color-primary-foreground: var(--cream);
+  --color-secondary: var(--parchment);
+  --color-secondary-foreground: var(--storm);
+  --color-muted: var(--parchment);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--blue);
+  --color-accent-foreground: var(--cream);
+  --color-warning: var(--orange);
+  --color-border: var(--mist);
+  --color-input: var(--mist);
+  --color-ring: var(--blue);
 
-  /* Status — triple-encoded (color + glyph + word). fg verified on its own bg. */
-  --pending-fg: oklch(0.42 0.1 70);
-  --pending-bg: oklch(0.96 0.05 80);
-  --pending-line: oklch(0.85 0.08 80);
-  --pending-solid: oklch(0.72 0.15 72);
+  /* Typography */
+  --font-sans: "Aeonik Pro", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+  --font-display: "Aeonik Pro", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  --approved-fg: oklch(0.43 0.11 155);
-  --approved-bg: oklch(0.95 0.05 158);
-  --approved-line: oklch(0.82 0.09 158);
-  --approved-solid: oklch(0.58 0.13 156);
-
-  --rejected-fg: oklch(0.47 0.18 25);
-  --rejected-bg: oklch(0.96 0.04 22);
-  --rejected-line: oklch(0.88 0.07 22);
-  --rejected-solid: oklch(0.55 0.2 25);
-
-  --withdrawn-fg: oklch(0.43 0.008 265);
-  --withdrawn-bg: oklch(0.95 0.003 265);
-  --withdrawn-line: oklch(0.88 0.004 265);
-  --withdrawn-solid: oklch(0.6 0.008 265);
-
-  /* Decision buttons — semantic fills with AA-safe white text */
-  --approve-btn: oklch(0.47 0.13 156);
-  --approve-btn-hover: oklch(0.42 0.12 156);
-  --reject-btn: oklch(0.52 0.2 25);
-  --reject-btn-hover: oklch(0.47 0.19 25);
-
-  /* Focus ring */
-  --ring: oklch(0.545 0.205 33 / 0.45);
+  /* Type scale (aop) */
+  --text-3xs: 10px;
+  --text-3xs--line-height: 1;
+  --text-2xs: 11px;
+  --text-2xs--line-height: 1.2;
+  --text-caption: 16px;
+  --text-caption--line-height: 1.5;
+  --text-caption--letter-spacing: 0.01em;
+  --text-field: 15px;
+  --text-field--line-height: 1.4;
+  --text-field--letter-spacing: -0.006em;
+  --text-body-sm: 18px;
+  --text-body-sm--line-height: 1.4;
+  --text-body-sm--letter-spacing: 0.01em;
+  --text-body: 21px;
+  --text-body--line-height: 1.4;
+  --text-body--letter-spacing: -0.012em;
+  --text-subheading: 24px;
+  --text-subheading--line-height: 1.1;
+  --text-subheading--letter-spacing: -0.012em;
+  --text-heading-sm: 32px;
+  --text-heading-sm--line-height: 1.1;
+  --text-heading-sm--letter-spacing: -0.02em;
+  --text-heading: 36px;
+  --text-heading--line-height: 1.1;
+  --text-heading--letter-spacing: -0.02em;
+  --text-heading-lg: 72px;
+  --text-heading-lg--line-height: 0.9;
+  --text-heading-lg--letter-spacing: -0.025em;
+  --text-display: 101px;
+  --text-display--line-height: 0.8;
+  --text-display--letter-spacing: -0.025em;
 
   /* Radii */
-  --radius-xs: 0.25rem;
-  --radius-sm: 0.375rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
-  --radius-2xl: 1.5rem;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
+  --radius-4xl: 32px;
 
-  /* Shadows — soft, ink-tinted, never heavy */
-  --shadow-sm: 0 1px 2px oklch(0.23 0.02 265 / 0.06);
-  --shadow-md: 0 4px 12px oklch(0.23 0.02 265 / 0.07), 0 1px 2px oklch(0.23 0.02 265 / 0.05);
-  --shadow-lg: 0 12px 32px oklch(0.23 0.03 265 / 0.12), 0 2px 6px oklch(0.23 0.02 265 / 0.06);
-  --shadow-seal: 0 2px 0 oklch(0.4 0.18 33 / 0.18), inset 0 0 0 1px oklch(0.63 0.21 35 / 0.35);
-}
+  /* Custom spacing */
+  --spacing-18: 72px;
+  --spacing-22: 88px;
+  --spacing-30: 120px;
 
-.dark {
-  --bg: oklch(0.17 0.006 265);
-  --surface: oklch(0.205 0.007 265);
-  --surface-2: oklch(0.235 0.008 265);
-  --surface-sunken: oklch(0.155 0.006 265);
-
-  --ink: oklch(0.95 0.004 265);
-  --ink-soft: oklch(0.82 0.006 265);
-  --muted: oklch(0.665 0.009 265);
-  --faint: oklch(0.55 0.008 265);
-
-  --line: oklch(0.285 0.008 265);
-  --line-strong: oklch(0.37 0.01 265);
-
-  --accent: oklch(0.555 0.21 33);
-  --accent-hover: oklch(0.61 0.21 34);
-  --accent-ink: oklch(0.73 0.16 38);
-  --accent-bright: oklch(0.66 0.21 36);
-  --accent-wash: oklch(0.28 0.05 33);
-  --accent-line: oklch(0.4 0.12 34);
-  --accent-contrast: oklch(0.99 0 0);
-
-  --sidebar: oklch(0.145 0.006 265);
-  --sidebar-2: oklch(0.215 0.008 265);
-  --sidebar-ink: oklch(0.93 0.005 265);
-  --sidebar-muted: oklch(0.66 0.009 265);
-  --sidebar-line: oklch(0.26 0.008 265);
-  --sidebar-active: oklch(0.3 0.06 33);
-
-  --pending-fg: oklch(0.84 0.12 82);
-  --pending-bg: oklch(0.31 0.06 78);
-  --pending-line: oklch(0.42 0.08 78);
-  --pending-solid: oklch(0.78 0.14 78);
-
-  --approved-fg: oklch(0.82 0.14 158);
-  --approved-bg: oklch(0.29 0.06 158);
-  --approved-line: oklch(0.4 0.08 158);
-  --approved-solid: oklch(0.72 0.15 156);
-
-  --rejected-fg: oklch(0.77 0.15 26);
-  --rejected-bg: oklch(0.31 0.08 26);
-  --rejected-line: oklch(0.43 0.1 26);
-  --rejected-solid: oklch(0.66 0.2 26);
-
-  --withdrawn-fg: oklch(0.72 0.008 265);
-  --withdrawn-bg: oklch(0.27 0.006 265);
-  --withdrawn-line: oklch(0.36 0.008 265);
-  --withdrawn-solid: oklch(0.6 0.008 265);
-
-  --approve-btn: oklch(0.5 0.14 156);
-  --approve-btn-hover: oklch(0.56 0.15 156);
-  --reject-btn: oklch(0.54 0.21 26);
-  --reject-btn-hover: oklch(0.6 0.21 26);
-
-  --ring: oklch(0.66 0.18 36 / 0.55);
-
-  --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.4);
-  --shadow-md: 0 4px 14px oklch(0 0 0 / 0.45), 0 1px 2px oklch(0 0 0 / 0.4);
-  --shadow-lg: 0 14px 36px oklch(0 0 0 / 0.55), 0 2px 8px oklch(0 0 0 / 0.4);
-  --shadow-seal: 0 2px 0 oklch(0 0 0 / 0.35), inset 0 0 0 1px oklch(0.66 0.21 36 / 0.45);
-}
-
-/* Expose tokens to Tailwind utilities: bg-bg, text-ink, border-line,
-   text-accent, bg-pending-bg, font-mono, shadow-md, rounded-lg, etc. */
-@theme inline {
-  --color-bg: var(--bg);
-  --color-surface: var(--surface);
-  --color-surface-2: var(--surface-2);
-  --color-surface-sunken: var(--surface-sunken);
-
-  --color-ink: var(--ink);
-  --color-ink-soft: var(--ink-soft);
-  --color-muted: var(--muted);
-  --color-faint: var(--faint);
-
-  --color-line: var(--line);
-  --color-line-strong: var(--line-strong);
-
-  --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
-  --color-accent-ink: var(--accent-ink);
-  --color-accent-bright: var(--accent-bright);
-  --color-accent-wash: var(--accent-wash);
-  --color-accent-line: var(--accent-line);
-  --color-accent-contrast: var(--accent-contrast);
-
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-2: var(--sidebar-2);
-  --color-sidebar-ink: var(--sidebar-ink);
-  --color-sidebar-muted: var(--sidebar-muted);
-  --color-sidebar-line: var(--sidebar-line);
-  --color-sidebar-active: var(--sidebar-active);
-
-  --color-pending-fg: var(--pending-fg);
-  --color-pending-bg: var(--pending-bg);
-  --color-pending-line: var(--pending-line);
-  --color-pending-solid: var(--pending-solid);
-  --color-approved-fg: var(--approved-fg);
-  --color-approved-bg: var(--approved-bg);
-  --color-approved-line: var(--approved-line);
-  --color-approved-solid: var(--approved-solid);
-  --color-rejected-fg: var(--rejected-fg);
-  --color-rejected-bg: var(--rejected-bg);
-  --color-rejected-line: var(--rejected-line);
-  --color-rejected-solid: var(--rejected-solid);
-  --color-withdrawn-fg: var(--withdrawn-fg);
-  --color-withdrawn-bg: var(--withdrawn-bg);
-  --color-withdrawn-line: var(--withdrawn-line);
-  --color-withdrawn-solid: var(--withdrawn-solid);
-
-  --color-approve-btn: var(--approve-btn);
-  --color-approve-btn-hover: var(--approve-btn-hover);
-  --color-reject-btn: var(--reject-btn);
-  --color-reject-btn-hover: var(--reject-btn-hover);
-
-  --color-ring: var(--ring);
-
-  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, "SF Mono", monospace;
-
-  /* Sub-xs steps for badge counts and micro-labels */
-  --text-3xs: 0.625rem;
-  --text-3xs--line-height: 1;
-  --text-2xs: 0.6875rem;
-  --text-2xs--line-height: 1.1;
-
-  --radius-xs: var(--radius-xs);
-  --radius-sm: var(--radius-sm);
-  --radius-md: var(--radius-md);
-  --radius-lg: var(--radius-lg);
-  --radius-xl: var(--radius-xl);
-  --radius-2xl: var(--radius-2xl);
-
-  --shadow-sm: var(--shadow-sm);
-  --shadow-md: var(--shadow-md);
-  --shadow-lg: var(--shadow-lg);
-  --shadow-seal: var(--shadow-seal);
-
-  /* Semantic z-index scale — never arbitrary 999s */
-  --z-base: 0;
+  /* Semantic z-index scale */
   --z-dropdown: 30;
   --z-sticky: 40;
   --z-drawer-backdrop: 50;
@@ -239,87 +146,91 @@
   --z-toast: 80;
 
   /* Motion */
-  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-quart: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @layer base {
   * {
-    border-color: var(--line);
+    border-color: var(--mist);
   }
 
   html {
     color-scheme: light;
   }
-  html.dark {
-    color-scheme: dark;
-  }
 
   body {
-    background-color: var(--bg);
+    background-color: var(--cream);
     color: var(--ink);
     font-family: var(--font-sans);
+    font-feature-settings: "dlig" 1, "ss02" 1, "ss08" 1;
+    letter-spacing: -0.012em;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
-  /* Tabular lining figures everywhere money or counts appear — the ledger. */
-  .tabular,
-  th,
-  td,
-  .font-mono {
-    font-variant-numeric: tabular-nums lining-nums;
-  }
-
-  h1, h2, h3 {
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--ink);
     text-wrap: balance;
-    letter-spacing: -0.012em;
   }
   p {
     text-wrap: pretty;
   }
 
+  /* Tabular lining figures for money, counts, and table data */
+  .tabular,
+  table {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
   ::selection {
-    background-color: var(--accent-wash);
-    color: var(--accent-ink);
+    background-color: color-mix(in srgb, var(--blue) 18%, transparent);
+    color: var(--ink);
   }
 
   ::placeholder {
-    color: var(--faint);
+    color: color-mix(in srgb, var(--storm) 45%, transparent);
     opacity: 1;
+  }
+
+  /* Single focus treatment — a 2px blue ring, the only "elevation" allowed */
+  :focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
+    border-radius: var(--radius-md);
+  }
+
+  /* Lucide-style icon stroke weight, globally */
+  svg {
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 }
 
 @layer components {
-  /* The seal — embossed vermilion ring that marks a decision moment. */
-  .seal {
-    position: relative;
-    display: grid;
-    place-items: center;
-    border-radius: 9999px;
-    color: var(--accent-contrast);
-    background: radial-gradient(circle at 35% 30%, var(--accent-bright), var(--accent) 70%);
-    box-shadow: var(--shadow-seal);
-  }
-  .seal::after {
-    content: "";
-    position: absolute;
-    inset: 14%;
-    border-radius: 9999px;
-    border: 1.5px dashed oklch(1 0 0 / 0.55);
+  /* An uppercase tracked eyebrow/label — aop's signature small type */
+  .eyebrow {
+    font-size: var(--text-2xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: color-mix(in srgb, var(--storm) 60%, transparent);
   }
 
-  /* Skeleton shimmer for loading rows */
+  /* Skeleton shimmer — parchment, no elevation */
   .skeleton {
     background: linear-gradient(
       100deg,
-      var(--surface-2) 30%,
-      var(--surface-sunken) 50%,
-      var(--surface-2) 70%
+      var(--parchment) 30%,
+      color-mix(in srgb, var(--mist) 50%, var(--parchment)) 50%,
+      var(--parchment) 70%
     );
     background-size: 200% 100%;
     animation: skeleton-pan 1.4s ease-in-out infinite;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md);
   }
 }
 
@@ -328,28 +239,32 @@
   from { background-position: 200% 0; }
   to { background-position: -200% 0; }
 }
-@keyframes seal-press {
-  0% { transform: scale(0.6) rotate(-8deg); opacity: 0; }
-  60% { transform: scale(1.06) rotate(1deg); opacity: 1; }
-  100% { transform: scale(1) rotate(0); opacity: 1; }
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
-@keyframes rise {
-  from { transform: translateY(6px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-@keyframes pulse-ring {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
 }
 
-.animate-seal { animation: seal-press 0.5s var(--ease-out-quart) both; }
-.animate-rise { animation: rise 0.4s var(--ease-out-quart) both; }
-.pulse-dot { animation: pulse-ring 2s ease-in-out infinite; }
+.animate-fade-in { animation: fade-in 0.2s var(--ease-out-quart) both; }
+.animate-slide-up { animation: slide-up 0.24s var(--ease-out-quart) both; }
+.animate-slide-down { animation: slide-down 0.24s var(--ease-out-quart) both; }
+.animate-scale-in { animation: scale-in 0.2s var(--ease-out-quart) both; }
 
 /* Staggered list rise — set --i on each row */
 .stagger-rise > * {
-  animation: rise 0.42s var(--ease-out-quart) both;
-  animation-delay: calc(var(--i, 0) * 45ms);
+  animation: slide-up 0.3s var(--ease-out-quart) both;
+  animation-delay: calc(var(--i, 0) * 40ms);
 }
 
 @media (prefers-reduced-motion: reduce) {
