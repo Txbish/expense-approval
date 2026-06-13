@@ -82,6 +82,10 @@ export default async function DashboardPage() {
         </div>
       </section>
 
+      {requests.length === 0 ? (
+        <FirstRun isAdmin={ctx.role === "admin"} />
+      ) : (
+        <>
       {/* Stat panel */}
       <section className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-mist bg-mist sm:grid-cols-4">
         <Stat label="Requests" value={requests.length} />
@@ -167,7 +171,31 @@ export default async function DashboardPage() {
           </div>
         </div>
       </section>
+        </>
+      )}
     </div>
+  );
+}
+
+function FirstRun({ isAdmin }: { isAdmin: boolean }) {
+  return (
+    <section className="rounded-2xl border border-mist bg-card p-8 sm:p-10">
+      <p className="text-2xs font-medium uppercase tracking-[0.16em] text-storm/55">Getting started</p>
+      <h2 className="mt-2 text-subheading text-ink">Your workspace is ready.</h2>
+      <p className="mt-2 max-w-xl text-body-sm text-storm/80">
+        {isAdmin
+          ? "Invite the people who'll submit and approve expenses, then log your first request. Add at least one approver so requests above your threshold can be decided."
+          : "Submit your first expense request and it'll head to your approvers for review."}
+      </p>
+      <div className="mt-6 flex flex-wrap gap-3">
+        <LinkButton href="/requests/new">+ New request</LinkButton>
+        {isAdmin && (
+          <LinkButton href="/members" variant="outline">
+            Invite your team ↗
+          </LinkButton>
+        )}
+      </div>
+    </section>
   );
 }
 

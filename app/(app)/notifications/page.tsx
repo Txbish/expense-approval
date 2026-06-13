@@ -7,11 +7,12 @@ import { markAllRead } from "@/app/(app)/actions";
 import type { AppNotification } from "@/lib/types";
 
 export default async function NotificationsPage() {
-  await getAppContext();
+  const ctx = (await getAppContext())!;
   const supabase = await createClient();
   const { data } = await supabase
     .from("notifications")
     .select("*")
+    .eq("org_id", ctx.org.id)
     .order("created_at", { ascending: false })
     .limit(50);
   const notifications = (data ?? []) as AppNotification[];

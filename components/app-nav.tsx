@@ -118,6 +118,15 @@ export function AppNav({ org, role, memberships, fullName, unreadCount, pendingC
         Organization
       </p>
       <OrgSwitcher current={org} memberships={memberships} />
+      <Link
+        href="/orgs/new"
+        onClick={close}
+        className="mt-2 flex items-center gap-2 rounded-md px-3 py-1.5 text-xs font-medium text-storm/75 transition-colors hover:bg-ink/6 hover:text-ink">
+        <svg viewBox="0 0 20 20" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" aria-hidden>
+          <path d="M10 5v10M5 10h10" />
+        </svg>
+        Add organization
+      </Link>
     </div>
   );
 
