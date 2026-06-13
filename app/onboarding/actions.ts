@@ -6,13 +6,14 @@ import { createClient } from "@/lib/supabase/server";
 import { ORG_COOKIE } from "@/lib/context";
 import { createOrgSchema } from "@/lib/validation";
 import { parseAmountToMinor } from "@/lib/format";
-import { log } from "@/lib/logger";
+import { log, startAction } from "@/lib/logger";
 
 export interface OnboardState {
   error?: string;
 }
 
 export async function createOrg(_prev: OnboardState, formData: FormData): Promise<OnboardState> {
+  const rid = startAction("org.create");
   const thresholdMinor = parseAmountToMinor(String(formData.get("threshold") ?? "0")) ?? 0;
   const parsed = createOrgSchema.safeParse({
     name: formData.get("name"),
@@ -33,7 +34,7 @@ export async function createOrg(_prev: OnboardState, formData: FormData): Promis
     .single<{ id: string }>();
 
   if (error || !data) {
-    log("error", "org.create_failed", { reason: error?.message });
+    log("error", "org.create_failed", { rid, reason: error?.message });
     return { error: "Could not create the organization. Please try again." };
   }
 
@@ -42,6 +43,7 @@ export async function createOrg(_prev: OnboardState, formData: FormData): Promis
 }
 
 export async function joinByToken(_prev: OnboardState, formData: FormData): Promise<OnboardState> {
+  startAction("org.join");
   const token = String(formData.get("token") ?? "").trim();
   if (!token) return { error: "Paste the invite code you were given." };
 

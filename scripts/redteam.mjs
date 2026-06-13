@@ -20,7 +20,8 @@ let fail = 0;
 function check(name, ok, detail = "") {
   const tag = ok ? "\x1b[32mPASS\x1b[0m" : "\x1b[31mFAIL\x1b[0m";
   console.log(`  ${tag}  ${name}${detail ? `  — ${detail}` : ""}`);
-  ok ? pass++ : fail++;
+  if (ok) pass++;
+  else fail++;
 }
 
 async function signIn(email) {

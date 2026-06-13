@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getAppContext } from "@/lib/context";
 import { inviteSchema } from "@/lib/validation";
+import { startAction } from "@/lib/logger";
 import type { Role } from "@/lib/types";
 
 export interface InviteState {
@@ -13,6 +14,7 @@ export interface InviteState {
 }
 
 export async function inviteMember(_prev: InviteState, formData: FormData): Promise<InviteState> {
+  startAction("member.invite");
   const ctx = await getAppContext();
   if (!ctx || ctx.role !== "admin") return { error: "Only admins can invite members." };
 
@@ -40,6 +42,7 @@ export async function inviteMember(_prev: InviteState, formData: FormData): Prom
 }
 
 export async function changeRole(formData: FormData): Promise<void> {
+  startAction("member.change_role");
   const ctx = await getAppContext();
   if (!ctx || ctx.role !== "admin") return;
   const membershipId = String(formData.get("membershipId") ?? "");
@@ -52,6 +55,7 @@ export async function changeRole(formData: FormData): Promise<void> {
 }
 
 export async function removeMember(formData: FormData): Promise<void> {
+  startAction("member.remove");
   const ctx = await getAppContext();
   if (!ctx || ctx.role !== "admin") return;
   const membershipId = String(formData.get("membershipId") ?? "");
@@ -65,6 +69,7 @@ export async function removeMember(formData: FormData): Promise<void> {
 }
 
 export async function revokeInvite(formData: FormData): Promise<void> {
+  startAction("member.revoke_invite");
   const ctx = await getAppContext();
   if (!ctx || ctx.role !== "admin") return;
   const inviteId = String(formData.get("inviteId") ?? "");

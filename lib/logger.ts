@@ -30,3 +30,18 @@ export function newRequestId(): string {
     Math.random().toString(36).slice(2, 8)
   );
 }
+
+/**
+ * Call at the top of every server action. Mints a correlation id, logs the
+ * action start with it, and returns the id so the rest of the action can attach
+ * it to its own log lines. This is what guarantees every server action emits a
+ * request_id.
+ */
+export function startAction(
+  name: string,
+  fields: Record<string, unknown> = {},
+): string {
+  const rid = newRequestId();
+  log("info", `action:${name}`, { rid, ...fields });
+  return rid;
+}

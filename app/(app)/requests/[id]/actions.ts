@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { decisionSchema } from "@/lib/validation";
-import { log, newRequestId } from "@/lib/logger";
+import { log, startAction } from "@/lib/logger";
 
 export interface DecisionState {
   error?: string;
@@ -14,7 +14,7 @@ export async function decideRequest(
   _prev: DecisionState,
   formData: FormData,
 ): Promise<DecisionState> {
-  const rid = newRequestId();
+  const rid = startAction("request.decide");
   const parsed = decisionSchema.safeParse({
     requestId: formData.get("requestId"),
     decision: formData.get("decision"),
@@ -47,10 +47,14 @@ export async function withdrawRequest(
   _prev: DecisionState,
   formData: FormData,
 ): Promise<DecisionState> {
+  const rid = startAction("request.withdraw");
   const requestId = String(formData.get("requestId") ?? "");
   const supabase = await createClient();
   const { error } = await supabase.rpc("withdraw_request", { p_request: requestId });
-  if (error) return { error: error.message };
+  if (error) {
+    log("warn", "request.withdraw_rejected", { rid, request: requestId, reason: error.message });
+    return { error: error.message };
+  }
   revalidatePath(`/requests/${requestId}`);
   revalidatePath("/requests");
   return { ok: true };

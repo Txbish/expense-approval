@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getAppContext } from "@/lib/context";
 import { newRequestSchema } from "@/lib/validation";
 import { parseAmountToMinor } from "@/lib/format";
-import { log, newRequestId } from "@/lib/logger";
+import { log, startAction } from "@/lib/logger";
 
 export interface NewRequestState {
   error?: string;
@@ -15,7 +15,7 @@ export async function createRequest(
   _prev: NewRequestState,
   formData: FormData,
 ): Promise<NewRequestState> {
-  const rid = newRequestId();
+  const rid = startAction("request.create");
   const ctx = await getAppContext();
   if (!ctx) redirect("/onboarding");
 

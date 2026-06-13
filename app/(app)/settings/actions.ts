@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getAppContext } from "@/lib/context";
 import { orgSettingsSchema } from "@/lib/validation";
 import { parseAmountToMinor } from "@/lib/format";
+import { startAction } from "@/lib/logger";
 
 export interface SettingsState {
   error?: string;
@@ -12,6 +13,7 @@ export interface SettingsState {
 }
 
 export async function updateSettings(_prev: SettingsState, formData: FormData): Promise<SettingsState> {
+  startAction("org.update_settings");
   const ctx = await getAppContext();
   if (!ctx || ctx.role !== "admin") return { error: "Only admins can change settings." };
 

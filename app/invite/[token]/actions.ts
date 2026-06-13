@@ -4,12 +4,14 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ORG_COOKIE } from "@/lib/context";
+import { startAction } from "@/lib/logger";
 
 export interface AcceptState {
   error?: string;
 }
 
 export async function acceptInvite(_prev: AcceptState, formData: FormData): Promise<AcceptState> {
+  startAction("invite.accept");
   const token = String(formData.get("token") ?? "");
   const supabase = await createClient();
   const { data, error } = await supabase
