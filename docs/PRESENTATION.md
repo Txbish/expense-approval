@@ -156,7 +156,8 @@ The assessment asked about fixing a production-only bug from logs alone. So:
   ties an error to the action and actor.
 - **Append-only audit log** = domain-level traceability of who decided what, when.
 - **`/api/health`** endpoint (privilege-free DB probe) for uptime monitoring.
-- **Sentry** hook is wired and env-gated (blank DSN = disabled) for client/server errors.
+- **Sentry** captures client + server exceptions in production (verified live — a test
+  error landed in the dashboard). Env-gated, so local/dev runs without it.
 
 ---
 
