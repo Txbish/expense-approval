@@ -15,11 +15,28 @@ import { startAction } from "@/lib/logger";
  */
 export async function switchOrg(orgId: string, redirectTo?: string): Promise<void> {
   startAction("org.switch");
-  // Confirm the user actually belongs to the target org (RLS returns nothing otherwise).
+  // Confirm the user actually belongs to the target org. Scope to THIS user:
+  // the memberships RLS policy exposes co-members, so filtering by org_id alone
+  // returns every member's row and `.maybeSingle()` would error on >1 row,
+  // silently dropping the switch for any multi-member org. (org_id, user_id) is
+  // unique, so this resolves to exactly the caller's membership or nothing.
   const supabase = await createClient();
-  const { data } = await supabase.from("memberships").select("org_id").eq("org_id", orgId).maybeSingle();
-  if (data) {
-    (await cookies()).set(ORG_COOKIE, orgId, { httpOnly: true, sameSite: "lax", path: "/" });
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (user) {
+    const { data } = await supabase
+      .from("memberships")
+      .select("org_id")
+      .eq("org_id", orgId)
+      .eq("user_id", user.id)
+      .maybeSingle();
+    if (data) {
+      (await cookies()).set(ORG_COOKIE, orgId, { httpOnly: true, sameSite: "lax", path: "/" });
+      // The sidebar/topbar live in the persistent app layout; revalidate it so
+      // org name, badges, and role-gated nav reflect the new tenant immediately.
+      revalidatePath("/", "layout");
+    }
   }
   // Only honor in-app paths — never an open redirect.
   const dest =
