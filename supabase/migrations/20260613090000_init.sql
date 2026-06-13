@@ -83,7 +83,7 @@ create table public.invitations (
   org_id      uuid not null references public.organizations(id) on delete cascade,
   email       text not null,
   role        app_role not null default 'requester',
-  token       text not null unique default encode(gen_random_bytes(16), 'hex'),
+  token       text not null unique default encode(extensions.gen_random_bytes(16), 'hex'),
   invited_by  uuid references auth.users(id),
   expires_at  timestamptz not null default (now() + interval '7 days'),
   accepted_at timestamptz,
