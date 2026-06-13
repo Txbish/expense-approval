@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-14T00:00:00.000Z",
+  "title": "Design System: Approvals",
+  "extensions": {
+    "colorMeta": {
+      "ink": { "role": "primary", "displayName": "Ink", "canonical": "hsl(187 100% 3%)", "tonalRamp": ["#001011", "#0f1e1f", "#1c3133", "#2c474a", "#456569", "#7d9396", "#a9bcbe", "#dfe7e7"] },
+      "blue": { "role": "primary", "displayName": "Electric Blue", "canonical": "hsl(211 100% 50%)", "tonalRamp": ["#00214a", "#003a80", "#0056bd", "#007aff", "#3f9bff", "#73b6ff", "#a8d2ff", "#d9ecff"] },
+      "orange": { "role": "secondary", "displayName": "Vermilion Orange", "canonical": "hsl(13 98% 56%)", "tonalRamp": ["#451103", "#73200a", "#a33013", "#d4401b", "#fd5321", "#ff7d57", "#ffa78c", "#ffd5c6"] },
+      "success": { "role": "tertiary", "displayName": "Ledger Green", "canonical": "hsl(158 67% 22%)", "tonalRamp": ["#06241a", "#0a3a2a", "#0e4d37", "#125e42", "#1f8a64", "#33b888", "#74d3b1", "#b8ecda"] },
+      "destructive": { "role": "tertiary", "displayName": "Crimson", "canonical": "hsl(6 73% 38%)", "tonalRamp": ["#3a0e08", "#5e1610", "#83201a", "#a8281a", "#cf3d2c", "#e0705f", "#eda393", "#f8d4cb"] },
+      "cream": { "role": "neutral", "displayName": "Cream", "canonical": "hsl(47 33% 98%)", "tonalRamp": ["#2a2924", "#46443c", "#6a675b", "#928e7e", "#bbb7a8", "#dedacb", "#f0ede4", "#fcfbf8"] },
+      "parchment": { "role": "neutral", "displayName": "Parchment", "canonical": "hsl(60 9% 92%)", "tonalRamp": ["#2b2b27", "#46463f", "#6a6a60", "#919186", "#b9b9af", "#d6d6cd", "#ededea", "#f7f7f4"] },
+      "mist": { "role": "neutral", "displayName": "Mist", "canonical": "hsl(150 3% 76%)", "tonalRamp": ["#262827", "#3f423f", "#5f635f", "#868a86", "#a7aba8", "#c1c4c2", "#d9dbda", "#eeefee"] },
+      "storm": { "role": "neutral", "displayName": "Storm", "canonical": "hsl(184 35% 9%)", "tonalRamp": ["#0f1e1f", "#16302f", "#1f4543", "#2c605d", "#3f827d", "#67aaa4", "#9ccbc6", "#d3e8e6"] },
+      "muted-foreground": { "role": "neutral", "displayName": "Muted Foreground", "canonical": "hsl(184 14% 30%)", "tonalRamp": ["#1a2324", "#283638", "#374b4d", "#425657", "#5d7476", "#83999b", "#aec0c1", "#dbe5e5"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Auth/marketing hero headline only (heading-lg, 72px)." },
+      "headline": { "displayName": "Headline", "purpose": "Page titles in PageHeader and request detail (heading-sm/heading, 32–36px)." },
+      "title": { "displayName": "Title", "purpose": "Section and card headings (subheading, 24px)." },
+      "body": { "displayName": "Body", "purpose": "UI workhorse — controls, table cells, form values (field, 15px). Steps up to 18/21px for descriptions and prose." },
+      "label": { "displayName": "Label / Eyebrow", "purpose": "Uppercase tracked kicker and field labels (2xs, 11px, 0.16em). Counts use 3xs (10px)." }
+    },
+    "shadows": [
+      { "name": "none", "value": "none", "purpose": "The system is flat. Depth comes from paper tone (cream→parchment→mist) and hairline borders, never box-shadow." }
+    ],
+    "focusRing": [
+      { "name": "focus-visible", "value": "outline: 2px solid var(--blue); outline-offset: 2px", "purpose": "The only sanctioned 'elevation' — every interactive control gets the 2px blue ring on keyboard focus." }
+    ],
+    "motion": [
+      { "name": "ease-out-quart", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "Default easing for state transitions and entrances." },
+      { "name": "ease-out-expo", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Sharper deceleration for larger reveals." },
+      { "name": "duration", "value": "150–250ms", "purpose": "State-only; users are in flow. fade-in/slide-up/scale-in keyframes; stagger-rise for lists. All have prefers-reduced-motion fallbacks." }
+    ],
+    "zIndex": [
+      { "name": "dropdown", "value": "30" },
+      { "name": "sticky", "value": "40" },
+      { "name": "drawer-backdrop", "value": "50" },
+      { "name": "drawer", "value": "60" },
+      { "name": "toast", "value": "80" }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px", "note": "Sidebar appears; mobile drawer hides." },
+      { "name": "lg", "value": "1024px", "note": "Request lists switch from stacked cards to the ledger table." },
+      { "name": "xl", "value": "1280px", "note": "Members table replaces member cards beside the invite form." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The page's main action — ink pill, cream text.",
+      "html": "<button class=\"ds-btn-primary\">+ New request</button>",
+      "css": ".ds-btn-primary { display:inline-flex; align-items:center; justify-content:center; height:44px; padding:0 24px; border:none; border-radius:9999px; background:var(--ink,#001011); color:var(--cream,#fcfbf8); font:500 15px/1.4 'Aeonik Pro',ui-sans-serif,system-ui,sans-serif; letter-spacing:-0.006em; white-space:nowrap; cursor:pointer; transition:background .2s cubic-bezier(0.22,1,0.36,1); } .ds-btn-primary:hover { background:var(--storm,#0f1e1f); } .ds-btn-primary:focus-visible { outline:2px solid var(--blue,#007aff); outline-offset:2px; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary, wayfinding action — blue border + blue text on cream.",
+      "html": "<button class=\"ds-btn-outline\">Review 3 pending ↗</button>",
+      "css": ".ds-btn-outline { display:inline-flex; align-items:center; justify-content:center; height:44px; padding:0 24px; border:1px solid var(--blue,#007aff); border-radius:9999px; background:var(--cream,#fcfbf8); color:var(--blue,#007aff); font:500 15px/1.4 'Aeonik Pro',ui-sans-serif,system-ui,sans-serif; white-space:nowrap; cursor:pointer; transition:background .2s cubic-bezier(0.22,1,0.36,1); } .ds-btn-outline:hover { background:color-mix(in srgb, var(--blue,#007aff) 8%, transparent); } .ds-btn-outline:focus-visible { outline:2px solid var(--blue,#007aff); outline-offset:2px; }"
+    },
+    {
+      "name": "Decision Buttons",
+      "kind": "button",
+      "refersTo": "button-approve",
+      "description": "The decision path — AA-safe green Approve and crimson Reject, side by side.",
+      "html": "<div class=\"ds-decide\"><button class=\"ds-btn-approve\">Approve</button><button class=\"ds-btn-reject\">Reject</button></div>",
+      "css": ".ds-decide { display:flex; gap:12px; } .ds-btn-approve,.ds-btn-reject { flex:1; height:44px; padding:0 24px; border:none; border-radius:9999px; color:var(--cream,#fcfbf8); font:500 15px/1.4 'Aeonik Pro',ui-sans-serif,system-ui,sans-serif; cursor:pointer; transition:background .2s cubic-bezier(0.22,1,0.36,1); } .ds-btn-approve { background:var(--success,#125e42); } .ds-btn-reject { background:var(--destructive,#a8281a); } .ds-btn-approve:hover,.ds-btn-reject:hover { filter:brightness(1.08); } .ds-btn-approve:focus-visible,.ds-btn-reject:focus-visible { outline:2px solid var(--blue,#007aff); outline-offset:2px; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Labelled input — uppercase label over a cream field with a mist hairline; blue focus.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-label\">Work email</span><input class=\"ds-input\" placeholder=\"you@company.com\" /></label>",
+      "css": ".ds-field { display:block; } .ds-label { display:block; margin-bottom:8px; font:500 11px/1.2 'Aeonik Pro',ui-sans-serif,system-ui,sans-serif; text-transform:uppercase; letter-spacing:0.12em; color:color-mix(in srgb, var(--storm,#0f1e1f) 80%, transparent); } .ds-input { width:100%; height:44px; padding:0 16px; border:1px solid var(--mist,#c1c4c2); border-radius:12px; background:var(--cream,#fcfbf8); color:var(--ink,#001011); font:400 15px/1.4 'Aeonik Pro',ui-sans-serif,system-ui,sans-serif; transition:border-color .2s, box-shadow .2s; } .ds-input:hover { border-color:color-mix(in srgb, var(--storm,#0f1e1f) 30%, transparent); } .ds-input:focus { outline:none; border-color:var(--blue,#007aff); box-shadow:0 0 0 2px color-mix(in srgb, var(--blue,#007aff) 30%, transparent); } .ds-input::placeholder { color:color-mix(in srgb, var(--storm,#0f1e1f) 45%, transparent); }"
+    },
+    {
+      "name": "Status Badge — Pending",
+      "kind": "chip",
+      "refersTo": "badge-pending",
+      "description": "Triple-encoded status pill: orange border + ink text + clock glyph (orange is never the text).",
+      "html": "<span class=\"ds-badge-pending\"><svg viewBox=\"0 0 20 20\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"10\" cy=\"10\" r=\"7\"/><path d=\"M10 6v4l2.6 1.6\"/></svg>Pending</span>",
+      "css": ".ds-badge-pending { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border:1px solid color-mix(in srgb, var(--orange,#fd5321) 60%, transparent); border-radius:8px; background:color-mix(in srgb, var(--cream,#fcfbf8) 80%, transparent); color:var(--ink,#001011); font:500 12px/1 'Aeonik Pro',ui-sans-serif,system-ui,sans-serif; text-transform:capitalize; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Parchment panel on the cream canvas — readable as a card by tone, no border or shadow.",
+      "html": "<div class=\"ds-card\"><p class=\"ds-label\">Quick actions</p><p class=\"ds-card-title\">Jump in</p></div>",
+      "css": ".ds-card { padding:24px; border-radius:20px; background:var(--parchment,#ededea); } .ds-card .ds-label { margin-bottom:6px; font:500 11px/1.2 'Aeonik Pro',sans-serif; text-transform:uppercase; letter-spacing:0.16em; color:color-mix(in srgb, var(--storm,#0f1e1f) 55%, transparent); } .ds-card-title { margin:0; font:500 24px/1.1 'Aeonik Pro',sans-serif; letter-spacing:-0.012em; color:var(--ink,#001011); }"
+    },
+    {
+      "name": "Decision Seal",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Signature moment — a flat, status-colored disc with an inner hairline ring stamped when a request is decided.",
+      "html": "<span class=\"ds-seal\"><span class=\"ds-seal-ring\"></span><svg viewBox=\"0 0 20 20\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4.5 10.5 8.2 14.2 15.5 5.8\"/></svg></span>",
+      "css": ".ds-seal { position:relative; display:grid; place-items:center; width:56px; height:56px; border-radius:9999px; background:var(--success,#125e42); color:var(--cream,#fcfbf8); } .ds-seal-ring { position:absolute; inset:16%; border-radius:9999px; border:1px solid color-mix(in srgb, var(--cream,#fcfbf8) 30%, transparent); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Blueprint Ledger",
+    "overview": "Approvals reads like a well-kept accounting ledger drawn on a draughtsman's table: ink on cream paper, every figure squared to a baseline, hairline rules instead of boxes-with-shadows, and exactly one electric-blue stroke reserved for the things you can act on. It is a money tool first — staff scan a queue, trust what they see, and make a decision that goes permanently on the record. The aesthetic is high-contrast and flat: no elevation, depth from three stacked paper tones (cream → parchment → mist). Color is rationed — ink for actions and text, blue for anything interactive, orange for attention/decoration only, green/crimson for status. One engineered sans (Aeonik Pro) carries the whole product, because the tool should disappear into the task.",
+    "keyCharacteristics": [
+      "Ink-on-paper, light-theme-only; flat surfaces, zero shadows.",
+      "One typeface (Aeonik Pro) in three weights; tabular lining figures for all money, counts, IDs, and timestamps.",
+      "Blue = interactive accent; orange = attention/decoration; green/crimson = status meaning only.",
+      "Status is triple-encoded: color + glyph + word.",
+      "The Decision Seal is the single signature moment, used once per decided request — never as row decoration."
+    ],
+    "rules": [
+      { "name": "The One Blue Rule", "body": "Blue means 'interactive.' If an element isn't a link, a focusable control, or an action affordance, it is not blue. Its scarcity is what makes it scannable.", "section": "colors" },
+      { "name": "The Orange-Is-Never-Text Rule", "body": "Orange is a border, a dot, a decorative block, or a count chip — never a run of text. Pending status uses an orange border + ink text + clock glyph.", "section": "colors" },
+      { "name": "The Ledger Figures Rule", "body": "Every monetary amount, count, ID, and timestamp is set in tabular lining figures so columns align. Money never renders as a float.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at every rest and hover state. The only thing that may visually 'rise' is a focused control, and it rises with a blue ring — never a shadow.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do build depth from the three paper tones (cream → parchment → mist) and hairlines.",
+      "Do reserve blue for interactive elements only — links, focus, outline buttons, action affordances.",
+      "Do set every amount, count, ID, and timestamp in tabular lining figures, and store and render money as integer minor units.",
+      "Do encode every status three ways — colour + glyph + word.",
+      "Do use Aeonik Pro for everything; create contrast with weight and size, not a second family.",
+      "Do give every interactive control a visible 2px blue :focus-visible ring, and a prefers-reduced-motion fallback for every animation.",
+      "Do keep the Decision Seal to the one moment a request is decided."
+    ],
+    "donts": [
+      "Don't add shadows or glassmorphism to convey depth — the system is flat by default.",
+      "Don't render orange as text; pending uses an orange border + ink text + glyph.",
+      "Don't reach for the indigo/violet 'generic SaaS starter' look, or fintech clichés — navy-and-gold, neon 'terminal green' dark mode, or crypto gradients.",
+      "Don't use warm-cream/parchment as a decorative editorial background; here paper tone is structural, not mood.",
+      "Don't build decorative dashboards: no hero-metric templates, no gradient text, no identical icon-card grids.",
+      "Don't ship a dark theme — Approvals is a daytime, figure-scanning, light-only tool.",
+      "Don't reinvent standard affordances for flavour, except the custom Select (native <select> can't be themed cross-platform).",
+      "Don't nest a card inside a card."
+    ]
+  }
+}
