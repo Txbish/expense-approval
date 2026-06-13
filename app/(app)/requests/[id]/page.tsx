@@ -142,7 +142,7 @@ export default async function RequestDetailPage({
               <Money
                 minor={request.amount_minor}
                 currency={request.currency}
-                className="text-heading-lg text-ink"
+                className="text-heading-sm text-ink sm:text-heading-lg"
               />
               {overLimit && (
                 <span className="rounded-md border border-orange/55 bg-orange/8 px-2 py-1 text-2xs font-semibold uppercase tracking-wide text-ink">

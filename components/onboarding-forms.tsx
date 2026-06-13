@@ -17,7 +17,7 @@ export function OnboardingForms() {
           <Field label="Organization name">
             <Input name="name" required placeholder="Acme Inc" />
           </Field>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Currency">
               <Input name="currency" required maxLength={3} defaultValue="USD" className="uppercase" />
             </Field>

@@ -88,7 +88,7 @@ export function AppNav({ org, role, memberships, fullName, unreadCount, pendingC
                 href={link.href}
                 aria-current={active ? "page" : undefined}
                 className={clsx(
-                  "group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors duration-200",
+                  "group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors duration-200 pointer-coarse:py-2.5",
                   active ? "bg-ink text-cream" : "text-storm/85 hover:bg-ink/6 hover:text-ink",
                 )}
               >
@@ -137,7 +137,7 @@ export function AppNav({ org, role, memberships, fullName, unreadCount, pendingC
   return (
     <>
       {/* Mobile top bar */}
-      <div className="sticky top-0 z-[40] flex h-14 items-center justify-between border-b border-mist bg-cream/90 px-4 backdrop-blur md:hidden">
+      <div className="sticky top-0 z-[40] flex h-14 items-center justify-between border-b border-mist bg-cream/90 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] backdrop-blur md:hidden">
         <Link href="/dashboard" className="inline-flex items-center gap-2 text-ink">
           <BrandMark className="h-6 w-6" />
           <span className="text-lg font-medium lowercase tracking-tight">approvals.</span>
@@ -146,7 +146,7 @@ export function AppNav({ org, role, memberships, fullName, unreadCount, pendingC
           <Link
             href="/notifications"
             aria-label="Notifications"
-            className="relative inline-flex h-9 w-9 items-center justify-center rounded-md text-storm/70 hover:bg-ink/6 hover:text-ink"
+            className="relative inline-flex h-10 w-10 items-center justify-center rounded-md text-storm/70 hover:bg-ink/6 hover:text-ink"
           >
             <ICONS.bell className="h-5 w-5" />
             {unreadCount > 0 && (
@@ -160,7 +160,7 @@ export function AppNav({ org, role, memberships, fullName, unreadCount, pendingC
             onClick={() => setOpen(true)}
             aria-label="Open menu"
             aria-expanded={open}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-ink hover:bg-ink/6"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-ink hover:bg-ink/6"
           >
             <ICONS.menu className="h-5 w-5" />
           </button>
@@ -194,7 +194,7 @@ export function AppNav({ org, role, memberships, fullName, unreadCount, pendingC
               type="button"
               onClick={() => setOpen(false)}
               aria-label="Close menu"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-storm/70 hover:bg-ink/6 hover:text-ink"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-md text-storm/70 hover:bg-ink/6 hover:text-ink"
             >
               <ICONS.close className="h-5 w-5" />
             </button>

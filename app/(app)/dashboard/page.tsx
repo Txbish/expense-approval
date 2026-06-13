@@ -1,27 +1,22 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { getAppContext, isApprover } from "@/lib/context";
 import { createClient } from "@/lib/supabase/server";
 import { profilesByIds } from "@/lib/queries";
 import { RequestList } from "@/components/request-list";
-import { LinkButton, Money } from "@/components/ui";
-import { formatMoney } from "@/lib/format";
+import { LinkButton } from "@/components/ui";
+import { formatMoney, formatMoneyCompact } from "@/lib/format";
 import type { ExpenseRequest, RequestStatus } from "@/lib/types";
 
-function Stat({ label, value }: { label: string; value: React.ReactNode }) {
+/* A compact stat tile — muted surface, small label over an 18px value. */
+function StatCard({ label, value }: { label: string; value: ReactNode }) {
   return (
-    <div className="bg-cream px-6 py-5">
-      <p className="text-2xs font-medium uppercase tracking-[0.14em] text-storm/55">{label}</p>
-      <p className="mt-2 text-heading-sm tabular text-ink">{value}</p>
+    <div className="min-w-0 rounded-xl bg-parchment px-3 py-2.5">
+      <p className="truncate text-2xs font-medium uppercase tracking-[0.12em] text-storm/55">{label}</p>
+      <p className="mt-1 truncate text-body-sm font-medium tabular text-ink">{value}</p>
     </div>
   );
 }
-
-const STRIP: { status: RequestStatus; label: string }[] = [
-  { status: "pending", label: "Pending" },
-  { status: "approved", label: "Approved" },
-  { status: "rejected", label: "Rejected" },
-  { status: "withdrawn", label: "Withdrawn" },
-];
 
 export default async function DashboardPage() {
   const ctx = (await getAppContext())!;
@@ -56,121 +51,87 @@ export default async function DashboardPage() {
     day: "numeric",
   });
 
+  const pendingCount = byStatus("pending");
+  const currency = ctx.org.default_currency;
+
   return (
-    <div className="space-y-12">
-      {/* Hero */}
-      <section className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-        <div className="max-w-2xl space-y-3">
+    <div className="space-y-8">
+      {/* Header — eyebrow + heading on the left, primary actions top-right.
+          Stays stacked until lg so the heading and date line never get
+          squeezed into ragged wraps by the buttons beside them. */}
+      <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="min-w-0 space-y-1.5">
           <p className="text-2xs font-medium uppercase tracking-[0.16em] text-storm/55">
             Today · {dateStr} · {ctx.org.name}
           </p>
-          <h1 className="text-heading lowercase text-ink sm:text-heading-lg">
-            {firstName ? `welcome back, ${firstName}.` : "here's the latest."}
+          <h1 className="text-heading-sm text-ink">
+            {firstName ? `Welcome back, ${firstName}` : "Here's the latest"}
           </h1>
-          <p className="text-body-sm text-storm/80">
-            Requests above {formatMoney(ctx.org.approval_threshold_minor, ctx.org.default_currency)}{" "}
-            require an admin to approve.
-          </p>
         </div>
-        <div className="flex shrink-0 flex-wrap items-center gap-3">
-          <LinkButton href="/requests/new">+ New request</LinkButton>
+        <div className="flex shrink-0 gap-3">
+          <LinkButton href="/requests/new" className="flex-1 lg:flex-none">
+            + New request
+          </LinkButton>
           {pendingToReview > 0 && (
-            <LinkButton href="/queue" variant="outline">
+            <LinkButton href="/queue" variant="outline" className="flex-1 lg:flex-none">
               Review {pendingToReview} pending ↗
             </LinkButton>
           )}
         </div>
-      </section>
+      </header>
 
       {requests.length === 0 ? (
         <FirstRun isAdmin={ctx.role === "admin"} />
       ) : (
         <>
-      {/* Stat panel */}
-      <section className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-mist bg-mist sm:grid-cols-4">
-        <Stat label="Requests" value={requests.length} />
-        <Stat
-          label={approver ? "Pending value" : "My requests"}
-          value={approver ? <Money minor={pendingValue} currency={ctx.org.default_currency} /> : mine.length}
-        />
-        <Stat label="Approved" value={byStatus("approved")} />
-        <Stat label={approver ? "Approval rate" : "Pending"} value={approver ? `${approvalRate}%` : byStatus("pending")} />
-      </section>
+          {/* Stats — one compact row of four (2×2 on mobile) */}
+          <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <StatCard
+              label="Pending"
+              value={pendingCount > 0 ? `${pendingCount} · ${formatMoneyCompact(pendingValue, currency)}` : "0"}
+            />
+            <StatCard label="Approved" value={byStatus("approved")} />
+            <StatCard label="Rejected" value={byStatus("rejected")} />
+            <StatCard label="Approval rate" value={`${approvalRate}%`} />
+          </section>
 
-      {/* Status strip */}
-      <section className="space-y-4">
-        <div className="flex items-baseline justify-between">
-          <p className="text-2xs font-medium uppercase tracking-[0.16em] text-storm/55">
-            Status · {requests.length} total
-          </p>
-          <Link
-            href={approver ? "/requests/all" : "/requests"}
-            className="text-2xs font-medium uppercase tracking-[0.12em] text-blue hover:underline"
-          >
-            All requests ↗
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {STRIP.map((s) => {
-            const count = byStatus(s.status);
-            const highlight = s.status === "pending" && count > 0;
-            return (
-              <div
-                key={s.status}
-                className={
-                  highlight
-                    ? "rounded-xl bg-ink px-4 py-3.5 text-cream"
-                    : "rounded-xl border border-mist bg-parchment px-4 py-3.5"
-                }
-              >
-                <p
-                  className={
-                    highlight
-                      ? "text-2xs font-medium uppercase tracking-[0.12em] text-cream/70"
-                      : "text-2xs font-medium uppercase tracking-[0.12em] text-storm/55"
-                  }
-                >
-                  {s.label}
-                </p>
-                <p className={highlight ? "mt-1 text-subheading tabular text-cream" : "mt-1 text-subheading tabular text-ink"}>
-                  {count}
-                </p>
+          {/* Latest activity — the primary content area */}
+          <section className="space-y-4">
+            <div className="flex items-baseline justify-between gap-3">
+              <div className="min-w-0 space-y-1">
+                <p className="text-2xs font-medium uppercase tracking-[0.16em] text-storm/55">Recent</p>
+                <h2 className="text-subheading text-ink">{approver ? "Latest activity" : "My recent requests"}</h2>
               </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Recent + quick actions */}
-      <section className="grid gap-8 lg:grid-cols-3">
-        <div className="space-y-4 lg:col-span-2">
-          <div className="flex items-baseline justify-between">
-            <div className="space-y-1">
-              <p className="text-2xs font-medium uppercase tracking-[0.16em] text-storm/55">Recent</p>
-              <h2 className="text-subheading text-ink">{approver ? "Latest activity" : "My recent requests"}</h2>
+              <Link
+                href={approver ? "/requests/all" : "/requests"}
+                className="shrink-0 text-2xs font-medium uppercase tracking-[0.12em] text-blue hover:underline"
+              >
+                All requests ↗
+              </Link>
             </div>
-          </div>
-          <RequestList
-            requests={recent}
-            profiles={profiles}
-            showRequester={approver}
-            threshold={ctx.org.approval_threshold_minor}
-            emptyLabel={approver ? "No requests in this organization yet." : "You haven't made any requests yet."}
-          />
-        </div>
+            <RequestList
+              requests={recent}
+              profiles={profiles}
+              showRequester={approver}
+              threshold={ctx.org.approval_threshold_minor}
+              emptyLabel={approver ? "No requests in this organization yet." : "You haven't made any requests yet."}
+            />
+          </section>
 
-        <div className="space-y-4">
-          <div className="space-y-1">
+          {/* Quick actions — a slim row of links (stacked on mobile) */}
+          <section className="space-y-3">
             <p className="text-2xs font-medium uppercase tracking-[0.16em] text-storm/55">Quick actions</p>
-            <h2 className="text-subheading text-ink">Jump in</h2>
-          </div>
-          <div className="space-y-2.5">
-            <QuickAction href="/requests/new" label="New expense request" />
-            {approver && <QuickAction href="/queue" label="Review the approval queue" />}
-            <QuickAction href="/activity" label="View the audit trail" />
-          </div>
-        </div>
-      </section>
+            <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
+              <QuickAction href="/requests/new" label="New request" icon={<IconPlus />} />
+              {approver && <QuickAction href="/queue" label="Approval queue" icon={<IconQueue />} />}
+              <QuickAction href="/activity" label="Audit trail" icon={<IconTrail />} />
+            </div>
+          </section>
+
+          <p className="text-xs text-storm/55">
+            Requests above {formatMoney(ctx.org.approval_threshold_minor, currency)} require an admin to
+            approve.
+          </p>
         </>
       )}
     </div>
@@ -199,14 +160,41 @@ function FirstRun({ isAdmin }: { isAdmin: boolean }) {
   );
 }
 
-function QuickAction({ href, label }: { href: string; label: string }) {
+function QuickAction({ href, label, icon }: { href: string; label: string; icon: ReactNode }) {
   return (
     <Link
       href={href}
-      className="flex items-center justify-between gap-3 rounded-xl border border-mist bg-card px-4 py-3.5 text-field font-medium text-ink transition-colors hover:bg-mist/30"
+      className="inline-flex flex-1 items-center gap-2.5 rounded-xl border border-mist bg-card px-4 py-2.5 text-field font-medium text-ink transition-colors hover:bg-mist/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/40"
     >
+      <span className="shrink-0 text-storm/70">{icon}</span>
       {label}
-      <span className="text-storm/50">↗</span>
     </Link>
+  );
+}
+
+/* ── Quick-action glyphs (Lucide-weight, inherit stroke rounding from globals) */
+
+function IconPlus() {
+  return (
+    <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+      <path d="M10 4.5v11M4.5 10h11" />
+    </svg>
+  );
+}
+
+function IconQueue() {
+  return (
+    <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+      <circle cx="10" cy="10" r="6.5" />
+      <path d="M7 10l2 2 4-4.2" />
+    </svg>
+  );
+}
+
+function IconTrail() {
+  return (
+    <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+      <path d="M5 5.5h10M5 10h10M5 14.5h6.5" />
+    </svg>
   );
 }

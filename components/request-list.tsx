@@ -11,9 +11,17 @@ interface RequestListProps {
   showRequester?: boolean;
   threshold?: number;
   emptyLabel?: string;
-  /** Adds a per-row action button (e.g. on the approval queue). */
+  /** Adds a per-row action affordance (e.g. on the approval queue). */
   reviewable?: boolean;
   actionLabel?: string;
+}
+
+function AdminTag() {
+  return (
+    <span className="inline-flex shrink-0 rounded border border-orange/55 px-1.5 py-0.5 text-3xs font-semibold uppercase tracking-wide text-ink">
+      admin
+    </span>
+  );
 }
 
 export function RequestList({
@@ -42,8 +50,50 @@ export function RequestList({
 
   return (
     <div className="overflow-hidden rounded-2xl border border-mist bg-cream">
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[40rem] text-sm">
+      {/* Mobile / tablet: stacked cards (the whole row is the tap target).
+          Cards run up to lg because below the lg sidebar layout there isn't
+          room for the five-column table without clipping. */}
+      <ul className="stagger-rise divide-y divide-mist/70 lg:hidden">
+        {requests.map((r, i) => {
+          const overLimit = threshold !== undefined && r.amount_minor > threshold;
+          return (
+            <li key={r.id} style={{ "--i": i } as React.CSSProperties}>
+              <Link
+                href={`/requests/${r.id}`}
+                className="flex min-h-[3.75rem] flex-col gap-2 px-4 py-3.5 transition-colors active:bg-ink/5 focus-visible:outline-none focus-visible:bg-ink/5"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-ink">{r.title}</p>
+                    <p className="truncate text-xs text-storm/60">
+                      {r.category}
+                      {showRequester && <> · {nameOf(profiles, r.requester_id)}</>}
+                    </p>
+                  </div>
+                  <StatusBadge status={r.status} />
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <Money minor={r.amount_minor} currency={r.currency} className="font-medium text-ink" />
+                    {overLimit && r.status === "pending" && <AdminTag />}
+                  </div>
+                  <span className="flex items-center gap-1.5 text-xs tabular text-storm/55">
+                    {timeAgo(r.updated_at)}
+                    {reviewable && (
+                      <span aria-hidden className="font-medium text-blue">{actionLabel} →</span>
+                    )}
+                  </span>
+                </div>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+
+      {/* lg+: the ledger table. min-w-0 wrapper + overflow-x-auto keep it from
+          ever forcing the page wider than the viewport. */}
+      <div className="hidden min-w-0 overflow-x-auto lg:block">
+        <table className="w-full min-w-[36rem] text-sm">
           <thead className="border-b border-mist text-left">
             <tr className="[&>th]:px-4 [&>th]:py-3 [&>th]:text-2xs [&>th]:font-medium [&>th]:uppercase [&>th]:tracking-[0.08em] [&>th]:text-storm/60">
               <th>Request</th>
@@ -76,12 +126,10 @@ export function RequestList({
                     <td className="px-4 py-3.5 text-storm/80">{nameOf(profiles, r.requester_id)}</td>
                   )}
                   <td className="px-4 py-3.5 text-right">
-                    <Money minor={r.amount_minor} currency={r.currency} className="font-medium text-ink" />
-                    {overLimit && r.status === "pending" && (
-                      <span className="ml-2 inline-flex rounded border border-orange/55 px-1.5 py-0.5 text-3xs font-semibold uppercase tracking-wide text-ink">
-                        admin
-                      </span>
-                    )}
+                    <span className="inline-flex items-center justify-end gap-2">
+                      <Money minor={r.amount_minor} currency={r.currency} className="font-medium text-ink" />
+                      {overLimit && r.status === "pending" && <AdminTag />}
+                    </span>
                   </td>
                   <td className="px-4 py-3.5">
                     <StatusBadge status={r.status} />
@@ -91,7 +139,7 @@ export function RequestList({
                     <td className="px-4 py-3.5 text-right">
                       <Link
                         href={`/requests/${r.id}`}
-                        className="inline-flex h-8 items-center gap-1 rounded-full bg-ink px-3.5 text-xs font-medium text-cream transition-colors hover:bg-storm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/40"
+                        className="inline-flex h-8 items-center gap-1 whitespace-nowrap rounded-full bg-ink px-3.5 text-xs font-medium text-cream transition-colors hover:bg-storm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/40"
                       >
                         {actionLabel} →
                       </Link>

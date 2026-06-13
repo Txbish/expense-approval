@@ -38,7 +38,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         pendingCount={pending}
       />
       <AppTopBar orgName={ctx.org.name} fullName={ctx.fullName} role={ctx.role} unreadCount={unread ?? 0} />
-      <main className="mx-auto max-w-5xl px-5 py-10 sm:px-8 lg:py-12">{children}</main>
+      <main className="mx-auto max-w-5xl px-5 py-10 pb-[max(2.5rem,env(safe-area-inset-bottom))] sm:px-8 lg:py-12">{children}</main>
     </div>
   );
 }

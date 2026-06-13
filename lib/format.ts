@@ -16,6 +16,23 @@ export function formatMoney(amountMinor: number, currency: string): string {
   }
 }
 
+/**
+ * Like formatMoney but drops the minor units (no cents) — for compact stat
+ * tiles where "€1,100" reads cleaner than "€1,100.00".
+ */
+export function formatMoneyCompact(amountMinor: number, currency: string): string {
+  try {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amountMinor / 100);
+  } catch {
+    return `${currency} ${Math.round(amountMinor / 100)}`;
+  }
+}
+
 /** Parse a user-entered decimal string ("1,250.50") into integer minor units. */
 export function parseAmountToMinor(input: string): number | null {
   const cleaned = input.replace(/[,\s]/g, "");

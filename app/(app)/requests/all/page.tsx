@@ -56,7 +56,7 @@ export default async function AllRequestsPage({
               key={f.value}
               href={href}
               className={clsx(
-                "rounded-full border px-4 py-1.5 text-sm font-medium transition-colors",
+                "rounded-full border px-4 py-2 text-sm font-medium transition-colors",
                 isActive
                   ? "border-ink bg-ink text-cream"
                   : "border-mist bg-cream text-storm/80 hover:border-storm/30 hover:text-ink",

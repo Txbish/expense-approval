@@ -39,10 +39,60 @@ export function MembersAdmin({ members, invites }: { members: MemberRow[]; invit
 
   return (
     <div className="grid gap-6 lg:grid-cols-3">
-      <div className="space-y-6 lg:col-span-2">
+      <div className="min-w-0 space-y-6 lg:col-span-2">
         <div className="overflow-hidden rounded-2xl border border-mist bg-cream">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[34rem] text-sm">
+          {/* Cards until xl: the members column is only ~2/3 width on desktop,
+              so the table needs xl before it fits without clipping the action. */}
+          <ul className="divide-y divide-mist/70 xl:hidden">
+            {members.map((m) => (
+              <li key={m.membershipId} className="flex flex-col gap-3 p-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ink text-2xs font-semibold uppercase text-cream">
+                    {initials(m.name)}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="font-medium text-ink">
+                      {m.name}{" "}
+                      {m.isSelf && <span className="text-xs font-normal text-storm/50">(you)</span>}
+                    </div>
+                    <div className="truncate text-xs text-storm/65">{m.email}</div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  {m.isSelf ? (
+                    <RoleBadge role={m.role} />
+                  ) : (
+                    <form action={changeRole} className="min-w-0 flex-1">
+                      <input type="hidden" name="membershipId" value={m.membershipId} />
+                      <Select
+                        name="role"
+                        defaultValue={m.role}
+                        onChange={(e) => e.currentTarget.form?.requestSubmit()}
+                        className="w-full max-w-[12rem]"
+                      >
+                        <option value="requester">Requester</option>
+                        <option value="approver">Approver</option>
+                        <option value="admin">Admin</option>
+                      </Select>
+                    </form>
+                  )}
+                  {!m.isSelf && (
+                    <form action={removeMember}>
+                      <input type="hidden" name="membershipId" value={m.membershipId} />
+                      <input type="hidden" name="userId" value={m.userId} />
+                      <button className="inline-flex h-9 items-center rounded-md px-2 text-xs font-medium text-destructive transition-colors hover:bg-destructive/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/40">
+                        Remove
+                      </button>
+                    </form>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          {/* xl+: the members table */}
+          <div className="hidden min-w-0 overflow-x-auto xl:block">
+            <table className="w-full min-w-[32rem] text-sm">
               <thead className="border-b border-mist text-left">
                 <tr className="[&>th]:px-4 [&>th]:py-3 [&>th]:text-2xs [&>th]:font-medium [&>th]:uppercase [&>th]:tracking-[0.08em] [&>th]:text-storm/60">
                   <th>Member</th>
@@ -109,15 +159,15 @@ export function MembersAdmin({ members, invites }: { members: MemberRow[]; invit
             <h2 className="mb-3 text-subheading text-ink">Pending invitations</h2>
             <ul className="divide-y divide-mist/70">
               {invites.map((i) => (
-                <li key={i.id} className="flex items-center justify-between gap-2 py-3 text-sm first:pt-0 last:pb-0">
+                <li key={i.id} className="flex flex-col gap-2 py-3 text-sm first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex min-w-0 items-center gap-2">
                     <span className="truncate text-storm">{i.email}</span>
                     <RoleBadge role={i.role} />
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex shrink-0 items-center gap-2">
                     <button
                       onClick={() => copy(i.token)}
-                      className="rounded-md bg-cream px-2.5 py-1 font-mono text-xs text-storm/70 ring-1 ring-inset ring-mist transition-colors hover:bg-mist/40 hover:text-ink"
+                      className="whitespace-nowrap rounded-md bg-cream px-2.5 py-1 font-mono text-xs text-storm/70 ring-1 ring-inset ring-mist transition-colors hover:bg-mist/40 hover:text-ink"
                     >
                       {copied === i.token ? "copied!" : "copy code"}
                     </button>

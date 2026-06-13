@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>approvals — submission deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#15171A; --muted:#697586; --faint:#97A0AD;
+    --accent:#1B4D8A; --line:#E2E4E7; --paper:#FFFFFF; --panel:#F5F6F8;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:#E6E7E9;
+    font-family:'IBM Plex Sans',-apple-system,system-ui,sans-serif;
+    color:var(--ink);
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .deck{display:flex;flex-direction:column;align-items:center;gap:28px;padding:28px 0;}
+  .slide{position:relative;width:1280px;height:720px;background:var(--paper);overflow:hidden;padding:56px 72px;box-shadow:0 6px 24px rgba(20,23,26,.12);}
+  /* chrome */
+  .shead{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:15px;margin-bottom:30px;}
+  .shead h2{font-size:33px;font-weight:600;letter-spacing:-.01em;color:var(--accent);margin:0;}
+  .num{font-size:13px;font-weight:500;letter-spacing:.14em;color:var(--faint);font-variant-numeric:tabular-nums;}
+  ul.points{list-style:none;margin:0;padding:0;}
+  ul.points li{position:relative;padding-left:24px;margin-bottom:15px;font-size:18px;line-height:1.48;color:var(--ink);max-width:60ch;}
+  ul.points li::before{content:"";position:absolute;left:1px;top:10px;width:7px;height:7px;border-radius:50%;background:var(--accent);}
+  ul.points li .k{font-weight:600;}
+  ul.points li small{display:block;color:var(--muted);font-size:15px;line-height:1.45;margin-top:3px;max-width:58ch;}
+  .lead{font-size:19px;line-height:1.5;color:var(--muted);max-width:58ch;margin:0 0 22px;}
+  /* split */
+  .split{display:flex;gap:44px;align-items:flex-start;}
+  .split .col-text{flex:1 1 0;min-width:0;}
+  .split .col-media{flex:0 0 560px;display:flex;flex-direction:column;}
+  .split.wide .col-media{flex-basis:620px;}
+  /* shots */
+  .shot{margin:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel);box-shadow:0 2px 10px rgba(20,23,26,.08);}
+  .shot img{display:block;width:100%;height:auto;}
+  .shot.tall img{max-height:430px;object-fit:cover;object-position:top;}
+  .shot.h300 img{height:300px;object-fit:cover;object-position:bottom;}
+  .shot.h150 img{height:150px;object-fit:cover;object-position:top;}
+  .shot.h260 img{height:260px;object-fit:cover;object-position:top;}
+  .media-row{display:flex;gap:16px;align-items:stretch;}
+  .media-row .shot{flex:1 1 0;min-width:0;}
+  .media-row .shot.narrow{flex:0 0 196px;}
+  .cap{font-size:12.5px;color:var(--faint);letter-spacing:.05em;text-transform:uppercase;margin-top:9px;}
+  /* code */
+  .code{background:#0E1726;border-radius:8px;padding:20px 22px;font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.6;color:#D7DEE8;overflow:hidden;white-space:pre;}
+  .code.sm{font-size:12.5px;line-height:1.55;padding:16px 20px;}
+  .code .c{color:#7C8BA1;} .code .kw{color:#7FB2FF;} .code .s{color:#8FD6A6;} .code .hl{color:#FFD479;}
+  .code-cap{font-size:12.5px;color:var(--muted);margin-top:10px;}
+  .body-narrow{max-width:80ch;}
+  /* before/after */
+  .ba{display:flex;gap:36px;align-items:stretch;}
+  .ba .col{flex:1 1 0;min-width:0;display:flex;flex-direction:column;}
+  .thread{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:9px;}
+  .thread .chan{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.04em;margin-bottom:2px;}
+  .msg{max-width:88%;padding:8px 12px;border-radius:12px;font-size:14px;line-height:1.38;}
+  .msg .who{font-size:11px;font-weight:600;color:var(--muted);margin-bottom:1px;}
+  .msg.them{align-self:flex-start;background:#fff;border:1px solid var(--line);border-top-left-radius:4px;}
+  .msg.me{align-self:flex-end;background:#E7EEF7;border-top-right-radius:4px;}
+  .balabel{font-size:12.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;color:var(--muted);}
+  .balabel.good{color:var(--accent);}
+  /* next slide */
+  .next-primary{display:flex;gap:24px;margin-bottom:24px;}
+  .next-card{flex:1 1 0;border:1px solid var(--line);border-radius:10px;padding:18px 20px;background:var(--panel);}
+  .next-card h3{margin:0 0 6px;font-size:18px;font-weight:600;color:var(--ink);}
+  .next-card p{margin:0;font-size:14.5px;line-height:1.45;color:var(--muted);}
+  .next-card p code{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--accent);background:rgba(27,77,138,.07);padding:1px 4px;border-radius:3px;}
+  .next-also{font-size:16px;line-height:1.6;color:var(--ink);}
+  .next-also .lbl{font-size:12.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:8px;}
+  .next-also b{font-weight:600;}
+  .caveat{margin-top:18px;font-size:14px;line-height:1.45;color:var(--muted);border-left:2px solid var(--line);padding-left:14px;max-width:54ch;}
+  /* cover */
+  .cover{display:flex;flex-direction:column;height:100%;padding:0;}
+  .cover .hero{flex:0 0 auto;padding-top:74px;text-align:center;}
+  .cover .mark{font-size:84px;font-weight:700;letter-spacing:-.03em;color:var(--ink);margin:0;line-height:1;}
+  .cover .mark .dot{color:var(--accent);}
+  .cover .sub{font-size:23px;color:var(--ink);margin:22px 0 0;font-weight:500;}
+  .cover .meta{font-size:15px;color:var(--muted);margin:14px 0 0;}
+  .cover .stack{font-size:13px;color:var(--faint);margin:6px 0 0;letter-spacing:.12em;text-transform:uppercase;}
+  .cover .shotwrap{flex:1 1 auto;display:flex;align-items:flex-end;justify-content:center;padding:32px 90px 0;min-height:0;}
+  .cover .shot{width:100%;max-height:262px;}
+  .cover .shot img{max-height:262px;object-fit:cover;object-position:top;}
+  /* print */
+  @page{size:1280px 720px;margin:0;}
+  @media print{
+    body{background:#fff;}
+    .deck{gap:0;padding:0;}
+    .slide{box-shadow:none;page-break-after:always;break-after:page;}
+    .slide:last-child{page-break-after:auto;break-after:auto;}
+  }
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- 1 — COVER -->
+<section class="slide cover">
+  <div class="hero">
+    <h1 class="mark">approvals<span class="dot">.</span></h1>
+    <p class="sub">A multi-tenant expense approval tool for small teams</p>
+    <p class="meta">72-hour take-home submission</p>
+    <p class="stack">Next.js · Supabase (Postgres + RLS) · Vercel · Sentry</p>
+  </div>
+  <div class="shotwrap">
+    <figure class="shot"><img src="shots/s1-queue.png" alt="Approval queue"></figure>
+  </div>
+</section>
+
+<!-- 2 — THE PROBLEM -->
+<section class="slide">
+  <header class="shead"><h2>The problem</h2><span class="num">02 / 15</span></header>
+  <p class="lead">Small teams approve money over email and chat — no trail, no accountability, no status. <span style="color:var(--ink)">In fintech, an approval with no immutable record is a compliance failure, not an inconvenience.</span></p>
+  <div class="ba">
+    <div class="col">
+      <div class="balabel">Before — email &amp; chat</div>
+      <div class="thread">
+        <div class="chan"># expenses · Slack</div>
+        <div class="msg them"><div class="who">Dana</div>can someone approve my $1,500 laptop? 🙏</div>
+        <div class="msg me"><div class="who">You</div>who approves these now that Sam left?</div>
+        <div class="msg them"><div class="who">Priya</div>i think i ok&rsquo;d it last week? or was that the monitor</div>
+        <div class="msg them"><div class="who">Dana</div>did this get approved?? finance is asking 😬</div>
+        <div class="msg me"><div class="who">You</div>no idea — check the email thread</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="balabel good">After — one audited record</div>
+      <figure class="shot tall" style="flex:1"><img src="shots/s2-after.png" alt="Structured, audited request"></figure>
+    </div>
+  </div>
+</section>
+
+<!-- 3 — WHAT I BUILT -->
+<section class="slide">
+  <header class="shead"><h2>What I built</h2><span class="num">03 / 15</span></header>
+  <div class="split">
+    <div class="col-text">
+      <ul class="points">
+        <li>Multi-tenant expense approval app: request &rarr; review &rarr; decision</li>
+        <li>Three roles: <span class="k">requester, approver, admin</span> (admins can also submit)</li>
+        <li>Full lifecycle: <span class="k">pending &rarr; approved / rejected / withdrawn</span></li>
+        <li>Resubmission creates a <span class="k">new</span> request — the rejection stays on record permanently</li>
+        <li>Immutable audit trail on every state change</li>
+      </ul>
+    </div>
+    <div class="col-media">
+      <figure class="shot tall"><img src="shots/s3-timeline.png" alt="Request detail with event timeline"></figure>
+      <div class="cap">Request detail — event timeline (admin)</div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 — DATA MODEL -->
+<section class="slide">
+  <header class="shead"><h2>Data model</h2><span class="num">04 / 15</span></header>
+  <div class="split">
+    <div class="col-text">
+      <ul class="points">
+        <li>Six core tables: <span class="k">organizations · profiles · memberships · requests · request_events · invitations</span> <small>(plus a notifications table for in-app alerts)</small></li>
+        <li><span class="k">memberships</span> is the user&harr;org join — it carries the role</li>
+        <li>Every domain table is scoped by <span class="k">org_id</span> — tenant isolation at the data layer</li>
+        <li>Money as <span class="k">integer minor units (cents)</span> — never floats</li>
+        <li><span class="k">request_events</span> is append-only — no UPDATE/DELETE policy exists</li>
+      </ul>
+    </div>
+    <div class="col-media">
+<div class="code"><span class="kw">create table</span> requests (
+  id            uuid <span class="kw">primary key</span>,
+  org_id        uuid <span class="kw">not null references</span> organizations,
+  requester_id  uuid <span class="kw">not null references</span> auth.users,
+  amount_minor  bigint <span class="kw">not null check</span> (amount_minor &gt; 0), <span class="c">-- cents</span>
+  currency      text   <span class="kw">not null</span>,
+  status        request_status <span class="kw">default</span> <span class="s">'pending'</span>
+);
+
+<span class="kw">create table</span> request_events (   <span class="c">-- append-only</span>
+  id          uuid <span class="kw">primary key</span>,
+  org_id      uuid <span class="kw">not null references</span> organizations,
+  request_id  uuid <span class="kw">not null references</span> requests,
+  actor_id    uuid <span class="kw">references</span> auth.users,
+  from_status request_status,
+  to_status   request_status,
+  note        text,
+  created_at  timestamptz <span class="kw">default</span> now()
+);</div>
+      <div class="code-cap">Excerpt — <span style="font-family:'IBM Plex Mono',monospace">…_init.sql</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 — SECURITY ARCHITECTURE -->
+<section class="slide">
+  <header class="shead"><h2>Security architecture</h2><span class="num">05 / 15</span></header>
+  <div class="split">
+    <div class="col-text">
+      <ul class="points">
+        <li>Auth via <span class="k">@supabase/ssr httpOnly cookies</span> — JWT never in localStorage</li>
+        <li><span class="k">RLS on every table</span>, default-deny</li>
+        <li>Policies written <span class="k">per operation</span> — SELECT, INSERT, UPDATE, DELETE separately</li>
+        <li>A SELECT policy grants <span class="k">no</span> write access — each verb explicitly allowed or denied</li>
+        <li>Helpers <span class="k">is_org_member / is_org_approver / is_org_admin</span> keep policies clean</li>
+        <li>Service-role key is <span class="k">server-only</span> — the browser holds the public anon key; RLS protects the data</li>
+      </ul>
+    </div>
+    <div class="col-media">
+<div class="code"><span class="c">-- SELECT: owner OR an approver in the org</span>
+<span class="kw">create policy</span> requests_select <span class="kw">on</span> requests
+  <span class="kw">for select to</span> authenticated
+  <span class="kw">using</span> ( requester_id = auth.uid()
+          <span class="kw">or</span> is_org_approver(org_id) );
+
+<span class="c">-- INSERT: only for yourself, only in your org</span>
+<span class="kw">create policy</span> requests_insert <span class="kw">on</span> requests
+  <span class="kw">for insert to</span> authenticated
+  <span class="kw">with check</span> ( requester_id = auth.uid()
+               <span class="kw">and</span> is_org_member(org_id) );
+
+<span class="hl">-- No UPDATE / DELETE policy exists.</span>
+<span class="c">-- authenticated isn't even granted UPDATE —</span>
+<span class="c">-- status changes are impossible outside the RPC.</span></div>
+      <div class="code-cap">Excerpt — RLS policies on <span style="font-family:'IBM Plex Mono',monospace">requests</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 — DECISION RPC -->
+<section class="slide">
+  <header class="shead"><h2>The decision RPC</h2><span class="num">06 / 15</span></header>
+  <div class="split">
+    <div class="col-text">
+      <ul class="points">
+        <li><span class="k">decide_request()</span> is a <span class="k">SECURITY DEFINER</span> Postgres function</li>
+        <li>One atomic transaction enforces: member with approver/admin role; <span class="k">not the requester</span>; still <span class="k">pending</span> (row locked); threshold routing; status flip <span class="k">+</span> audit insert — both or neither</li>
+        <li>Business logic lives in the <span class="k">database</span>, not the API</li>
+        <li>Can&rsquo;t be bypassed via UI or raw API — <span class="k">authenticated</span> isn&rsquo;t granted UPDATE on requests</li>
+      </ul>
+    </div>
+    <div class="col-media">
+<div class="code"><span class="kw">create function</span> decide_request(p_request uuid,
+       p_decision request_status, p_note text)
+<span class="kw">security definer set</span> search_path = <span class="s">''</span> <span class="kw">as</span> $$
+  <span class="kw">select</span> * <span class="kw">into</span> v_req <span class="kw">from</span> requests
+    <span class="kw">where</span> id = p_request <span class="hl">for update</span>;        <span class="c">-- lock</span>
+  <span class="kw">if</span> v_req.status &lt;&gt; <span class="s">'pending'</span> <span class="kw">then</span> raise; <span class="c">-- 1 winner</span>
+  <span class="kw">if</span> v_req.requester_id = v_uid <span class="kw">then</span>          <span class="c">-- segregation</span>
+     raise <span class="s">'you cannot decide your own request'</span>;
+  <span class="kw">if not</span> is_org_approver(v_req.org_id) <span class="kw">then</span> raise;
+  <span class="kw">if</span> v_req.amount_minor &gt; v_threshold            <span class="c">-- threshold</span>
+     <span class="kw">and not</span> is_org_admin(org_id) <span class="kw">then</span> raise;
+  <span class="kw">update</span> requests <span class="kw">set</span> status = p_decision …;    <span class="c">-- flip</span>
+  <span class="kw">insert into</span> request_events …;               <span class="c">-- + audit</span>
+$$;</div>
+      <div class="code-cap">Excerpt — <span style="font-family:'IBM Plex Mono',monospace">decide_request</span> (abridged)</div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 — THRESHOLD ROUTING -->
+<section class="slide">
+  <header class="shead"><h2>Threshold routing</h2><span class="num">07 / 15</span></header>
+  <div class="split">
+    <div class="col-text">
+      <ul class="points">
+        <li>Each org sets an <span class="k">approval_threshold</span> (in minor units)</li>
+        <li><span class="k">Under</span> threshold &rarr; any approver or admin may decide</li>
+        <li><span class="k">Over</span> threshold &rarr; admin role required</li>
+        <li>Enforced inside the RPC — the UI flag is informational only</li>
+        <li><span class="k">Single-admin edge case:</span> if the only eligible admin is also the requester, it falls back to any approver rather than deadlocking — and the UI says so, never silently</li>
+        <li><span class="k">Self-approval is never permitted</span> — regardless of role or threshold</li>
+      </ul>
+    </div>
+    <div class="col-media">
+      <figure class="shot tall"><img src="shots/s7-overthreshold.png" alt="Over-threshold request blocked for approver"></figure>
+      <div class="cap">Over-threshold item blocked for an approver</div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 — MULTI-TENANCY -->
+<section class="slide">
+  <header class="shead"><h2>Multi-tenancy</h2><span class="num">08 / 15</span></header>
+  <div class="split wide">
+    <div class="col-text">
+      <ul class="points">
+        <li>A user can belong to <span class="k">multiple orgs</span>, with a different role in each</li>
+        <li>The active org is the <span class="k">current_org</span> cookie — single source of truth</li>
+        <li>Every list query filters by the active <span class="k">org_id</span></li>
+        <li>RLS <span class="k">double-locks</span> at the database — a direct API call can&rsquo;t return another tenant&rsquo;s rows</li>
+        <li>Verified with a red-team script using the public anon key: <span class="k">9/9</span> checks pass</li>
+      </ul>
+    </div>
+    <div class="col-media">
+      <div class="media-row">
+        <figure class="shot tall"><img src="shots/s8a-acme.png" alt="Acme Inc — USD"></figure>
+        <figure class="shot tall"><img src="shots/s8b-globex.png" alt="Globex — EUR"></figure>
+      </div>
+      <div class="cap">Same user, two orgs — Acme (USD) vs Globex (EUR), fully separate data</div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 — ONBOARDING & ORG SWITCHING -->
+<section class="slide">
+  <header class="shead"><h2>Joining &amp; switching orgs</h2><span class="num">09 / 15</span></header>
+  <div class="split wide">
+    <div class="col-text">
+      <ul class="points">
+        <li>Onboarding offers two paths: <span class="k">create an organization</span> (you become its admin) or <span class="k">join with an invite code</span></li>
+        <li>Invites are admin-issued, role-scoped codes; <span class="k">accept_invitation()</span> verifies the caller&rsquo;s email matches</li>
+        <li>The <span class="k">org switcher</span> re-renders the entire app in the chosen tenant — queue, members, settings, notifications</li>
+        <li>A cross-org deep link shows a <span class="k">switch banner</span> instead of silently blending context — switching is always deliberate</li>
+      </ul>
+    </div>
+    <div class="col-media">
+      <div class="media-row">
+        <figure class="shot h300 narrow"><img src="shots/s-switcher-side.png" alt="Org switcher menu"></figure>
+        <figure class="shot h300"><img src="shots/s-crossorg.png" alt="Cross-org switch banner"></figure>
+      </div>
+      <div class="cap">Org switcher menu · cross-org &ldquo;switch&rdquo; banner</div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 — AUDIT TRAIL -->
+<section class="slide">
+  <header class="shead"><h2>Audit trail &amp; resubmission</h2><span class="num">10 / 15</span></header>
+  <div class="split wide">
+    <div class="col-text">
+      <ul class="points">
+        <li><span class="k">request_events</span> is append-only — no UPDATE/DELETE policy exists</li>
+        <li>Every decision records <span class="k">actor, from_status, to_status, note, timestamp</span></li>
+        <li>A rejected request can be <span class="k">resubmitted</span> — it creates a <span class="k">new</span> request; the original rejection stays on record permanently</li>
+        <li>Both records coexist — nothing is ever overwritten or deleted</li>
+      </ul>
+    </div>
+    <div class="col-media">
+      <div class="media-row">
+        <figure class="shot tall"><img src="shots/s9b-rejected-detail.png" alt="Rejected request with event timeline and resubmit"></figure>
+        <figure class="shot tall"><img src="shots/s9-myrequests.png" alt="Original rejection and resubmitted copy both listed"></figure>
+      </div>
+      <div class="cap">Rejection + resubmit affordance (left) · original and new request, both on record (right)</div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 — OBSERVABILITY -->
+<section class="slide">
+  <header class="shead"><h2>Observability</h2><span class="num">11 / 15</span></header>
+  <div class="split wide">
+    <div class="col-text">
+      <ul class="points">
+        <li>Two layers: <span class="k">Sentry</span> for infrastructure errors, the <span class="k">activity feed</span> for domain decisions</li>
+        <li>Sentry on both <span class="k">server and client</span> — errors captured with stack trace + context</li>
+        <li>A correlation <span class="k">request_id</span> on every server action for log tracing</li>
+        <li><span class="k">/api/health</span> returns DB connectivity + latency; <span class="k">Vercel Web Analytics</span> enabled</li>
+        <li>The activity feed is the <span class="k">domain audit log</span> — every decision traceable to actor + timestamp</li>
+      </ul>
+<div class="code sm" style="margin-top:16px"><span class="kw">GET</span> /api/health <span class="c">→ 200</span>
+{ <span class="s">"status"</span>:<span class="s">"ok"</span>, <span class="s">"db"</span>:<span class="s">"up"</span>, <span class="s">"latency_ms"</span>:<span class="hl">16</span> }</div>
+    </div>
+    <div class="col-media">
+      <div class="media-row">
+        <figure class="shot tall"><img src="shots/sentry.png" alt="Sentry captured error event"></figure>
+        <figure class="shot tall"><img src="shots/s-activity.png" alt="Append-only activity feed"></figure>
+      </div>
+      <div class="cap">Sentry — a captured server error · in-app activity feed — domain audit log</div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 — LEFT OUT -->
+<section class="slide">
+  <header class="shead"><h2>What I left out — and why</h2><span class="num">12 / 15</span></header>
+  <div class="body body-narrow">
+    <ul class="points">
+      <li><span class="k">Email notifications</span> — Resend needs a verified custom domain, which a <span style="font-family:'IBM Plex Mono',monospace">*.vercel.app</span> preview URL can&rsquo;t have.<small>Integration point stubbed and ready; replaced with in-app notifications. ~30-min add with a domain.</small></li>
+      <li><span class="k">Multi-level approval tiers</span> — a single threshold covers the MVP.<small>Dual approval (two independent approvers for very large amounts) is the natural next tier; the RPC is where it goes.</small></li>
+      <li><span class="k">Native mobile</span> — responsive to 768px.<small>Browser-first is correct for an internal ops tool.</small></li>
+      <li><span class="k">These were deliberate scoping calls, not oversights.</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 13 — NEXT -->
+<section class="slide">
+  <header class="shead"><h2>What I&rsquo;d build next</h2><span class="num">13 / 15</span></header>
+  <div class="next-primary">
+    <div class="next-card">
+      <h3>Dual approval</h3>
+      <p>A second required actor <b>inside the existing <code>decide_request</code> RPC</b>: above a higher tier, the status flip waits for two distinct approvers — same transaction, same audit log, no new surface.</p>
+    </div>
+    <div class="next-card">
+      <h3>Delegated approval</h3>
+      <p>A <code>delegations</code> row checked inside <code>is_org_approver()</code>, so an out-of-office approver&rsquo;s authority temporarily passes to a delegate — enforced in RLS, not the UI.</p>
+    </div>
+  </div>
+  <div class="next-also">
+    <div class="lbl">Then</div>
+    <span class="next-also"><b>Email + in-app push</b> on a custom domain &nbsp;·&nbsp; <b>CSV / PDF export</b> for accounting &nbsp;·&nbsp; <b>org spending analytics</b> (by category, month, requester) &nbsp;·&nbsp; <b>webhooks</b> for accounting-tool integration</span>
+  </div>
+</section>
+
+<!-- 14 — TEST ACCOUNTS -->
+<section class="slide">
+  <header class="shead"><h2>Test accounts</h2><span class="num">14 / 15</span></header>
+  <div class="split">
+    <div class="col-text">
+      <ul class="points">
+        <li>All passwords: <span class="k">Password123!</span></li>
+        <li><span class="k">Requester</span> — <span style="font-family:'IBM Plex Mono',monospace">requester@acme.test</span></li>
+        <li><span class="k">Approver</span> — <span style="font-family:'IBM Plex Mono',monospace">approver@acme.test</span></li>
+        <li><span class="k">Admin</span> — <span style="font-family:'IBM Plex Mono',monospace">admin@acme.test</span></li>
+        <li>Org: <span class="k">Acme Inc</span> (USD, $1,000 threshold) — all three share one org, so the full flow is testable without switching</li>
+      </ul>
+      <p class="caveat">These are <span style="color:var(--ink);font-weight:600">seeded demo accounts</span> on a non-routable <span style="font-family:'IBM Plex Mono',monospace">.test</span> domain — password-reset and other email flows won&rsquo;t deliver. Sign in directly with the credentials above.</p>
+    </div>
+    <div class="col-media">
+      <figure class="shot tall"><img src="shots/s13-login-live.png" alt="Live app login page"></figure>
+      <div class="cap">Live sign-in</div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 — LIVE APP -->
+<section class="slide">
+  <header class="shead"><h2>Live app</h2><span class="num">15 / 15</span></header>
+  <div class="split">
+    <div class="col-text">
+      <ul class="points">
+        <li><span class="k" style="color:var(--accent)">expense-approval-teal.vercel.app</span> <small>(URL also in the submission form &mdash; open in incognito to start fresh)</small></li>
+        <li><span class="k">Walk the threshold flow in 4 steps:</span></li>
+        <li>1 — as <span style="font-family:'IBM Plex Mono',monospace">requester@acme.test</span>, submit a <span class="k">$1,500</span> request (over the $1,000 limit → auto-flagged <span class="k">&ldquo;admin required&rdquo;</span>)</li>
+        <li>2 — as <span style="font-family:'IBM Plex Mono',monospace">approver@acme.test</span>, open it — the decision is <span class="k">blocked</span></li>
+        <li>3 — as <span style="font-family:'IBM Plex Mono',monospace">admin@acme.test</span>, <span class="k">approve</span> it</li>
+        <li>4 — reopen the request to see the <span class="k">event timeline</span></li>
+      </ul>
+    </div>
+    <div class="col-media">
+      <figure class="shot tall"><img src="shots/s14-live-dashboard.png" alt="Live deployed app dashboard"></figure>
+      <div class="cap">Live dashboard — real data</div>
+    </div>
+  </div>
+</section>
+
+</div>
+</body>
+</html>
