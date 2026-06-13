@@ -6,7 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "db:reset": "supabase db reset",
+    "seed": "node --env-file=.env.local scripts/seed.mjs",
+    "redteam": "node --env-file=.env.local scripts/redteam.mjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",

@@ -1,0 +1,182 @@
+# Approvals — Project Presentation
+
+A multi-tenant expense-approval app. One **request → review → decision** flow, built
+to production-discipline in 72 hours with Next.js · Supabase · Vercel · Claude Code.
+
+> Use this as speaker notes for a 5–8 minute walkthrough, or read it straight through.
+> Live URL + test accounts are in the README.
+
+---
+
+## 1 · What I built (30 seconds)
+
+Employees submit expense requests; approvers review and decide. Two real roles with
+genuinely different UIs, a real lifecycle (`pending → approved/rejected`), live to both
+sides, fully audited — and it's **multi-tenant**: companies sign up and their data is
+isolated from each other.
+
+---
+
+## 2 · The decision that drove everything
+
+**With Supabase, the anon key is in the browser. It's public.** So the real security
+boundary isn't my React code — anyone can ignore my UI and hit the database with `curl`.
+The only thing protecting the data is **Row-Level Security**.
+
+So I treated the take-home as a security exercise wearing an expense-app costume, and put
+**all** authorization in the database:
+
+- RLS enabled on **every** table, default-deny.
+- **Separate policies per operation** (SELECT/INSERT/UPDATE/DELETE).
+- The `authenticated` role is **not even granted `UPDATE` on `requests`** — status
+  changes are physically impossible from a client. They go through one audited Postgres
+  function instead.
+
+This is the thing I think most submissions gloss over.
+
+---
+
+## 3 · Architecture
+
+```
+Browser ── anon key ──► Supabase REST/Auth        (httpOnly cookie session via @supabase/ssr)
+   │                         │
+   ▼                         ▼
+Next.js (Vercel)        Postgres + RLS  ◄── the real authorization boundary
+   │                         ▲
+   └── server actions ───────┘
+        └─ decide_request() / withdraw_request()  (SECURITY DEFINER, the only writers of status)
+```
+
+Identity = Supabase Auth (no Clerk — I wanted RLS to use native `auth.uid()`).
+Tenancy + roles = my own `organizations` / `memberships` tables, so the isolation is
+enforced by *my* RLS, not outsourced.
+
+---
+
+## 4 · The security model in one screen
+
+| Rule | Where it's enforced |
+|---|---|
+| You only see your org's data | RLS scopes every table by `org_id` |
+| Requesters see only their own requests; approvers see the org's | `requests` SELECT policy |
+| Nobody writes `status` from a client | no UPDATE grant + no UPDATE policy → RPC only |
+| **No self-approval** | `decide_request`: `actor ≠ requester` |
+| **Over threshold needs an admin** | `decide_request`: amount vs `approval_threshold` |
+| Two approvers at once → one winner | row lock + `WHERE status='pending'` |
+| Every decision is permanent + traceable | append-only `request_events`, no UPDATE/DELETE policy |
+
+---
+
+## 5 · Proof — I attacked my own app
+
+`npm run redteam` signs in as real users with the **public anon key** and tries to break in:
+
+```
+PASS  tenant isolation: Acme user sees zero Globex requests
+PASS  row ownership: requester sees only own requests
+PASS  no client writes: direct UPDATE status is blocked  (Postgres 42501)
+PASS  segregation of duties: self-approval rejected
+PASS  approval limit: over-threshold blocked for approver
+PASS  approval limit: admin CAN approve over-threshold
+PASS  concurrency: exactly one decision wins  (1 win / 1 blocked)
+PASS  unauthenticated: anon client reads zero rows
+PASS  cross-tenant: approver cannot decide another org's request
+9 passed, 0 failed
+```
+
+I'd rather show you the boundary holding than tell you it does.
+
+---
+
+## 6 · A bug worth bragging about
+
+My Playwright test caught the UI showing a **requester** the admin navigation. At first
+that looks like a privilege-escalation bug. It wasn't — because authorization lives in
+the database. The RLS policies key off `auth.uid()`, not what the UI *thinks* your role
+is, so the requester still couldn't actually approve anything, change settings, or read
+another user's data. The database would have rejected every attempt.
+
+The UI was wrong; the system was still safe. **That's the dividend of authorizing at the
+data layer instead of the UI** — and exactly why the two RLS questions in the assessment
+matter. (I fixed the UI too: `getAppContext` now scopes the membership lookup to the
+current user.)
+
+---
+
+## 7 · Observability — how I'd debug this at 2am
+
+The assessment asked about fixing a production-only bug from logs alone. So:
+
+- **Structured JSON logs** with a `request_id` on every server action — one log line
+  ties an error to the action and actor.
+- **Append-only audit log** = domain-level traceability of who decided what, when.
+- **`/api/health`** endpoint (privilege-free DB probe) for uptime monitoring.
+- **Sentry** hook is wired and env-gated (blank DSN = disabled) for client/server errors.
+
+---
+
+## 8 · First three features (the assessment's portal question)
+
+I shipped exactly the three things that make this flow *real*, and nothing else:
+
+1. **Auth + roles done right** — because without a trustworthy requester/approver
+   boundary, nothing else means anything.
+2. **The request lifecycle with the decision RPC** — the core value, with the controls
+   a finance team actually needs (no self-approval, approval limits).
+3. **The audit trail** — in a money workflow, "who approved this and when" is not
+   optional.
+
+Everything else (email, dual approval, uploads) is a layer on top of these three.
+
+---
+
+## 9 · What I cut, and the deeper fix (band-aid vs real)
+
+- **Email on decision** → cut. Real email needs a verified domain; you can't verify
+  `*.vercel.app`. The band-aid (email only to my own address) would look fake in a demo,
+  so I shipped **in-app notifications** instead and documented the real fix: verify a
+  domain with Resend/Postmark (~30 min) and have the RPC enqueue a send.
+- **Dual approval over a higher tier** → cut. The single threshold tier is in; the RPC
+  is the one place to extend it, so it's a contained change, not a rewrite.
+- **Editing a pending request** → cut intentionally to keep the "no client writes to
+  requests" story airtight; would add a narrow, status-guarded UPDATE policy.
+
+---
+
+## 10 · Adding a required field to a live table (the migration question)
+
+If I had to add a NOT-NULL column to `requests` with real users on it, I would **not**
+do it in one step (that locks the table / rejects existing rows). The safe sequence:
+
+1. Add the column **nullable** (instant).
+2. **Backfill** in batches.
+3. Add a default + `NOT NULL` once every row satisfies it.
+4. Ship the app code that writes it — behind the migration, not ahead of it.
+
+At demo scale it doesn't matter; with real data it's the difference between a deploy and
+an outage. Migrations here are versioned SQL, applied with `supabase db push` — never
+clicked into the dashboard.
+
+---
+
+## 11 · How I worked with Claude Code
+
+- A project **`CLAUDE.md`** encodes the non-negotiables (RLS, no localStorage JWT, money
+  as integers, service-role key never in the browser) so the assistant stays on-rails.
+- **`docs/CONVENTIONS.md`** defines the git + coding rules; **`docs/STATE.md`** is a live
+  context doc I kept updated as the build progressed.
+- **Clean, conventional, reviewable commits** on a feature branch → PR into `develop`.
+- I pushed back on the AI where my judgment differed (e.g. declining Clerk so RLS keeps
+  using native `auth.uid()`; cutting email rather than faking deliverability).
+
+---
+
+## 12 · Try it
+
+Live URL + test accounts in the README. The fastest way to feel the design:
+
+1. Log in as **`approver@acme.test`**, open the queue, try to approve the **$1,200
+   laptop** → blocked (over the approver's limit).
+2. Log in as **`admin@acme.test`** → approve the same request → it goes through.
+3. Run `npm run redteam` and watch the database refuse every attack.
