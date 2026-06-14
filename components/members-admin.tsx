@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { Button, Card, Field, FormError, Input, Select, Spinner } from "@/components/ui";
 import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
+import { FormPending } from "@/components/form-pending";
 import { RoleBadge } from "@/components/status-badge";
 import {
   inviteMember,
@@ -63,7 +64,7 @@ export function MembersAdmin({ members, invites }: { members: MemberRow[]; invit
                   {m.isSelf ? (
                     <RoleBadge role={m.role} />
                   ) : (
-                    <form action={changeRole} className="min-w-0 flex-1">
+                    <form action={changeRole} className="flex min-w-0 flex-1 items-center gap-2">
                       <input type="hidden" name="membershipId" value={m.membershipId} />
                       <Select
                         name="role"
@@ -76,6 +77,7 @@ export function MembersAdmin({ members, invites }: { members: MemberRow[]; invit
                         <option value="approver">Approver</option>
                         <option value="admin">Admin</option>
                       </Select>
+                      <FormPending className="shrink-0 text-storm/60" />
                     </form>
                   )}
                   {!m.isSelf && (
@@ -128,7 +130,7 @@ export function MembersAdmin({ members, invites }: { members: MemberRow[]; invit
                       {m.isSelf ? (
                         <RoleBadge role={m.role} />
                       ) : (
-                        <form action={changeRole}>
+                        <form action={changeRole} className="flex items-center gap-2">
                           <input type="hidden" name="membershipId" value={m.membershipId} />
                           <Select
                             name="role"
@@ -141,6 +143,7 @@ export function MembersAdmin({ members, invites }: { members: MemberRow[]; invit
                             <option value="approver">Approver</option>
                             <option value="admin">Admin</option>
                           </Select>
+                          <FormPending className="text-storm/60" />
                         </form>
                       )}
                     </td>

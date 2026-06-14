@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { Button, Field, FormError, Input, Spinner } from "@/components/ui";
+import { parseAmountToMinor } from "@/lib/format";
 import { updateSettings, type SettingsState } from "@/app/(app)/settings/actions";
 
 export function SettingsForm({
@@ -14,18 +15,54 @@ export function SettingsForm({
   threshold: string;
 }) {
   const [state, action, pending] = useActionState<SettingsState, FormData>(updateSettings, {});
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [currencyError, setCurrencyError] = useState<string | null>(null);
+  const [thresholdError, setThresholdError] = useState<string | null>(null);
 
   return (
     <form action={action} className="space-y-4">
-      <Field label="Organization name" required>
-        <Input name="name" required defaultValue={name} />
+      <Field label="Organization name" required error={nameError}>
+        <Input
+          name="name"
+          required
+          defaultValue={name}
+          aria-invalid={nameError ? true : undefined}
+          onBlur={(e) =>
+            setNameError(e.currentTarget.value.trim().length < 2 ? "Organization name is too short." : null)
+          }
+        />
       </Field>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Field label="Default currency" required>
-          <Input name="currency" required maxLength={3} defaultValue={currency} className="uppercase" />
+        <Field label="Default currency" required error={currencyError}>
+          <Input
+            name="currency"
+            required
+            maxLength={3}
+            defaultValue={currency}
+            className="uppercase"
+            aria-invalid={currencyError ? true : undefined}
+            onBlur={(e) =>
+              setCurrencyError(/^[A-Za-z]{3}$/.test(e.currentTarget.value.trim()) ? null : "Use a 3-letter code, e.g. USD.")
+            }
+          />
         </Field>
-        <Field label="Approval threshold" required hint="Requests above this require an admin.">
-          <Input name="threshold" required inputMode="decimal" defaultValue={threshold} />
+        <Field
+          label="Approval threshold"
+          required
+          error={thresholdError}
+          hint="Requests above this require an admin."
+        >
+          <Input
+            name="threshold"
+            required
+            inputMode="decimal"
+            defaultValue={threshold}
+            aria-invalid={thresholdError ? true : undefined}
+            onBlur={(e) => {
+              const m = parseAmountToMinor(e.currentTarget.value);
+              setThresholdError(m === null || m < 0 ? "Enter a valid amount (0 or more)." : null);
+            }}
+          />
         </Field>
       </div>
       <FormError message={state?.error} />

@@ -116,11 +116,13 @@ export function Field({
   label,
   hint,
   required,
+  error,
   children,
 }: {
   label: string;
   hint?: string;
   required?: boolean;
+  error?: string | null;
   children: ReactNode;
 }) {
   return (
@@ -138,7 +140,14 @@ export function Field({
         )}
       </span>
       {children}
-      {hint && <span className="block text-caption text-storm/70">{hint}</span>}
+      {/* Error supersedes the hint once validation has something to say. */}
+      {error ? (
+        <span role="alert" className="block text-caption text-destructive">
+          {error}
+        </span>
+      ) : (
+        hint && <span className="block text-caption text-storm/70">{hint}</span>
+      )}
     </label>
   );
 }
