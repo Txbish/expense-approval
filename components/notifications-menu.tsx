@@ -81,7 +81,7 @@ export function NotificationsMenu({
             className="animate-slide-down fixed right-3 top-[3.75rem] z-[60] flex max-h-[min(70vh,30rem)] w-[min(23rem,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-2xl border border-mist bg-cream md:right-6 md:top-[4.5rem] lg:right-8"
           >
             <div className="flex items-center justify-between gap-3 border-b border-mist px-4 py-3">
-              <p className="text-2xs font-medium uppercase tracking-[0.16em] text-storm/55">Notifications</p>
+              <p className="text-2xs font-semibold uppercase tracking-[0.16em] text-storm">Notifications</p>
               {hasUnread && (
                 <form action={markAllRead}>
                   <button
