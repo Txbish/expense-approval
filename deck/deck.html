@@ -79,12 +79,23 @@
   .cover .hero{flex:0 0 auto;padding-top:74px;text-align:center;}
   .cover .mark{font-size:84px;font-weight:700;letter-spacing:-.03em;color:var(--ink);margin:0;line-height:1;}
   .cover .mark .dot{color:var(--accent);}
-  .cover .sub{font-size:23px;color:var(--ink);margin:22px 0 0;font-weight:500;}
+  .cover .sub{font-size:23px;color:var(--ink);margin:22px auto 0;font-weight:500;max-width:46ch;line-height:1.4;text-wrap:balance;}
   .cover .meta{font-size:15px;color:var(--muted);margin:14px 0 0;}
   .cover .stack{font-size:13px;color:var(--faint);margin:6px 0 0;letter-spacing:.12em;text-transform:uppercase;}
   .cover .shotwrap{flex:1 1 auto;display:flex;align-items:flex-end;justify-content:center;padding:32px 90px 0;min-height:0;}
   .cover .shot{width:100%;max-height:262px;}
   .cover .shot img{max-height:262px;object-fit:cover;object-position:top;}
+  /* phones (responsive slide) */
+  .phones{display:flex;gap:26px;justify-content:center;align-items:flex-end;margin-top:2px;}
+  .phone-fig{display:flex;flex-direction:column;align-items:center;gap:9px;margin:0;}
+  .phone{width:155px;height:336px;border:6px solid var(--ink);border-radius:28px;background:var(--ink);overflow:hidden;box-shadow:0 8px 24px rgba(20,23,26,.16);}
+  .phone img{display:block;width:100%;height:100%;object-fit:cover;object-position:top;border-radius:22px;}
+  .phone-fig .cap{margin:0;font-size:12px;color:var(--faint);letter-spacing:.05em;text-transform:uppercase;}
+  .craft-strip{display:flex;gap:0;margin-top:20px;border-top:1px solid var(--line);padding-top:15px;}
+  .craft-strip .item{flex:1 1 0;padding:0 20px;border-left:1px solid var(--line);}
+  .craft-strip .item:first-child{padding-left:0;border-left:none;}
+  .craft-strip .item h4{margin:0 0 4px;font-size:14px;font-weight:600;color:var(--ink);}
+  .craft-strip .item p{margin:0;font-size:12.5px;line-height:1.42;color:var(--muted);}
   /* print */
   @page{size:1280px 720px;margin:0;}
   @media print{
@@ -102,7 +113,7 @@
 <section class="slide cover">
   <div class="hero">
     <h1 class="mark">approvals<span class="dot">.</span></h1>
-    <p class="sub">A multi-tenant expense approval tool for small teams</p>
+    <p class="sub">Request, review, and decide on expenses — multi-tenant, secure by default, and fully responsive from desktop to phone.</p>
     <p class="meta">72-hour take-home submission</p>
     <p class="stack">Next.js · Supabase (Postgres + RLS) · Vercel · Sentry</p>
   </div>
@@ -113,7 +124,7 @@
 
 <!-- 2 — THE PROBLEM -->
 <section class="slide">
-  <header class="shead"><h2>The problem</h2><span class="num">02 / 15</span></header>
+  <header class="shead"><h2>The problem</h2><span class="num">02 / 16</span></header>
   <p class="lead">Small teams approve money over email and chat — no trail, no accountability, no status. <span style="color:var(--ink)">In fintech, an approval with no immutable record is a compliance failure, not an inconvenience.</span></p>
   <div class="ba">
     <div class="col">
@@ -136,7 +147,7 @@
 
 <!-- 3 — WHAT I BUILT -->
 <section class="slide">
-  <header class="shead"><h2>What I built</h2><span class="num">03 / 15</span></header>
+  <header class="shead"><h2>What I built</h2><span class="num">03 / 16</span></header>
   <div class="split">
     <div class="col-text">
       <ul class="points">
@@ -154,9 +165,39 @@
   </div>
 </section>
 
-<!-- 4 — DATA MODEL -->
+<!-- 4 — RESPONSIVE / CRAFT -->
 <section class="slide">
-  <header class="shead"><h2>Data model</h2><span class="num">04 / 15</span></header>
+  <header class="shead"><h2>Designed for every screen</h2><span class="num">04 / 16</span></header>
+  <p class="lead" style="margin-bottom:12px">The same flat, ink-on-paper system reflows to any width — no feature dropped, no separate mobile theme, an approver can clear the queue from a phone.</p>
+  <div class="phones">
+    <figure class="phone-fig">
+      <div class="phone"><img src="shots/m-dashboard.png" alt="Dashboard on mobile"></div>
+      <figcaption class="cap">Dashboard</figcaption>
+    </figure>
+    <figure class="phone-fig">
+      <div class="phone"><img src="shots/m-filter.png" alt="Filter bottom sheet on mobile"></div>
+      <figcaption class="cap">Filter — bottom sheet</figcaption>
+    </figure>
+    <figure class="phone-fig">
+      <div class="phone"><img src="shots/m-notifications.png" alt="Notifications drawer on mobile"></div>
+      <figcaption class="cap">Notifications drawer</figcaption>
+    </figure>
+    <figure class="phone-fig">
+      <div class="phone"><img src="shots/m-login.png" alt="Sign-in on mobile"></div>
+      <figcaption class="cap">Sign in</figcaption>
+    </figure>
+  </div>
+  <div class="craft-strip">
+    <div class="item"><h4>Reflow, not shrink</h4><p>Tables become tap-friendly cards; the four-stat row stacks 2&times;2; nothing scrolls sideways.</p></div>
+    <div class="item"><h4>Native-feeling patterns</h4><p>Filters open as a bottom sheet with a grab handle; notifications as an anchored drawer — not a new page.</p></div>
+    <div class="item"><h4>Touch targets &amp; safe areas</h4><p>44px minimum hit areas, <span style="font-family:'IBM Plex Mono',monospace">100dvh</span> sheets, and <span style="font-family:'IBM Plex Mono',monospace">safe-area-inset</span> padding for the home bar.</p></div>
+    <div class="item"><h4>One system throughout</h4><p>Same tokens, type and status language as desktop — accessibility and contrast hold at every width.</p></div>
+  </div>
+</section>
+
+<!-- 5 — DATA MODEL -->
+<section class="slide">
+  <header class="shead"><h2>Data model</h2><span class="num">05 / 16</span></header>
   <div class="split">
     <div class="col-text">
       <ul class="points">
@@ -194,7 +235,7 @@
 
 <!-- 5 — SECURITY ARCHITECTURE -->
 <section class="slide">
-  <header class="shead"><h2>Security architecture</h2><span class="num">05 / 15</span></header>
+  <header class="shead"><h2>Security architecture</h2><span class="num">06 / 16</span></header>
   <div class="split">
     <div class="col-text">
       <ul class="points">
@@ -229,7 +270,7 @@
 
 <!-- 6 — DECISION RPC -->
 <section class="slide">
-  <header class="shead"><h2>The decision RPC</h2><span class="num">06 / 15</span></header>
+  <header class="shead"><h2>The decision RPC</h2><span class="num">07 / 16</span></header>
   <div class="split">
     <div class="col-text">
       <ul class="points">
@@ -261,7 +302,7 @@ $$;</div>
 
 <!-- 7 — THRESHOLD ROUTING -->
 <section class="slide">
-  <header class="shead"><h2>Threshold routing</h2><span class="num">07 / 15</span></header>
+  <header class="shead"><h2>Threshold routing</h2><span class="num">08 / 16</span></header>
   <div class="split">
     <div class="col-text">
       <ul class="points">
@@ -282,7 +323,7 @@ $$;</div>
 
 <!-- 8 — MULTI-TENANCY -->
 <section class="slide">
-  <header class="shead"><h2>Multi-tenancy</h2><span class="num">08 / 15</span></header>
+  <header class="shead"><h2>Multi-tenancy</h2><span class="num">09 / 16</span></header>
   <div class="split wide">
     <div class="col-text">
       <ul class="points">
@@ -305,7 +346,7 @@ $$;</div>
 
 <!-- 9 — ONBOARDING & ORG SWITCHING -->
 <section class="slide">
-  <header class="shead"><h2>Joining &amp; switching orgs</h2><span class="num">09 / 15</span></header>
+  <header class="shead"><h2>Joining &amp; switching orgs</h2><span class="num">10 / 16</span></header>
   <div class="split wide">
     <div class="col-text">
       <ul class="points">
@@ -327,7 +368,7 @@ $$;</div>
 
 <!-- 10 — AUDIT TRAIL -->
 <section class="slide">
-  <header class="shead"><h2>Audit trail &amp; resubmission</h2><span class="num">10 / 15</span></header>
+  <header class="shead"><h2>Audit trail &amp; resubmission</h2><span class="num">11 / 16</span></header>
   <div class="split wide">
     <div class="col-text">
       <ul class="points">
@@ -349,7 +390,7 @@ $$;</div>
 
 <!-- 11 — OBSERVABILITY -->
 <section class="slide">
-  <header class="shead"><h2>Observability</h2><span class="num">11 / 15</span></header>
+  <header class="shead"><h2>Observability</h2><span class="num">12 / 16</span></header>
   <div class="split wide">
     <div class="col-text">
       <ul class="points">
@@ -372,14 +413,14 @@ $$;</div>
   </div>
 </section>
 
-<!-- 12 — LEFT OUT -->
+<!-- 13 — LEFT OUT -->
 <section class="slide">
-  <header class="shead"><h2>What I left out — and why</h2><span class="num">12 / 15</span></header>
+  <header class="shead"><h2>What I left out — and why</h2><span class="num">13 / 16</span></header>
   <div class="body body-narrow">
     <ul class="points">
       <li><span class="k">Email notifications</span> — Resend needs a verified custom domain, which a <span style="font-family:'IBM Plex Mono',monospace">*.vercel.app</span> preview URL can&rsquo;t have.<small>Integration point stubbed and ready; replaced with in-app notifications. ~30-min add with a domain.</small></li>
       <li><span class="k">Multi-level approval tiers</span> — a single threshold covers the MVP.<small>Dual approval (two independent approvers for very large amounts) is the natural next tier; the RPC is where it goes.</small></li>
-      <li><span class="k">Native mobile</span> — responsive to 768px.<small>Browser-first is correct for an internal ops tool.</small></li>
+      <li><span class="k">A native mobile app</span> — the web app is fully responsive down to ~360px (see previous slide), so a separate native build wasn&rsquo;t needed for an internal ops tool.</li>
       <li><span class="k">These were deliberate scoping calls, not oversights.</span></li>
     </ul>
   </div>
@@ -387,7 +428,7 @@ $$;</div>
 
 <!-- 13 — NEXT -->
 <section class="slide">
-  <header class="shead"><h2>What I&rsquo;d build next</h2><span class="num">13 / 15</span></header>
+  <header class="shead"><h2>What I&rsquo;d build next</h2><span class="num">14 / 16</span></header>
   <div class="next-primary">
     <div class="next-card">
       <h3>Dual approval</h3>
@@ -406,7 +447,7 @@ $$;</div>
 
 <!-- 14 — TEST ACCOUNTS -->
 <section class="slide">
-  <header class="shead"><h2>Test accounts</h2><span class="num">14 / 15</span></header>
+  <header class="shead"><h2>Test accounts</h2><span class="num">15 / 16</span></header>
   <div class="split">
     <div class="col-text">
       <ul class="points">
@@ -427,7 +468,7 @@ $$;</div>
 
 <!-- 15 — LIVE APP -->
 <section class="slide">
-  <header class="shead"><h2>Live app</h2><span class="num">15 / 15</span></header>
+  <header class="shead"><h2>Live app</h2><span class="num">16 / 16</span></header>
   <div class="split">
     <div class="col-text">
       <ul class="points">

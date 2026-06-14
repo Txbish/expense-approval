@@ -15,8 +15,12 @@ type ButtonVariant =
   | "wash"
   | "link";
 
+// Flat by default (no shadows, per the system). Tactility comes from a tone
+// shift on hover, the blue ring on focus, and a 2% scale-down on press — a
+// "depress" expressed as transform, never elevation. The scale is removed
+// under prefers-reduced-motion (see globals.css).
 const buttonBase =
-  "inline-flex items-center justify-center gap-2 rounded-full h-11 px-6 text-field font-medium whitespace-nowrap select-none transition-colors duration-200 ease-out-quart focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/40 disabled:pointer-events-none disabled:opacity-45";
+  "inline-flex items-center justify-center gap-2 rounded-full h-11 px-6 text-field font-medium whitespace-nowrap select-none transition-[background-color,transform] duration-200 ease-out-quart active:scale-[0.97] motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/40 disabled:pointer-events-none disabled:opacity-45";
 
 const buttonVariants: Record<ButtonVariant, string> = {
   primary: "bg-ink text-cream hover:bg-storm",
@@ -26,7 +30,7 @@ const buttonVariants: Record<ButtonVariant, string> = {
   danger: "bg-destructive text-cream hover:bg-destructive/90",
   approve: "bg-success text-cream hover:bg-success/90",
   wash: "bg-orange text-ink hover:bg-orange/90",
-  link: "h-auto px-0 text-blue hover:underline underline-offset-4",
+  link: "h-auto px-0 text-blue hover:underline underline-offset-4 active:scale-100",
 };
 
 export function Button({
