@@ -56,7 +56,7 @@ export function AppTopBar({
 
       <div className="flex items-center gap-3">
         <RoleBadge role={role} />
-        <NotificationsMenu notifications={notifications} unreadCount={unreadCount} className="h-9 w-9" />
+        <NotificationsMenu notifications={notifications} unreadCount={unreadCount} className="h-10 w-10" />
         <div className="flex items-center gap-2 border-l border-mist pl-3">
           <span
             className="grid h-8 w-8 place-items-center rounded-full bg-ink text-2xs font-semibold uppercase text-cream"
@@ -69,7 +69,7 @@ export function AppTopBar({
               type="submit"
               aria-label="Sign out"
               title="Sign out"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-storm/70 transition-colors hover:bg-ink/6 hover:text-ink"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-md text-storm/70 transition-colors hover:bg-ink/6 hover:text-ink"
             >
               <svg viewBox="0 0 24 24" className="h-[1.05rem] w-[1.05rem]" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                 <path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3" />

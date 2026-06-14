@@ -1,6 +1,7 @@
 import { getAppContext } from "@/lib/context";
 import { createClient } from "@/lib/supabase/server";
-import { Button, EmptyState, PageHeader } from "@/components/ui";
+import { EmptyState, PageHeader } from "@/components/ui";
+import { SubmitButton } from "@/components/submit-button";
 import { NotificationLink } from "@/components/notification-link";
 import { timeAgo } from "@/lib/format";
 import { markAllRead } from "@/app/(app)/actions";
@@ -26,9 +27,9 @@ export default async function NotificationsPage() {
         actions={
           hasUnread && (
             <form action={markAllRead}>
-              <Button type="submit" variant="secondary">
+              <SubmitButton variant="secondary" pendingText="Marking…">
                 Mark all read
-              </Button>
+              </SubmitButton>
             </form>
           )
         }

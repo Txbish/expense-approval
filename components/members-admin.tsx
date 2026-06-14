@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { Button, Card, Field, FormError, Input, Select, Spinner } from "@/components/ui";
+import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
 import { RoleBadge } from "@/components/status-badge";
 import {
   inviteMember,
@@ -81,9 +82,14 @@ export function MembersAdmin({ members, invites }: { members: MemberRow[]; invit
                     <form action={removeMember}>
                       <input type="hidden" name="membershipId" value={m.membershipId} />
                       <input type="hidden" name="userId" value={m.userId} />
-                      <button className="inline-flex h-9 items-center rounded-md px-2 text-xs font-medium text-destructive transition-colors hover:bg-destructive/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/40">
+                      <ConfirmSubmitButton
+                        title="Remove this member?"
+                        body={`${m.name} will immediately lose access to this workspace. You can re-invite them later.`}
+                        confirmLabel="Remove"
+                        className="inline-flex h-9 items-center rounded-md px-2 text-xs font-medium text-destructive transition-colors hover:bg-destructive/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/40"
+                      >
                         Remove
-                      </button>
+                      </ConfirmSubmitButton>
                     </form>
                   )}
                 </div>
@@ -143,9 +149,14 @@ export function MembersAdmin({ members, invites }: { members: MemberRow[]; invit
                         <form action={removeMember}>
                           <input type="hidden" name="membershipId" value={m.membershipId} />
                           <input type="hidden" name="userId" value={m.userId} />
-                          <button className="rounded px-1 text-xs font-medium text-destructive transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/40">
+                          <ConfirmSubmitButton
+                            title="Remove this member?"
+                            body={`${m.name} will immediately lose access to this workspace. You can re-invite them later.`}
+                            confirmLabel="Remove"
+                            className="rounded px-1 text-xs font-medium text-destructive transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/40"
+                          >
                             Remove
-                          </button>
+                          </ConfirmSubmitButton>
                         </form>
                       )}
                     </td>
@@ -175,9 +186,14 @@ export function MembersAdmin({ members, invites }: { members: MemberRow[]; invit
                     </button>
                     <form action={revokeInvite}>
                       <input type="hidden" name="inviteId" value={i.id} />
-                      <button className="rounded px-1 text-xs font-medium text-destructive transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/40">
+                      <ConfirmSubmitButton
+                        title="Revoke this invite?"
+                        body={`The invite code for ${i.email} will stop working immediately.`}
+                        confirmLabel="Revoke"
+                        className="rounded px-1 text-xs font-medium text-destructive transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/40"
+                      >
                         Revoke
-                      </button>
+                      </ConfirmSubmitButton>
                     </form>
                   </div>
                 </li>
