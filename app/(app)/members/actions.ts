@@ -13,6 +13,11 @@ export interface InviteState {
   email?: string;
 }
 
+export interface MemberActionState {
+  ok?: boolean;
+  error?: string;
+}
+
 export async function inviteMember(_prev: InviteState, formData: FormData): Promise<InviteState> {
   startAction("member.invite");
   const ctx = await getAppContext();
@@ -41,17 +46,22 @@ export async function inviteMember(_prev: InviteState, formData: FormData): Prom
   return { token: data.token, email: parsed.data.email };
 }
 
-export async function changeRole(formData: FormData): Promise<void> {
+export async function changeRole(
+  _prev: MemberActionState,
+  formData: FormData,
+): Promise<MemberActionState> {
   startAction("member.change_role");
   const ctx = await getAppContext();
-  if (!ctx || ctx.role !== "admin") return;
+  if (!ctx || ctx.role !== "admin") return { error: "Only admins can change roles." };
   const membershipId = String(formData.get("membershipId") ?? "");
   const role = String(formData.get("role") ?? "") as Role;
-  if (!["admin", "approver", "requester"].includes(role)) return;
+  if (!["admin", "approver", "requester"].includes(role)) return { error: "Invalid role." };
 
   const supabase = await createClient();
-  await supabase.from("memberships").update({ role }).eq("id", membershipId);
+  const { error } = await supabase.from("memberships").update({ role }).eq("id", membershipId);
+  if (error) return { error: "Could not update the role." };
   revalidatePath("/members");
+  return { ok: true };
 }
 
 export async function removeMember(formData: FormData): Promise<void> {

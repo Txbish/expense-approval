@@ -1,9 +1,9 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Button, Card, Field, FormError, Input, Select, Spinner } from "@/components/ui";
 import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
-import { FormPending } from "@/components/form-pending";
+import { useToast } from "@/components/toast";
 import { RoleBadge } from "@/components/status-badge";
 import {
   inviteMember,
@@ -11,7 +11,38 @@ import {
   removeMember,
   revokeInvite,
   type InviteState,
+  type MemberActionState,
 } from "@/app/(app)/members/actions";
+
+/* Role picker that submits on change, shows a pending spinner, and confirms the
+   save with a toast (the row stays put, so the change is otherwise silent). */
+function RoleSelectForm({ member, selectClassName }: { member: MemberRow; selectClassName: string }) {
+  const { push } = useToast();
+  const [state, action, pending] = useActionState<MemberActionState, FormData>(changeRole, {});
+
+  useEffect(() => {
+    if (state?.ok) push({ message: `Role updated for ${member.name}`, tone: "success" });
+    else if (state?.error) push({ message: state.error, tone: "error" });
+  }, [state, push, member.name]);
+
+  return (
+    <form action={action} className="flex min-w-0 flex-1 items-center gap-2">
+      <input type="hidden" name="membershipId" value={member.membershipId} />
+      <Select
+        name="role"
+        defaultValue={member.role}
+        submitOnChange
+        aria-label={`Role for ${member.name}`}
+        className={selectClassName}
+      >
+        <option value="requester">Requester</option>
+        <option value="approver">Approver</option>
+        <option value="admin">Admin</option>
+      </Select>
+      {pending && <Spinner className="shrink-0 text-storm/60" />}
+    </form>
+  );
+}
 
 export interface MemberRow {
   membershipId: string;
@@ -64,21 +95,7 @@ export function MembersAdmin({ members, invites }: { members: MemberRow[]; invit
                   {m.isSelf ? (
                     <RoleBadge role={m.role} />
                   ) : (
-                    <form action={changeRole} className="flex min-w-0 flex-1 items-center gap-2">
-                      <input type="hidden" name="membershipId" value={m.membershipId} />
-                      <Select
-                        name="role"
-                        defaultValue={m.role}
-                        submitOnChange
-                        aria-label={`Role for ${m.name}`}
-                        className="w-full max-w-[12rem]"
-                      >
-                        <option value="requester">Requester</option>
-                        <option value="approver">Approver</option>
-                        <option value="admin">Admin</option>
-                      </Select>
-                      <FormPending className="shrink-0 text-storm/60" />
-                    </form>
+                    <RoleSelectForm member={m} selectClassName="w-full max-w-[12rem]" />
                   )}
                   {!m.isSelf && (
                     <form action={removeMember}>
@@ -130,21 +147,7 @@ export function MembersAdmin({ members, invites }: { members: MemberRow[]; invit
                       {m.isSelf ? (
                         <RoleBadge role={m.role} />
                       ) : (
-                        <form action={changeRole} className="flex items-center gap-2">
-                          <input type="hidden" name="membershipId" value={m.membershipId} />
-                          <Select
-                            name="role"
-                            defaultValue={m.role}
-                            submitOnChange
-                            aria-label={`Role for ${m.name}`}
-                            className="w-40"
-                          >
-                            <option value="requester">Requester</option>
-                            <option value="approver">Approver</option>
-                            <option value="admin">Admin</option>
-                          </Select>
-                          <FormPending className="text-storm/60" />
-                        </form>
+                        <RoleSelectForm member={m} selectClassName="w-40" />
                       )}
                     </td>
                     <td className="px-4 py-3 text-right">

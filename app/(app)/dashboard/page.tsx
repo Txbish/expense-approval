@@ -133,6 +133,7 @@ export default async function DashboardPage() {
                 showRequester
                 threshold={ctx.org.approval_threshold_minor}
                 from="dashboard"
+                currentUserId={ctx.userId}
                 emptyLabel="No requests in this organization yet."
               />
             ) : (

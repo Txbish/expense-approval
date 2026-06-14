@@ -30,6 +30,7 @@ export function AppNav({ org, role, memberships, fullName, unreadCount, pendingC
   const isAdmin = role === "admin";
   const triggerRef = useRef<HTMLButtonElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
+  const asideRef = useRef<HTMLElement>(null);
   const close = () => setOpen(false);
   // Dismiss + return focus to the trigger (for the explicit close affordances).
   const dismiss = () => {
@@ -42,7 +43,26 @@ export function AppNav({ org, role, memberships, fullName, unreadCount, pendingC
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") dismiss();
+      if (e.key === "Escape") {
+        dismiss();
+        return;
+      }
+      // Trap Tab within the drawer so focus can't reach the page behind the scrim.
+      if (e.key === "Tab" && asideRef.current) {
+        const focusable = asideRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     document.addEventListener("keydown", onKey);
     closeBtnRef.current?.focus();
@@ -192,6 +212,7 @@ export function AppNav({ org, role, memberships, fullName, unreadCount, pendingC
           )}
         />
         <aside
+          ref={asideRef}
           role="dialog"
           aria-modal="true"
           aria-label="Main menu"

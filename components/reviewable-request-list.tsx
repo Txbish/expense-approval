@@ -21,6 +21,8 @@ interface Props {
   threshold?: number;
   emptyLabel?: string;
   from?: string;
+  /** The viewer's id — own rows are tagged "(you)" to explain the absent action. */
+  currentUserId?: string;
 }
 
 // nameOf lives in a server-only module; inline the same fallback here so this
@@ -54,6 +56,7 @@ export function ReviewableRequestList({
   threshold,
   emptyLabel = "No requests yet.",
   from,
+  currentUserId,
 }: Props) {
   const router = useRouter();
   const [decided, setDecided] = useState<Set<string>>(() => new Set());
@@ -132,7 +135,13 @@ export function ReviewableRequestList({
                   <p className="truncate font-medium text-ink">{r.title}</p>
                   <p className="truncate text-xs text-storm/60">
                     {r.category}
-                    {showRequester && <> · {displayName(profiles, r.requester_id)}</>}
+                    {showRequester && (
+                      <>
+                        {" · "}
+                        {displayName(profiles, r.requester_id)}
+                        {r.requester_id === currentUserId && <span className="text-storm/45"> (you)</span>}
+                      </>
+                    )}
                   </p>
                   <Money minor={r.amount_minor} currency={r.currency} className="font-medium text-ink" />
                 </Link>
@@ -179,7 +188,10 @@ export function ReviewableRequestList({
                       <div className="text-xs text-storm/60">{r.category}</div>
                     </td>
                     {showRequester && (
-                      <td className="px-4 py-3.5 text-storm/80">{displayName(profiles, r.requester_id)}</td>
+                      <td className="px-4 py-3.5 text-storm/80">
+                        {displayName(profiles, r.requester_id)}
+                        {r.requester_id === currentUserId && <span className="text-storm/45"> (you)</span>}
+                      </td>
                     )}
                     <td className="px-4 py-3.5 text-right">
                       <Money minor={r.amount_minor} currency={r.currency} className="font-medium text-ink" />

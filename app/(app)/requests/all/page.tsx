@@ -58,6 +58,7 @@ export default async function AllRequestsPage({
         showRequester
         threshold={ctx.org.approval_threshold_minor}
         from="all"
+        currentUserId={ctx.userId}
         emptyLabel={active === "all" ? "No requests in this organization yet." : `No ${active} requests.`}
       />
     </div>

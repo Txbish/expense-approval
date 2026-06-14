@@ -32,8 +32,15 @@ async function signIn(email) {
 }
 
 async function idByTitle(title) {
-  const { data } = await admin.from("requests").select("id, requester_id, org_id").eq("title", title).single();
-  return data;
+  // Newest match — tolerant of leftover duplicate seed rows so the harness runs
+  // even when the local DB hasn't been reset between seeds.
+  const { data } = await admin
+    .from("requests")
+    .select("id, requester_id, org_id")
+    .eq("title", title)
+    .order("created_at", { ascending: false })
+    .limit(1);
+  return data?.[0] ?? null;
 }
 
 async function main() {
