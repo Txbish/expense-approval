@@ -2,8 +2,9 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { getAppContext, isApprover } from "@/lib/context";
 import { createClient } from "@/lib/supabase/server";
-import { profilesByIds } from "@/lib/queries";
+import { profilesByIds, reviewMapFor } from "@/lib/queries";
 import { RequestList } from "@/components/request-list";
+import { ReviewableRequestList } from "@/components/reviewable-request-list";
 import { LinkButton } from "@/components/ui";
 import { formatMoney, formatMoneyCompact } from "@/lib/format";
 import type { ExpenseRequest, RequestStatus } from "@/lib/types";
@@ -44,6 +45,8 @@ export default async function DashboardPage() {
 
   const profiles = await profilesByIds(supabase, requests.map((r) => r.requester_id));
   const recent = approver ? requests.slice(0, 6) : mine.slice(0, 6);
+  // Approvers can decide actionable rows in place, right from the dashboard.
+  const reviewable = approver ? await reviewMapFor(supabase, recent, ctx) : {};
   const firstName = ctx.fullName?.trim().split(/\s+/)[0] ?? null;
   const dateStr = new Date().toLocaleDateString("en-US", {
     weekday: "long",
@@ -109,14 +112,25 @@ export default async function DashboardPage() {
                 All requests ↗
               </Link>
             </div>
-            <RequestList
-              requests={recent}
-              profiles={profiles}
-              showRequester={approver}
-              threshold={ctx.org.approval_threshold_minor}
-              from="dashboard"
-              emptyLabel={approver ? "No requests in this organization yet." : "You haven't made any requests yet."}
-            />
+            {approver ? (
+              <ReviewableRequestList
+                requests={recent}
+                profiles={profiles}
+                reviewable={reviewable}
+                showRequester
+                threshold={ctx.org.approval_threshold_minor}
+                from="dashboard"
+                emptyLabel="No requests in this organization yet."
+              />
+            ) : (
+              <RequestList
+                requests={recent}
+                profiles={profiles}
+                threshold={ctx.org.approval_threshold_minor}
+                from="dashboard"
+                emptyLabel="You haven't made any requests yet."
+              />
+            )}
           </section>
 
           {/* Quick actions — a slim row of links (stacked on mobile) */}

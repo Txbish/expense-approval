@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import { getAppContext, isApprover } from "@/lib/context";
 import { createClient } from "@/lib/supabase/server";
-import { profilesByIds } from "@/lib/queries";
-import { RequestList } from "@/components/request-list";
+import { profilesByIds, reviewMapFor } from "@/lib/queries";
+import { ReviewableRequestList } from "@/components/reviewable-request-list";
 import { RequestFilter } from "@/components/request-filter";
 import { PageHeader } from "@/components/ui";
 import type { ExpenseRequest, RequestStatus } from "@/lib/types";
@@ -36,7 +36,10 @@ export default async function AllRequestsPage({
 
   const { data } = await query;
   const requests = (data ?? []) as ExpenseRequest[];
-  const profiles = await profilesByIds(supabase, requests.map((r) => r.requester_id));
+  const [profiles, reviewable] = await Promise.all([
+    profilesByIds(supabase, requests.map((r) => r.requester_id)),
+    reviewMapFor(supabase, requests, ctx),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -48,9 +51,10 @@ export default async function AllRequestsPage({
 
       <RequestFilter filters={FILTERS} active={active} />
 
-      <RequestList
+      <ReviewableRequestList
         requests={requests}
         profiles={profiles}
+        reviewable={reviewable}
         showRequester
         threshold={ctx.org.approval_threshold_minor}
         from="all"
