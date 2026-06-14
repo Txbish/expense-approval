@@ -44,6 +44,9 @@ export async function updateSession(request: NextRequest) {
     path.startsWith("/auth") ||
     path.startsWith("/invite") ||
     path.startsWith("/api/health") ||
+    // Generated social-card routes must be reachable by unauthenticated crawlers.
+    path.startsWith("/opengraph-image") ||
+    path.startsWith("/twitter-image") ||
     path === "/";
 
   if (!user && !isPublic) {

@@ -3,11 +3,40 @@ import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
 import "./globals.css";
 
+// Canonical origin for absolute OG/Twitter image URLs. Prefer an explicit env
+// var; otherwise use Vercel's production URL, falling back to the live deploy.
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "https://expense-approval-teal.vercel.app");
+
+const description =
+  "Multi-tenant expense approvals with authorization enforced in the database. Request, review, decide — secure by default, responsive on any device.";
+
 export const metadata: Metadata = {
-  title: "approvals — expense requests",
-  description: "Request, review, and decide on company expenses.",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "approvals — expense requests",
+    template: "%s · approvals",
+  },
+  description,
+  applicationName: "approvals",
   icons: {
     icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+  },
+  openGraph: {
+    type: "website",
+    siteName: "approvals",
+    title: "approvals — expense requests",
+    description,
+    url: siteUrl,
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "approvals — expense requests",
+    description,
   },
 };
 
