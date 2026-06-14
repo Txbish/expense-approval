@@ -5,7 +5,8 @@ import { createClient } from "@/lib/supabase/server";
 import { profilesByIds, reviewMapFor } from "@/lib/queries";
 import { RequestList } from "@/components/request-list";
 import { ReviewableRequestList } from "@/components/reviewable-request-list";
-import { LinkButton } from "@/components/ui";
+import { NewRequestSheet } from "@/components/new-request-sheet";
+import { LinkButton, buttonClass } from "@/components/ui";
 import { formatMoney, formatMoneyCompact } from "@/lib/format";
 import type { ExpenseRequest, RequestStatus } from "@/lib/types";
 
@@ -39,12 +40,18 @@ export default async function DashboardPage() {
   const decided = byStatus("approved") + byStatus("rejected");
   const approvalRate = decided ? Math.round((byStatus("approved") / decided) * 100) : 0;
   // What this user can actually action — excludes their own pending requests.
-  const pendingToReview = approver
-    ? requests.filter((r) => r.status === "pending" && r.requester_id !== ctx.userId).length
-    : 0;
+  const needsReview = approver
+    ? requests.filter((r) => r.status === "pending" && r.requester_id !== ctx.userId)
+    : [];
+  const pendingToReview = needsReview.length;
 
   const profiles = await profilesByIds(supabase, requests.map((r) => r.requester_id));
-  const recent = approver ? requests.slice(0, 6) : mine.slice(0, 6);
+  // Approvers: lead the list with what needs their decision, then recent
+  // activity — otherwise newer decided items bury the actionable rows and the
+  // inline Review action never shows here. Requesters see their own, newest first.
+  const recent = approver
+    ? [...needsReview, ...requests.filter((r) => !needsReview.includes(r))].slice(0, 6)
+    : mine.slice(0, 6);
   // Approvers can decide actionable rows in place, right from the dashboard.
   const reviewable = approver ? await reviewMapFor(supabase, recent, ctx) : {};
   const firstName = ctx.fullName?.trim().split(/\s+/)[0] ?? null;
@@ -56,6 +63,7 @@ export default async function DashboardPage() {
 
   const pendingCount = byStatus("pending");
   const currency = ctx.org.default_currency;
+  const thresholdLabel = formatMoney(ctx.org.approval_threshold_minor, currency);
 
   return (
     <div className="space-y-8">
@@ -72,9 +80,14 @@ export default async function DashboardPage() {
           </h1>
         </div>
         <div className="flex shrink-0 gap-3">
-          <LinkButton href="/requests/new" className="flex-1 lg:flex-none">
+          <NewRequestSheet
+            currency={currency}
+            threshold={thresholdLabel}
+            thresholdMinor={ctx.org.approval_threshold_minor}
+            triggerClassName={buttonClass("primary", "flex-1 lg:flex-none")}
+          >
             + New request
-          </LinkButton>
+          </NewRequestSheet>
           {pendingToReview > 0 && (
             <LinkButton href="/queue" variant="outline" className="flex-1 lg:flex-none">
               Review {pendingToReview} pending ↗
@@ -137,7 +150,17 @@ export default async function DashboardPage() {
           <section className="space-y-3">
             <p className="text-2xs font-medium uppercase tracking-[0.16em] text-storm/55">Quick actions</p>
             <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
-              <QuickAction href="/requests/new" label="New request" icon={<IconPlus />} />
+              <NewRequestSheet
+                currency={currency}
+                threshold={thresholdLabel}
+                thresholdMinor={ctx.org.approval_threshold_minor}
+                triggerClassName="inline-flex flex-1 items-center gap-2.5 rounded-xl border border-mist bg-card px-4 py-2.5 text-field font-medium text-ink transition-colors hover:bg-mist/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/40"
+              >
+                <span className="shrink-0 text-storm/70">
+                  <IconPlus />
+                </span>
+                New request
+              </NewRequestSheet>
               {approver && <QuickAction href="/queue" label="Approval queue" icon={<IconQueue />} />}
               <QuickAction href="/activity" label="Audit trail" icon={<IconTrail />} />
             </div>

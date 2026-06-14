@@ -43,6 +43,11 @@ export function Button({
   );
 }
 
+/** The button class string, for non-<Button> triggers that need the same look. */
+export function buttonClass(variant: ButtonVariant = "primary", className?: string): string {
+  return clsx(buttonBase, buttonVariants[variant], className);
+}
+
 export function LinkButton({
   href,
   variant = "primary",

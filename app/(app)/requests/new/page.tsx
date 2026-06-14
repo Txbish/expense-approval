@@ -27,6 +27,7 @@ export default async function NewRequestPage({
         <NewRequestForm
           currency={ctx.org.default_currency}
           threshold={formatMoney(ctx.org.approval_threshold_minor, ctx.org.default_currency)}
+          thresholdMinor={ctx.org.approval_threshold_minor}
           defaults={{
             title: sp.title,
             category: sp.category,

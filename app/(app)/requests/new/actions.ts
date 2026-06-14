@@ -10,6 +10,8 @@ import { log, startAction } from "@/lib/logger";
 
 export interface NewRequestState {
   error?: string;
+  ok?: boolean;
+  id?: string;
 }
 
 export async function createRequest(
@@ -54,6 +56,11 @@ export async function createRequest(
   }
 
   log("info", "request.created", { rid, org: ctx.org.id, request: data.id });
-  revalidatePath("/", "layout"); // refresh the persisted nav badge (pending count)
-  redirect(`/requests/${data.id}`);
+  // Return success (not redirect) so the caller decides where to go: the full
+  // page navigates to the new request; the slide-over just closes and refreshes.
+  revalidatePath("/", "layout"); // persisted nav badge (pending count)
+  revalidatePath("/dashboard");
+  revalidatePath("/requests");
+  revalidatePath("/requests/all");
+  return { ok: true, id: data.id };
 }

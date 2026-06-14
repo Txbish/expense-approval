@@ -2,7 +2,9 @@ import { getAppContext } from "@/lib/context";
 import { createClient } from "@/lib/supabase/server";
 import { profilesByIds } from "@/lib/queries";
 import { RequestList } from "@/components/request-list";
-import { LinkButton, PageHeader } from "@/components/ui";
+import { NewRequestSheet } from "@/components/new-request-sheet";
+import { PageHeader, buttonClass } from "@/components/ui";
+import { formatMoney } from "@/lib/format";
 import type { ExpenseRequest } from "@/lib/types";
 
 export default async function MyRequestsPage() {
@@ -24,7 +26,16 @@ export default async function MyRequestsPage() {
         eyebrow="Workspace"
         title="My requests"
         description="Everything you've submitted, newest first."
-        actions={<LinkButton href="/requests/new">+ New request</LinkButton>}
+        actions={
+          <NewRequestSheet
+            currency={ctx.org.default_currency}
+            threshold={formatMoney(ctx.org.approval_threshold_minor, ctx.org.default_currency)}
+            thresholdMinor={ctx.org.approval_threshold_minor}
+            triggerClassName={buttonClass("primary")}
+          >
+            + New request
+          </NewRequestSheet>
+        }
       />
       <RequestList
         requests={requests}
