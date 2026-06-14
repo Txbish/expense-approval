@@ -12,12 +12,27 @@ import { SwitchOrgButton } from "@/components/switch-org-button";
 import { formatMoney, timeAgo } from "@/lib/format";
 import type { ExpenseRequest, RequestEvent } from "@/lib/types";
 
+/* Where "Back" returns to, keyed by the ?from= origin the link carried. Falls
+   back to My requests when absent/unknown so the link is never a dead default. */
+const BACK_TARGETS: Record<string, { href: string; label: string }> = {
+  queue: { href: "/queue", label: "Back to queue" },
+  dashboard: { href: "/dashboard", label: "Back to dashboard" },
+  requests: { href: "/requests", label: "Back to my requests" },
+  all: { href: "/requests/all", label: "Back to all requests" },
+  activity: { href: "/activity", label: "Back to activity" },
+  notifications: { href: "/notifications", label: "Back to notifications" },
+};
+
 export default async function RequestDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ from?: string }>;
 }) {
   const { id } = await params;
+  const { from } = await searchParams;
+  const back = (from && BACK_TARGETS[from]) || { href: "/requests", label: "Back to requests" };
   const ctx = (await getAppContext())!;
   const supabase = await createClient();
 
@@ -88,7 +103,7 @@ export default async function RequestDetailPage({
   return (
     <div className="space-y-6">
       <Link
-        href="/requests"
+        href={back.href}
         className="inline-flex items-center gap-1.5 text-2xs font-medium uppercase tracking-[0.12em] text-storm/60 transition-colors hover:text-ink">
         <svg
           viewBox="0 0 20 20"
@@ -101,7 +116,7 @@ export default async function RequestDetailPage({
           aria-hidden>
           <path d="M12 5 7 10l5 5" />
         </svg>
-        Back to requests
+        {back.label}
       </Link>
 
       {crossOrg && (
@@ -177,6 +192,7 @@ export default async function RequestDetailPage({
                 overLimit={overLimit}
                 canDecideOverLimit={isAdmin || approverFallback}
                 fallback={approverFallback}
+                amountLabel={formatMoney(request.amount_minor, request.currency)}
               />
             </Card>
           )}

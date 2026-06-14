@@ -121,7 +121,7 @@ export function NotificationsMenu({
                     <li key={n.id}>
                       {n.request_id ? (
                         <Link
-                          href={`/requests/${n.request_id}`}
+                          href={`/requests/${n.request_id}?from=notifications`}
                           onClick={() => {
                             read(n);
                             setOpen(false);

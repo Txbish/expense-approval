@@ -114,6 +114,7 @@ export default async function DashboardPage() {
               profiles={profiles}
               showRequester={approver}
               threshold={ctx.org.approval_threshold_minor}
+              from="dashboard"
               emptyLabel={approver ? "No requests in this organization yet." : "You haven't made any requests yet."}
             />
           </section>

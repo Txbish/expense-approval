@@ -30,6 +30,7 @@ export default async function MyRequestsPage() {
         requests={requests}
         profiles={profiles}
         threshold={ctx.org.approval_threshold_minor}
+        from="requests"
         emptyLabel="You haven't made any requests yet. Create your first one."
       />
     </div>
