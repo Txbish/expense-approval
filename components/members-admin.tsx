@@ -193,7 +193,7 @@ export function MembersAdmin({ members, invites }: { members: MemberRow[]; invit
           Generates an invite code. Share it with the person — they redeem it after signing up.
         </p>
         <form action={action} className="mt-5 space-y-4">
-          <Field label="Email">
+          <Field label="Email" required>
             <Input name="email" type="email" required placeholder="teammate@company.com" />
           </Field>
           <Field label="Role">

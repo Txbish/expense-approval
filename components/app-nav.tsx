@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { clsx } from "clsx";
 import { OrgSwitcher } from "@/components/org-switcher";
 import { BrandMark } from "@/components/brand-mark";
@@ -28,7 +28,26 @@ export function AppNav({ org, role, memberships, fullName, unreadCount, pendingC
   const [open, setOpen] = useState(false);
   const isApprover = role === "approver" || role === "admin";
   const isAdmin = role === "admin";
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
   const close = () => setOpen(false);
+  // Dismiss + return focus to the trigger (for the explicit close affordances).
+  const dismiss = () => {
+    setOpen(false);
+    triggerRef.current?.focus();
+  };
+
+  // While the drawer is open: Escape closes it and focus moves inside, so
+  // keyboard/SR users aren't left tabbing through the page behind the scrim.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") dismiss();
+    };
+    document.addEventListener("keydown", onKey);
+    closeBtnRef.current?.focus();
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
 
   const groups: NavGroup[] = [
     {
@@ -145,13 +164,15 @@ export function AppNav({ org, role, memberships, fullName, unreadCount, pendingC
           <span className="text-lg font-medium lowercase tracking-tight">approvals.</span>
         </Link>
         <div className="flex items-center gap-1">
-          <NotificationsMenu notifications={notifications} unreadCount={unreadCount} className="h-10 w-10" />
+          <NotificationsMenu notifications={notifications} unreadCount={unreadCount} className="h-11 w-11" />
           <button
+            ref={triggerRef}
             type="button"
             onClick={() => setOpen(true)}
             aria-label="Open menu"
+            aria-haspopup="dialog"
             aria-expanded={open}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-ink hover:bg-ink/6"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-ink hover:bg-ink/6"
           >
             <ICONS.menu className="h-5 w-5" />
           </button>
@@ -164,13 +185,16 @@ export function AppNav({ org, role, memberships, fullName, unreadCount, pendingC
         aria-hidden={!open}
       >
         <div
-          onClick={() => setOpen(false)}
+          onClick={dismiss}
           className={clsx(
             "absolute inset-0 bg-ink/60 transition-opacity duration-300",
             open ? "opacity-100" : "opacity-0",
           )}
         />
         <aside
+          role="dialog"
+          aria-modal="true"
+          aria-label="Main menu"
           className={clsx(
             "absolute inset-y-0 left-0 flex w-[17rem] max-w-[85%] flex-col bg-cream transition-transform duration-300 ease-out",
             open ? "translate-x-0" : "-translate-x-full",
@@ -182,10 +206,11 @@ export function AppNav({ org, role, memberships, fullName, unreadCount, pendingC
               <span className="text-lg font-medium lowercase tracking-tight">approvals.</span>
             </span>
             <button
+              ref={closeBtnRef}
               type="button"
-              onClick={() => setOpen(false)}
+              onClick={dismiss}
               aria-label="Close menu"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-md text-storm/70 hover:bg-ink/6 hover:text-ink"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-md text-storm/70 hover:bg-ink/6 hover:text-ink"
             >
               <ICONS.close className="h-5 w-5" />
             </button>

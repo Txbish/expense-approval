@@ -14,14 +14,14 @@ export function OnboardingForms() {
         <h2 className="text-subheading text-ink">Create an organization</h2>
         <p className="mt-1 text-caption text-storm/75">You&apos;ll be its admin and first approver.</p>
         <form action={createAction} className="mt-5 space-y-4">
-          <Field label="Organization name">
+          <Field label="Organization name" required>
             <Input name="name" required placeholder="Acme Inc" />
           </Field>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Field label="Currency">
+            <Field label="Currency" required>
               <Input name="currency" required maxLength={3} defaultValue="USD" className="uppercase" />
             </Field>
-            <Field label="Approval threshold" hint="Above this needs an admin.">
+            <Field label="Approval threshold" required hint="Above this needs an admin.">
               <Input name="threshold" required defaultValue="1000" inputMode="decimal" />
             </Field>
           </div>
@@ -37,7 +37,7 @@ export function OnboardingForms() {
         <h2 className="text-subheading text-ink">Join with an invite</h2>
         <p className="mt-1 text-caption text-storm/75">Paste the invite code an admin shared with you.</p>
         <form action={joinAction} className="mt-5 space-y-4">
-          <Field label="Invite code">
+          <Field label="Invite code" required>
             <Input name="token" required placeholder="e.g. 3f9a1c…" className="font-mono" />
           </Field>
           <FormError message={joinState?.error} />

@@ -17,14 +17,14 @@ export function SettingsForm({
 
   return (
     <form action={action} className="space-y-4">
-      <Field label="Organization name">
+      <Field label="Organization name" required>
         <Input name="name" required defaultValue={name} />
       </Field>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Field label="Default currency">
+        <Field label="Default currency" required>
           <Input name="currency" required maxLength={3} defaultValue={currency} className="uppercase" />
         </Field>
-        <Field label="Approval threshold" hint="Requests above this require an admin.">
+        <Field label="Approval threshold" required hint="Requests above this require an admin.">
           <Input name="threshold" required inputMode="decimal" defaultValue={threshold} />
         </Field>
       </div>

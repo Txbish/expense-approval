@@ -15,14 +15,14 @@ export function AuthForm({ action, mode }: AuthFormProps) {
   return (
     <form action={formAction} className="space-y-4">
       {mode === "signup" && (
-        <Field label="Full name">
+        <Field label="Full name" required>
           <Input name="full_name" required autoComplete="name" placeholder="Jane Doe" />
         </Field>
       )}
-      <Field label="Work email">
+      <Field label="Work email" required>
         <Input name="email" type="email" required autoComplete="email" placeholder="you@company.com" />
       </Field>
-      <Field label="Password" hint={mode === "signup" ? "At least 8 characters." : undefined}>
+      <Field label="Password" required hint={mode === "signup" ? "At least 8 characters." : undefined}>
         <Input
           name="password"
           type="password"

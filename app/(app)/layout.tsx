@@ -39,6 +39,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen bg-cream md:pl-64">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-ink focus:px-4 focus:py-2 focus:text-field focus:font-medium focus:text-cream"
+      >
+        Skip to content
+      </a>
       <AppNav
         org={ctx.org}
         role={ctx.role}
@@ -55,7 +61,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         unreadCount={unread ?? 0}
         notifications={notifications}
       />
-      <main className="mx-auto max-w-5xl px-5 py-10 pb-[max(2.5rem,env(safe-area-inset-bottom))] sm:px-8 lg:py-12">{children}</main>
+      <main id="main" tabIndex={-1} className="mx-auto max-w-5xl px-5 py-10 pb-[max(2.5rem,env(safe-area-inset-bottom))] focus:outline-none sm:px-8 lg:py-12">{children}</main>
     </div>
   );
 }

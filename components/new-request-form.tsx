@@ -29,7 +29,7 @@ export function NewRequestForm({
 
   return (
     <form action={action} className="space-y-4">
-      <Field label="Title">
+      <Field label="Title" required>
         <Input
           name="title"
           required
@@ -38,8 +38,8 @@ export function NewRequestForm({
           defaultValue={defaults?.title}
         />
       </Field>
-      <div className="grid grid-cols-2 gap-4">
-        <Field label="Category">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Field label="Category" required>
           <Select name="category" required defaultValue={defaultCategory}>
             {CATEGORIES.map((c) => (
               <option key={c} value={c}>
@@ -48,7 +48,7 @@ export function NewRequestForm({
             ))}
           </Select>
         </Field>
-        <Field label={`Amount (${currency})`} hint={`Over ${threshold} needs an admin.`}>
+        <Field label={`Amount (${currency})`} required hint={`Over ${threshold} needs an admin.`}>
           <Input name="amount" required inputMode="decimal" placeholder="1200.00" defaultValue={defaults?.amount} />
         </Field>
       </div>

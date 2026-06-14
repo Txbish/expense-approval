@@ -110,16 +110,27 @@ const controlBase =
 export function Field({
   label,
   hint,
+  required,
   children,
 }: {
   label: string;
   hint?: string;
+  required?: boolean;
   children: ReactNode;
 }) {
   return (
     <label className="block space-y-2">
       <span className="block text-2xs font-medium uppercase tracking-[0.12em] text-storm/80">
         {label}
+        {required && (
+          <>
+            <span className="text-destructive" aria-hidden>
+              {" "}
+              *
+            </span>
+            <span className="sr-only"> (required)</span>
+          </>
+        )}
       </span>
       {children}
       {hint && <span className="block text-caption text-storm/70">{hint}</span>}
