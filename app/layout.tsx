@@ -11,13 +11,21 @@ const siteUrl =
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : "https://expense-approval-teal.vercel.app");
 
+// Full description for the search-result snippet (~146 chars — fills the SERP).
 const description =
   "Multi-tenant expense approvals with authorization enforced in the database. Request, review, decide — secure by default, responsive on any device.";
+
+// Shorter variant for social cards, which truncate around ~125 chars on mobile.
+const socialDescription =
+  "Multi-tenant expense approvals with authorization enforced in the database — request, review, decide, secure by default.";
+
+// Longer, keyword-rich title for the SERP/browser tab (~56 chars fills the slot).
+const title = "approvals — secure expense requests, reviews & decisions";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "approvals — expense requests",
+    default: title,
     template: "%s · approvals",
   },
   description,
@@ -28,15 +36,15 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "approvals",
-    title: "approvals — expense requests",
-    description,
+    title,
+    description: socialDescription,
     url: siteUrl,
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "approvals — expense requests",
-    description,
+    title,
+    description: socialDescription,
   },
   // `og:logo` is not part of the typed OpenGraph spec, so emit it manually as an
   // absolute URL for validators/crawlers that look for it.

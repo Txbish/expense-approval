@@ -72,9 +72,33 @@ export default function OpengraphImage() {
           </div>
         </div>
 
-        {/* footer / stack */}
-        <div style={{ display: "flex", fontSize: 22, color: "rgba(252,251,248,0.5)", letterSpacing: "0.04em" }}>
-          Next.js · Supabase (Postgres + RLS) · Vercel
+        {/* footer: tech stack + call-to-action pill */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <div style={{ display: "flex", fontSize: 22, color: "rgba(252,251,248,0.5)", letterSpacing: "0.04em" }}>
+            Next.js · Supabase (Postgres + RLS) · Vercel
+          </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              fontSize: 26,
+              fontWeight: 600,
+              color: CREAM,
+              backgroundColor: BLUE,
+              padding: "16px 30px",
+              borderRadius: 999,
+              letterSpacing: "-0.01em",
+            }}
+          >
+            Try the live demo →
+          </div>
         </div>
       </div>
     ),
