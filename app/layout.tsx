@@ -38,6 +38,11 @@ export const metadata: Metadata = {
     title: "approvals — expense requests",
     description,
   },
+  // `og:logo` is not part of the typed OpenGraph spec, so emit it manually as an
+  // absolute URL for validators/crawlers that look for it.
+  other: {
+    "og:logo": `${siteUrl}/icon.svg`,
+  },
 };
 
 // viewport-fit=cover lets us pad against the notch / home indicator with env().
