@@ -15,6 +15,8 @@ interface RequestListProps {
   /** Adds a per-row action affordance (e.g. on the approval queue). */
   reviewable?: boolean;
   actionLabel?: string;
+  /** Origin tag so the detail page's "Back" returns here (e.g. "dashboard"). */
+  from?: string;
 }
 
 export function RequestList({
@@ -25,7 +27,10 @@ export function RequestList({
   emptyLabel = "No requests yet.",
   reviewable = false,
   actionLabel = "Review",
+  from,
 }: RequestListProps) {
+  const hrefFor = (id: string) => (from ? `/requests/${id}?from=${from}` : `/requests/${id}`);
+
   if (requests.length === 0) {
     return (
       <EmptyState
@@ -52,7 +57,7 @@ export function RequestList({
           return (
             <li key={r.id} style={{ "--i": i } as React.CSSProperties}>
               <Link
-                href={`/requests/${r.id}`}
+                href={hrefFor(r.id)}
                 className={clsx(
                   "flex min-h-[3.75rem] flex-col gap-2 px-4 py-3.5 transition-colors active:bg-ink/5 focus-visible:outline-none focus-visible:bg-ink/5",
                   adminReq && "bg-parchment/60",
@@ -111,7 +116,7 @@ export function RequestList({
                 >
                   <td className="px-4 py-3.5">
                     <Link
-                      href={`/requests/${r.id}`}
+                      href={hrefFor(r.id)}
                       className="font-medium text-ink transition-colors group-hover:text-blue"
                     >
                       {r.title}
@@ -131,7 +136,7 @@ export function RequestList({
                   {reviewable && (
                     <td className="px-4 py-3.5 text-right">
                       <Link
-                        href={`/requests/${r.id}`}
+                        href={hrefFor(r.id)}
                         className="inline-flex h-8 items-center gap-1 whitespace-nowrap rounded-full bg-ink px-3.5 text-xs font-medium text-cream transition-colors hover:bg-storm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/40"
                       >
                         {actionLabel} →

@@ -64,7 +64,7 @@ export default async function NotificationsPage() {
               <NotificationLink
                 key={n.id}
                 id={n.id}
-                href={`/requests/${n.request_id}`}
+                href={`/requests/${n.request_id}?from=notifications`}
                 unread={!n.read_at}
                 className="block transition-colors hover:bg-ink/3"
               >

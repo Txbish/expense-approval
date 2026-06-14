@@ -66,7 +66,7 @@ export default async function ActivityPage() {
                   <span className="font-medium text-ink">{nameOf(profiles, e.actor_id)}</span>{" "}
                   <span className="text-storm/70">{VERB[e.type] ?? e.type}</span>{" "}
                   <Link
-                    href={`/requests/${e.request_id}`}
+                    href={`/requests/${e.request_id}?from=activity`}
                     className="font-medium text-blue transition-colors hover:underline"
                   >
                     {titles.get(e.request_id) ?? "a request"}

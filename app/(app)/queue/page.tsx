@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
 import { getAppContext, isApprover } from "@/lib/context";
 import { createClient } from "@/lib/supabase/server";
-import { profilesByIds } from "@/lib/queries";
-import { RequestList } from "@/components/request-list";
+import { profilesByIds, nameOf } from "@/lib/queries";
 import { PageHeader } from "@/components/ui";
+import { QueueReview, type ReviewItem } from "@/components/queue-review";
 import type { ExpenseRequest } from "@/lib/types";
 
 export default async function QueuePage() {
@@ -21,6 +21,43 @@ export default async function QueuePage() {
   const requests = (data ?? []) as ExpenseRequest[];
   const profiles = await profilesByIds(supabase, requests.map((r) => r.requester_id));
 
+  const threshold = ctx.org.approval_threshold_minor;
+  const isAdmin = ctx.role === "admin";
+
+  // Resolve each row's decision capability server-side so the drawer never
+  // offers an action the decide_request RPC would reject. Above-threshold rows
+  // need an admin UNLESS no eligible (non-requester) admin exists — in which
+  // case an approver may decide as a fallback. We only pay for that RPC on the
+  // rows that actually need it (over-limit, viewer is not an admin).
+  const items: ReviewItem[] = await Promise.all(
+    requests.map(async (r): Promise<ReviewItem> => {
+      const overLimit = r.amount_minor > threshold;
+      let canDecide = true;
+      let fallback = false;
+      if (overLimit && !isAdmin) {
+        const { data: exists, error } = await supabase.rpc("request_eligible_admin_exists", {
+          p_request: r.id,
+        });
+        const eligibleAdminExists = error ? true : exists === true;
+        canDecide = !eligibleAdminExists;
+        fallback = !eligibleAdminExists;
+      }
+      return {
+        id: r.id,
+        title: r.title,
+        category: r.category,
+        amountMinor: r.amount_minor,
+        currency: r.currency,
+        requesterName: nameOf(profiles, r.requester_id),
+        createdAt: r.created_at,
+        description: r.description ?? null,
+        overLimit,
+        canDecide,
+        fallback,
+      };
+    }),
+  );
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -33,14 +70,7 @@ export default async function QueuePage() {
           </>
         }
       />
-      <RequestList
-        requests={requests}
-        profiles={profiles}
-        showRequester
-        reviewable
-        threshold={ctx.org.approval_threshold_minor}
-        emptyLabel="You're all caught up — nothing to review."
-      />
+      <QueueReview initialItems={items} />
     </div>
   );
 }
