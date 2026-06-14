@@ -3,6 +3,7 @@ import { getAppContext, isApprover } from "@/lib/context";
 import { createClient } from "@/lib/supabase/server";
 import { AppNav } from "@/components/app-nav";
 import { AppTopBar } from "@/components/app-topbar";
+import { ToastProvider } from "@/components/toast";
 import type { AppNotification } from "@/lib/types";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -61,7 +62,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         unreadCount={unread ?? 0}
         notifications={notifications}
       />
-      <main id="main" tabIndex={-1} className="mx-auto max-w-5xl px-5 py-10 pb-[max(2.5rem,env(safe-area-inset-bottom))] focus:outline-none sm:px-8 lg:py-12">{children}</main>
+      <main id="main" tabIndex={-1} className="mx-auto max-w-5xl px-5 py-10 pb-[max(2.5rem,env(safe-area-inset-bottom))] focus:outline-none sm:px-8 lg:py-12">
+        <ToastProvider>{children}</ToastProvider>
+      </main>
     </div>
   );
 }

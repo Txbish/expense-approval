@@ -1,14 +1,24 @@
 "use client";
 
-import { useActionState, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { Button, FormError, Spinner } from "@/components/ui";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { useToast } from "@/components/toast";
 import { withdrawRequest, type DecisionState } from "@/app/(app)/requests/[id]/actions";
 
 export function WithdrawButton({ requestId }: { requestId: string }) {
   const [state, action, pending] = useActionState<DecisionState, FormData>(withdrawRequest, {});
+  const { push } = useToast();
   const [open, setOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const notified = useRef(false);
+
+  useEffect(() => {
+    if (state?.ok && !notified.current) {
+      notified.current = true;
+      push({ message: "Request withdrawn", tone: "success" });
+    }
+  }, [state, push]);
 
   return (
     <form ref={formRef} action={action} className="space-y-2">

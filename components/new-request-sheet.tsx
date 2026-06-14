@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { NewRequestForm } from "@/components/new-request-form";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { useToast } from "@/components/toast";
 
 /**
  * "New request" as an in-page slide-over — a genuine quick action: log an
@@ -28,10 +28,10 @@ export function NewRequestSheet({
   children: ReactNode;
 }) {
   const router = useRouter();
+  const { push } = useToast();
   const [open, setOpen] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [confirmDiscard, setConfirmDiscard] = useState(false);
-  const [toastId, setToastId] = useState<string | null>(null);
 
   function reallyClose() {
     setOpen(false);
@@ -58,16 +58,14 @@ export function NewRequestSheet({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, dirty]);
 
-  useEffect(() => {
-    if (!toastId) return;
-    const t = setTimeout(() => setToastId(null), 5000);
-    return () => clearTimeout(t);
-  }, [toastId]);
-
   function handleSuccess(id: string) {
     reallyClose();
-    setToastId(id);
     router.refresh();
+    push({
+      message: "Request submitted",
+      tone: "success",
+      action: { label: "View", onClick: () => router.push(`/requests/${id}`) },
+    });
   }
 
   return (
@@ -125,28 +123,6 @@ export function NewRequestSheet({
         onConfirm={reallyClose}
         onCancel={() => setConfirmDiscard(false)}
       />
-
-      {toastId && (
-        <div
-          role="status"
-          aria-live="polite"
-          className="fixed inset-x-0 bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-[70] flex justify-center px-4"
-        >
-          <div className="animate-slide-up flex items-center gap-3 rounded-full border border-ink bg-ink px-4 py-2.5 text-cream">
-            <svg viewBox="0 0 20 20" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-              <path d="M4.5 10.5 8.2 14.2 15.5 5.8" />
-            </svg>
-            <span className="text-field font-medium">Request submitted</span>
-            <Link
-              href={`/requests/${toastId}`}
-              onClick={() => setToastId(null)}
-              className="text-field font-medium text-cream underline underline-offset-4 hover:no-underline"
-            >
-              View
-            </Link>
-          </div>
-        </div>
-      )}
     </>
   );
 }

@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { Button, FormError, Spinner, Textarea } from "@/components/ui";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { useToast } from "@/components/toast";
 import { decideRequest, type DecisionState } from "@/app/(app)/requests/[id]/actions";
 
 type Decision = "approved" | "rejected";
@@ -27,6 +28,7 @@ export function DecisionPanel({
   onDecided?: (decision: Decision) => void;
 }) {
   const [state, action, pending] = useActionState<DecisionState, FormData>(decideRequest, {});
+  const { push } = useToast();
   const blockedByLimit = overLimit && !canDecideOverLimit;
 
   // Which button is in flight — so only the clicked one spins (not both).
@@ -42,9 +44,11 @@ export function DecisionPanel({
   useEffect(() => {
     if (state?.ok && !notified.current) {
       notified.current = true;
-      onDecided?.(firedDecision.current ?? "approved");
+      const decision = firedDecision.current ?? "approved";
+      push({ message: decision === "rejected" ? "Request rejected" : "Request approved", tone: "success" });
+      onDecided?.(decision);
     }
-  }, [state, onDecided]);
+  }, [state, onDecided, push]);
 
   function fire(decision: Decision) {
     if (decisionRef.current) decisionRef.current.value = decision;
