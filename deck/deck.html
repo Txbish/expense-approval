@@ -124,7 +124,7 @@
 
 <!-- 2 — THE PROBLEM -->
 <section class="slide">
-  <header class="shead"><h2>The problem</h2><span class="num">02 / 16</span></header>
+  <header class="shead"><h2>The problem</h2><span class="num">02 / 17</span></header>
   <p class="lead">Small teams approve money over email and chat — no trail, no accountability, no status. <span style="color:var(--ink)">In fintech, an approval with no immutable record is a compliance failure, not an inconvenience.</span></p>
   <div class="ba">
     <div class="col">
@@ -147,7 +147,7 @@
 
 <!-- 3 — WHAT I BUILT -->
 <section class="slide">
-  <header class="shead"><h2>What I built</h2><span class="num">03 / 16</span></header>
+  <header class="shead"><h2>What I built</h2><span class="num">03 / 17</span></header>
   <div class="split">
     <div class="col-text">
       <ul class="points">
@@ -165,9 +165,29 @@
   </div>
 </section>
 
-<!-- 4 — RESPONSIVE / CRAFT -->
+<!-- 4 — REVIEW IN PLACE -->
 <section class="slide">
-  <header class="shead"><h2>Designed for every screen</h2><span class="num">04 / 16</span></header>
+  <header class="shead"><h2>Review without leaving the page</h2><span class="num">04 / 17</span></header>
+  <div class="split">
+    <div class="col-text">
+      <ul class="points">
+        <li>Approving used to mean a <span class="k">page round-trip per request</span> — open, decide, go back, repeat down the queue</li>
+        <li>Now every queue, dashboard and list row has a prominent <span class="k">Review</span> action that opens an <span class="k">in-place drawer</span> — the list stays put behind it</li>
+        <li>Decide with an optional note and it <span class="k">auto-advances</span> to the next pending item — clear the queue without losing your place</li>
+        <li>Over-threshold items surface the <span class="k">admin-required</span> state inline; a confirm step guards large approvals and a toast confirms every decision</li>
+        <li>The drawer is pure UX — the decision is still made by the <span class="k">decide_request</span> RPC, never the client</li>
+      </ul>
+    </div>
+    <div class="col-media">
+      <figure class="shot"><img src="shots/s-review-drawer.png" alt="Inline review drawer over the approval queue"></figure>
+      <div class="cap">Inline review drawer — decide in place, then auto-advance</div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 — RESPONSIVE / CRAFT -->
+<section class="slide">
+  <header class="shead"><h2>Designed for every screen</h2><span class="num">05 / 17</span></header>
   <p class="lead" style="margin-bottom:12px">The same flat, ink-on-paper system reflows to any width — no feature dropped, no separate mobile theme, an approver can clear the queue from a phone.</p>
   <div class="phones">
     <figure class="phone-fig">
@@ -197,7 +217,7 @@
 
 <!-- 5 — DATA MODEL -->
 <section class="slide">
-  <header class="shead"><h2>Data model</h2><span class="num">05 / 16</span></header>
+  <header class="shead"><h2>Data model</h2><span class="num">06 / 17</span></header>
   <div class="split">
     <div class="col-text">
       <ul class="points">
@@ -235,7 +255,7 @@
 
 <!-- 5 — SECURITY ARCHITECTURE -->
 <section class="slide">
-  <header class="shead"><h2>Security architecture</h2><span class="num">06 / 16</span></header>
+  <header class="shead"><h2>Security architecture</h2><span class="num">07 / 17</span></header>
   <div class="split">
     <div class="col-text">
       <ul class="points">
@@ -270,7 +290,7 @@
 
 <!-- 6 — DECISION RPC -->
 <section class="slide">
-  <header class="shead"><h2>The decision RPC</h2><span class="num">07 / 16</span></header>
+  <header class="shead"><h2>The decision RPC</h2><span class="num">08 / 17</span></header>
   <div class="split">
     <div class="col-text">
       <ul class="points">
@@ -302,7 +322,7 @@ $$;</div>
 
 <!-- 7 — THRESHOLD ROUTING -->
 <section class="slide">
-  <header class="shead"><h2>Threshold routing</h2><span class="num">08 / 16</span></header>
+  <header class="shead"><h2>Threshold routing</h2><span class="num">09 / 17</span></header>
   <div class="split">
     <div class="col-text">
       <ul class="points">
@@ -323,7 +343,7 @@ $$;</div>
 
 <!-- 8 — MULTI-TENANCY -->
 <section class="slide">
-  <header class="shead"><h2>Multi-tenancy</h2><span class="num">09 / 16</span></header>
+  <header class="shead"><h2>Multi-tenancy</h2><span class="num">10 / 17</span></header>
   <div class="split wide">
     <div class="col-text">
       <ul class="points">
@@ -346,7 +366,7 @@ $$;</div>
 
 <!-- 9 — ONBOARDING & ORG SWITCHING -->
 <section class="slide">
-  <header class="shead"><h2>Joining &amp; switching orgs</h2><span class="num">10 / 16</span></header>
+  <header class="shead"><h2>Joining &amp; switching orgs</h2><span class="num">11 / 17</span></header>
   <div class="split wide">
     <div class="col-text">
       <ul class="points">
@@ -368,7 +388,7 @@ $$;</div>
 
 <!-- 10 — AUDIT TRAIL -->
 <section class="slide">
-  <header class="shead"><h2>Audit trail &amp; resubmission</h2><span class="num">11 / 16</span></header>
+  <header class="shead"><h2>Audit trail &amp; resubmission</h2><span class="num">12 / 17</span></header>
   <div class="split wide">
     <div class="col-text">
       <ul class="points">
@@ -390,7 +410,7 @@ $$;</div>
 
 <!-- 11 — OBSERVABILITY -->
 <section class="slide">
-  <header class="shead"><h2>Observability</h2><span class="num">12 / 16</span></header>
+  <header class="shead"><h2>Observability</h2><span class="num">13 / 17</span></header>
   <div class="split wide">
     <div class="col-text">
       <ul class="points">
@@ -415,7 +435,7 @@ $$;</div>
 
 <!-- 13 — LEFT OUT -->
 <section class="slide">
-  <header class="shead"><h2>What I left out — and why</h2><span class="num">13 / 16</span></header>
+  <header class="shead"><h2>What I left out — and why</h2><span class="num">14 / 17</span></header>
   <div class="body body-narrow">
     <ul class="points">
       <li><span class="k">Email notifications</span> — Resend needs a verified custom domain, which a <span style="font-family:'IBM Plex Mono',monospace">*.vercel.app</span> preview URL can&rsquo;t have.<small>Integration point stubbed and ready; replaced with in-app notifications. ~30-min add with a domain.</small></li>
@@ -428,7 +448,7 @@ $$;</div>
 
 <!-- 13 — NEXT -->
 <section class="slide">
-  <header class="shead"><h2>What I&rsquo;d build next</h2><span class="num">14 / 16</span></header>
+  <header class="shead"><h2>What I&rsquo;d build next</h2><span class="num">15 / 17</span></header>
   <div class="next-primary">
     <div class="next-card">
       <h3>Dual approval</h3>
@@ -447,7 +467,7 @@ $$;</div>
 
 <!-- 14 — TEST ACCOUNTS -->
 <section class="slide">
-  <header class="shead"><h2>Test accounts</h2><span class="num">15 / 16</span></header>
+  <header class="shead"><h2>Test accounts</h2><span class="num">16 / 17</span></header>
   <div class="split">
     <div class="col-text">
       <ul class="points">
@@ -468,7 +488,7 @@ $$;</div>
 
 <!-- 15 — LIVE APP -->
 <section class="slide">
-  <header class="shead"><h2>Live app</h2><span class="num">16 / 16</span></header>
+  <header class="shead"><h2>Live app</h2><span class="num">17 / 17</span></header>
   <div class="split">
     <div class="col-text">
       <ul class="points">
